@@ -1,0 +1,403 @@
+[
+  {
+    "id": "1",
+    "term": "食べる",
+    "reading": "たべる",
+    "meanings": ["to eat"],
+    "partOfSpeech": "verb",
+    "examples": ["私はりんごを食べる。"]
+  },
+  {
+    "id": "2",
+    "term": "飲む",
+    "reading": "のむ",
+    "meanings": ["to drink"],
+    "partOfSpeech": "verb",
+    "examples": ["水を飲む。"]
+  },
+  {
+    "id": "3",
+    "term": "見る",
+    "reading": "みる",
+    "meanings": ["to see", "to watch"],
+    "partOfSpeech": "verb",
+    "examples": ["映画を見る。"]
+  },
+  {
+    "id": "4",
+    "term": "行く",
+    "reading": "いく",
+    "meanings": ["to go"],
+    "partOfSpeech": "verb",
+    "examples": ["学校へ行く。"]
+  },
+  {
+    "id": "5",
+    "term": "来る",
+    "reading": "くる",
+    "meanings": ["to come"],
+    "partOfSpeech": "verb",
+    "examples": ["友達が家に来る。"]
+  },
+  {
+    "id": "6",
+    "term": "する",
+    "reading": "する",
+    "meanings": ["to do"],
+    "partOfSpeech": "verb",
+    "examples": ["宿題をする。"]
+  },
+  {
+    "id": "7",
+    "term": "ある",
+    "reading": "ある",
+    "meanings": ["to exist (inanimate)", "to have"],
+    "partOfSpeech": "verb",
+    "examples": ["机の上に本がある。"]
+  },
+  {
+    "id": "8",
+    "term": "いる",
+    "reading": "いる",
+    "meanings": ["to exist (animate)"],
+    "partOfSpeech": "verb",
+    "examples": ["猫が部屋にいる。"]
+  },
+  {
+    "id": "9",
+    "term": "言う",
+    "reading": "いう",
+    "meanings": ["to say"],
+    "partOfSpeech": "verb",
+    "examples": ["「ありがとう」と言う。"]
+  },
+  {
+    "id": "10",
+    "term": "聞く",
+    "reading": "きく",
+    "meanings": ["to hear", "to ask"],
+    "partOfSpeech": "verb",
+    "examples": ["音楽を聞く。"]
+  },
+  {
+    "id": "11",
+    "term": "話す",
+    "reading": "はなす",
+    "meanings": ["to speak"],
+    "partOfSpeech": "verb",
+    "examples": ["日本語で話す。"]
+  },
+  {
+    "id": "12",
+    "term": "読む",
+    "reading": "よむ",
+    "meanings": ["to read"],
+    "partOfSpeech": "verb",
+    "examples": ["本を読む。"]
+  },
+  {
+    "id": "13",
+    "term": "書く",
+    "reading": "かく",
+    "meanings": ["to write"],
+    "partOfSpeech": "verb",
+    "examples": ["手紙を書く。"]
+  },
+  {
+    "id": "14",
+    "term": "買う",
+    "reading": "かう",
+    "meanings": ["to buy"],
+    "partOfSpeech": "verb",
+    "examples": ["パンを買う。"]
+  },
+  {
+    "id": "15",
+    "term": "売る",
+    "reading": "うる",
+    "meanings": ["to sell"],
+    "partOfSpeech": "verb",
+    "examples": ["古い車を売る。"]
+  },
+  {
+    "id": "16",
+    "term": "使う",
+    "reading": "つかう",
+    "meanings": ["to use"],
+    "partOfSpeech": "verb",
+    "examples": ["スマホを使う。"]
+  },
+  {
+    "id": "17",
+    "term": "作る",
+    "reading": "つくる",
+    "meanings": ["to make", "to create"],
+    "partOfSpeech": "verb",
+    "examples": ["ケーキを作る。"]
+  },
+  {
+    "id": "18",
+    "term": "会う",
+    "reading": "あう",
+    "meanings": ["to meet"],
+    "partOfSpeech": "verb",
+    "examples": ["友達に会う。"]
+  },
+  {
+    "id": "19",
+    "term": "分かる",
+    "reading": "わかる",
+    "meanings": ["to understand"],
+    "partOfSpeech": "verb",
+    "examples": ["意味が分かる。"]
+  },
+  {
+    "id": "20",
+    "term": "思う",
+    "reading": "おもう",
+    "meanings": ["to think"],
+    "partOfSpeech": "verb",
+    "examples": ["明日晴れると思う。"]
+  },
+  {
+    "id": "21",
+    "term": "知る",
+    "reading": "しる",
+    "meanings": ["to know"],
+    "partOfSpeech": "verb",
+    "examples": ["彼の名前を知る。"]
+  },
+  {
+    "id": "22",
+    "term": "学ぶ",
+    "reading": "まなぶ",
+    "meanings": ["to learn"],
+    "partOfSpeech": "verb",
+    "examples": ["歴史を学ぶ。"]
+  },
+  {
+    "id": "23",
+    "term": "教える",
+    "reading": "おしえる",
+    "meanings": ["to teach", "to tell"],
+    "partOfSpeech": "verb",
+    "examples": ["英語を教える。"]
+  },
+  {
+    "id": "24",
+    "term": "起きる",
+    "reading": "おきる",
+    "meanings": ["to wake up"],
+    "partOfSpeech": "verb",
+    "examples": ["毎朝6時に起きる。"]
+  },
+  {
+    "id": "25",
+    "term": "寝る",
+    "reading": "ねる",
+    "meanings": ["to sleep"],
+    "partOfSpeech": "verb",
+    "examples": ["早く寝る。"]
+  },
+  {
+    "id": "26",
+    "term": "走る",
+    "reading": "はしる",
+    "meanings": ["to run"],
+    "partOfSpeech": "verb",
+    "examples": ["公園で走る。"]
+  },
+  {
+    "id": "27",
+    "term": "歩く",
+    "reading": "あるく",
+    "meanings": ["to walk"],
+    "partOfSpeech": "verb",
+    "examples": ["駅まで歩く。"]
+  },
+  {
+    "id": "28",
+    "term": "待つ",
+    "reading": "まつ",
+    "meanings": ["to wait"],
+    "partOfSpeech": "verb",
+    "examples": ["バスを待つ。"]
+  },
+  {
+    "id": "29",
+    "term": "入る",
+    "reading": "はいる",
+    "meanings": ["to enter"],
+    "partOfSpeech": "verb",
+    "examples": ["部屋に入る。"]
+  },
+  {
+    "id": "30",
+    "term": "出る",
+    "reading": "でる",
+    "meanings": ["to leave", "to exit"],
+    "partOfSpeech": "verb",
+    "examples": ["家を出る。"]
+  },
+  {
+    "id": "31",
+    "term": "高い",
+    "reading": "たかい",
+    "meanings": ["tall", "expensive"],
+    "partOfSpeech": "adjective",
+    "examples": ["この店は少し高い。"]
+  },
+  {
+    "id": "32",
+    "term": "低い",
+    "reading": "ひくい",
+    "meanings": ["low", "short"],
+    "partOfSpeech": "adjective",
+    "examples": ["山はそれほど低くない。"]
+  },
+  {
+    "id": "33",
+    "term": "新しい",
+    "reading": "あたらしい",
+    "meanings": ["new"],
+    "partOfSpeech": "adjective",
+    "examples": ["新しい靴を買った。"]
+  },
+  {
+    "id": "34",
+    "term": "古い",
+    "reading": "ふるい",
+    "meanings": ["old (not person)"],
+    "partOfSpeech": "adjective",
+    "examples": ["古い本を読む。"]
+  },
+  {
+    "id": "35",
+    "term": "早い",
+    "reading": "はやい",
+    "meanings": ["early", "fast"],
+    "partOfSpeech": "adjective",
+    "examples": ["早い電車に乗る。"]
+  },
+  {
+    "id": "36",
+    "term": "遅い",
+    "reading": "おそい",
+    "meanings": ["late", "slow"],
+    "partOfSpeech": "adjective",
+    "examples": ["到着が遅い。"]
+  },
+  {
+    "id": "37",
+    "term": "きれい",
+    "reading": "きれい",
+    "meanings": ["beautiful", "clean"],
+    "partOfSpeech": "adjective",
+    "examples": ["海がきれいだ。"]
+  },
+  {
+    "id": "38",
+    "term": "静か",
+    "reading": "しずか",
+    "meanings": ["quiet"],
+    "partOfSpeech": "adjective",
+    "examples": ["図書館は静かだ。"]
+  },
+  {
+    "id": "39",
+    "term": "大きい",
+    "reading": "おおきい",
+    "meanings": ["big"],
+    "partOfSpeech": "adjective",
+    "examples": ["大きい犬を見る。"]
+  },
+  {
+    "id": "40",
+    "term": "小さい",
+    "reading": "ちいさい",
+    "meanings": ["small"],
+    "partOfSpeech": "adjective",
+    "examples": ["小さい花が咲いた。"]
+  },
+  {
+    "id": "41",
+    "term": "そして",
+    "reading": "そして",
+    "meanings": ["and then"],
+    "partOfSpeech": "conjunction",
+    "examples": ["そして、家に帰った。"]
+  },
+  {
+    "id": "42",
+    "term": "しかし",
+    "reading": "しかし",
+    "meanings": ["however"],
+    "partOfSpeech": "conjunction",
+    "examples": ["しかし、問題は解決しなかった。"]
+  },
+  {
+    "id": "43",
+    "term": "でも",
+    "reading": "でも",
+    "meanings": ["but"],
+    "partOfSpeech": "conjunction",
+    "examples": ["でも、あきらめない。"]
+  },
+  {
+    "id": "44",
+    "term": "とても",
+    "reading": "とても",
+    "meanings": ["very"],
+    "partOfSpeech": "adverb",
+    "examples": ["今日はとても寒い。"]
+  },
+  {
+    "id": "45",
+    "term": "少し",
+    "reading": "すこし",
+    "meanings": ["a little"],
+    "partOfSpeech": "adverb",
+    "examples": ["少し休みたい。"]
+  },
+  {
+    "id": "46",
+    "term": "よく",
+    "reading": "よく",
+    "meanings": ["often", "well"],
+    "partOfSpeech": "adverb",
+    "examples": ["彼は本をよく読む。"]
+  },
+  {
+    "id": "47",
+    "term": "私",
+    "reading": "わたし",
+    "meanings": ["I", "me"],
+    "partOfSpeech": "pronoun",
+    "examples": ["私は学生です。"]
+  },
+  {
+    "id": "48",
+    "term": "これ",
+    "reading": "これ",
+    "meanings": ["this"],
+    "partOfSpeech": "pronoun",
+    "examples": ["これはペンです。"]
+  },
+  {
+    "id": "49",
+    "term": "おはよう",
+    "reading": "おはよう",
+    "meanings": ["good morning"],
+    "partOfSpeech": "interjection",
+    "examples": ["おはようございます。"]
+  },
+  {
+    "id": "50",
+    "term": "ありがとう",
+    "reading": "ありがとう",
+    "meanings": ["thank you"],
+    "partOfSpeech": "interjection",
+    "examples": ["本当にありがとう。"]
+  }
+]
+

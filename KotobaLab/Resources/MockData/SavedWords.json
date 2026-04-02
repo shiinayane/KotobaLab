@@ -1,0 +1,26 @@
+[
+    {
+      "id": "1",
+      "term": "食べる",
+      "reading": "たべる",
+      "meanings": ["to eat"],
+      "partOfSpeech": "verb",
+      "examples": ["私はりんごを食べる。"]
+    },
+    {
+      "id": "2",
+      "term": "飲む",
+      "reading": "のむ",
+      "meanings": ["to drink"],
+      "partOfSpeech": "verb",
+      "examples": ["水を飲む。"]
+    },
+    {
+      "id": "3",
+      "term": "見る",
+      "reading": "みる",
+      "meanings": ["to see", "to watch"],
+      "partOfSpeech": "verb",
+      "examples": ["映画を見る。"]
+    }
+]

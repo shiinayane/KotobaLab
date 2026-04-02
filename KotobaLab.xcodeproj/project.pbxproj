@@ -3,14 +3,35 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 100;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8D089AFC2F7D6C340040BB42 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 8D089AFB2F7D6C340040BB42 /* GRDB */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		8D3B28302F768193007932B7 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		8D85E6652F745BFA002A040A /* KotobaLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KotobaLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DAABF502F7D868900CE4802 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		8D3B28062F765F81007932B7 /* docs */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = docs;
+			sourceTree = "<group>";
+		};
+		8D3B281E2F766500007932B7 /* scripts */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = scripts;
+			sourceTree = "<group>";
+		};
+		8D3B28692F7D002F007932B7 /* data */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = data;
+			sourceTree = "<group>";
+		};
 		8D85E6672F745BFA002A040A /* KotobaLab */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = KotobaLab;
@@ -21,10 +42,9 @@
 /* Begin PBXFrameworksBuildPhase section */
 		8D85E6622F745BFA002A040A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
+				8D089AFC2F7D6C340040BB42 /* GRDB in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -32,6 +52,11 @@
 		8D85E65C2F745BFA002A040A = {
 			isa = PBXGroup;
 			children = (
+				8DAABF502F7D868900CE4802 /* .gitignore */,
+				8D3B28692F7D002F007932B7 /* data */,
+				8D3B28302F768193007932B7 /* README.md */,
+				8D3B281E2F766500007932B7 /* scripts */,
+				8D3B28062F765F81007932B7 /* docs */,
 				8D85E6672F745BFA002A040A /* KotobaLab */,
 				8D85E6662F745BFA002A040A /* Products */,
 			);
@@ -58,13 +83,12 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			fileSystemSynchronizedGroups = (
 				8D85E6672F745BFA002A040A /* KotobaLab */,
 			);
 			name = KotobaLab;
 			packageProductDependencies = (
+				8D089AFB2F7D6C340040BB42 /* GRDB */,
 			);
 			productName = KotobaLab;
 			productReference = 8D85E6652F745BFA002A040A /* KotobaLab.app */;
@@ -94,7 +118,10 @@
 			);
 			mainGroup = 8D85E65C2F745BFA002A040A;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
+			packageReferences = (
+				8D089AFA2F7D6C340040BB42 /* XCRemoteSwiftPackageReference "GRDB" */,
+			);
+			preferredProjectObjectVersion = 100;
 			productRefGroup = 8D85E6662F745BFA002A040A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -107,25 +134,21 @@
 /* Begin PBXResourcesBuildPhase section */
 		8D85E6632F745BFA002A040A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8D85E6612F745BFA002A040A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		8D85E66E2F745BFC002A040A /* Debug */ = {
+		8D85E66E2F745BFC002A040A /* Debug configuration for PBXProject "KotobaLab" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -189,7 +212,7 @@
 			};
 			name = Debug;
 		};
-		8D85E66F2F745BFC002A040A /* Release */ = {
+		8D85E66F2F745BFC002A040A /* Release configuration for PBXProject "KotobaLab" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -246,7 +269,7 @@
 			};
 			name = Release;
 		};
-		8D85E6712F745BFC002A040A /* Debug */ = {
+		8D85E6712F745BFC002A040A /* Debug configuration for PBXNativeTarget "KotobaLab" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -273,12 +296,12 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		8D85E6722F745BFC002A040A /* Release */ = {
+		8D85E6722F745BFC002A040A /* Release configuration for PBXNativeTarget "KotobaLab" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -305,7 +328,7 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -316,22 +339,39 @@
 		8D85E6602F745BFA002A040A /* Build configuration list for PBXProject "KotobaLab" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8D85E66E2F745BFC002A040A /* Debug */,
-				8D85E66F2F745BFC002A040A /* Release */,
+				8D85E66E2F745BFC002A040A /* Debug configuration for PBXProject "KotobaLab" */,
+				8D85E66F2F745BFC002A040A /* Release configuration for PBXProject "KotobaLab" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		8D85E6702F745BFC002A040A /* Build configuration list for PBXNativeTarget "KotobaLab" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8D85E6712F745BFC002A040A /* Debug */,
-				8D85E6722F745BFC002A040A /* Release */,
+				8D85E6712F745BFC002A040A /* Debug configuration for PBXNativeTarget "KotobaLab" */,
+				8D85E6722F745BFC002A040A /* Release configuration for PBXNativeTarget "KotobaLab" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8D089AFA2F7D6C340040BB42 /* XCRemoteSwiftPackageReference "GRDB" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8D089AFB2F7D6C340040BB42 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D089AFA2F7D6C340040BB42 /* XCRemoteSwiftPackageReference "GRDB" */;
+			productName = GRDB;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8D85E65D2F745BFA002A040A /* Project object */;
 }
