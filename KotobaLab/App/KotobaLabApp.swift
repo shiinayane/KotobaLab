@@ -9,6 +9,10 @@ import SwiftUI
 
 @main
 struct KotobaLabApp: App {
+    init () {
+        debugSearchRepository()
+    }
+    
     var body: some Scene {
         WindowGroup {
             RootView()

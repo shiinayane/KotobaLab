@@ -32,6 +32,11 @@
 			path = data;
 			sourceTree = "<group>";
 		};
+		8D5D61282F7E44E50070F608 /* logs */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = logs;
+			sourceTree = "<group>";
+		};
 		8D85E6672F745BFA002A040A /* KotobaLab */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = KotobaLab;
@@ -52,6 +57,7 @@
 		8D85E65C2F745BFA002A040A = {
 			isa = PBXGroup;
 			children = (
+				8D5D61282F7E44E50070F608 /* logs */,
 				8DAABF502F7D868900CE4802 /* .gitignore */,
 				8D3B28692F7D002F007932B7 /* data */,
 				8D3B28302F768193007932B7 /* README.md */,
