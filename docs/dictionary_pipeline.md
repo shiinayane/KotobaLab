@@ -4,26 +4,58 @@
 
 Yomitan dictionary
 
-↓
+    ↓
 
 Python parsing
 
-↓
+    ↓
 
 SQLite database
 
-↓
+    ↓
 
 DatabaseManager
 
-↓ Provide dbQueue
+    ↓ Provide dbQueue
 
 SQLiteDictionaryRepository
 
-↓ Provide searchWords / fetchWordDetail
+    ↓ Provide searchWords / fetchWordDetail
 
 SearchStore
 
-↓ Provide states to UI
+    ↓ Provide states to UI
 
+SearchView
+
+## About view and store
+
+SearchView
+
+     ↓
+     
+SearchStore.query
+
+     ↓
+     
+SearchStore.search()
+
+     ↓
+     
+SQLiteDictionaryRepository.searchWords()
+
+     ↓
+     
+SQLite
+
+     ↓
+     
+WordSummary[]
+
+     ↓
+     
+SearchStore.results
+
+     ↓
+     
 SearchView

@@ -11,27 +11,27 @@ import Foundation
 @Observable
 class SearchStore{
     var query: String = ""
-    var allWords: [WordEntry] = []
-    var results: [WordEntry] = []
+    var results: [WordSummary] = []
     
-    private let repository = WordRepository()
+    private let repository: DictionaryRepositoryProtocol
     
-    func loadWords() {
-        allWords = repository.loadWords()
-        results = allWords
+    init(repository: DictionaryRepositoryProtocol) {
+        self.repository = repository
     }
     
     func search() {
         let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard !q.isEmpty else {
-            results = allWords
+            results = []
             return
         }
         
-        results = allWords.filter {
-            $0.term.contains(q) ||
-            $0.reading.contains(q)
+        do {
+            results = try repository.searchWords(query: q, limit: 20)
+        } catch {
+            print("Search failed:", error)
+            results = []
         }
     }
 }

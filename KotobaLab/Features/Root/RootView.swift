@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RootView: View {
     @State private var router = AppRouter()
+    let searchStore: SearchStore
     
     var body: some View {
         TabView {
@@ -34,7 +35,7 @@ struct RootView: View {
             }
             Tab("Search", systemImage: "magnifyingglass", role: .search) {
                 AppTabContainer(title: "Search") {
-                    SearchView()
+                    SearchView(store: searchStore)
                 }
             }
         }
@@ -52,5 +53,9 @@ struct RootView: View {
 }
 
 #Preview {
-    RootView()
+    let searchStore = SearchStore(repository: MockDictionaryRepository())
+    
+    RootView(
+        searchStore: searchStore
+    )
 }
