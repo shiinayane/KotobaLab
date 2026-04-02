@@ -14,6 +14,7 @@ class SearchStore{
     var results: [WordSummary] = []
     
     private let repository: DictionaryRepositoryProtocol
+    private var searchTask: Task<Void, Never>?
     
     init(repository: DictionaryRepositoryProtocol) {
         self.repository = repository
@@ -32,6 +33,20 @@ class SearchStore{
         } catch {
             print("Search failed:", error)
             results = []
+        }
+    }
+    
+    func debouncedSearch() {
+        searchTask?.cancel()
+        
+        searchTask = Task {
+            try? await Task.sleep(for: .milliseconds(300))
+            
+            guard !Task.isCancelled else { return }
+            
+            await MainActor.run {
+                self.search()
+            }
         }
     }
 }

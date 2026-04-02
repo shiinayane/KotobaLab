@@ -20,7 +20,7 @@ struct SearchView: View {
         }
         .searchable(text: $store.query)
         .onChange(of: store.query) { _, _ in
-            store.search()
+            store.debouncedSearch()
         }
     }
 }
