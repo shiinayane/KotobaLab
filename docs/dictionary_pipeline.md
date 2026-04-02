@@ -1,11 +1,29 @@
 # Dictionary Pipeline
 
+## One possible example
+
 Yomitan dictionary
+
 ↓
+
 Python parsing
+
 ↓
+
 SQLite database
+
 ↓
-GRDB repository
-↓
-SwiftUI search
+
+DatabaseManager
+
+↓ Provide dbQueue
+
+SQLiteDictionaryRepository
+
+↓ Provide searchWords / fetchWordDetail
+
+SearchStore
+
+↓ Provide states to UI
+
+SearchView
