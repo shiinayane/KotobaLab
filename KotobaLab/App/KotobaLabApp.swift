@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct KotobaLabApp: App {
@@ -28,5 +29,6 @@ struct KotobaLabApp: App {
         WindowGroup {
             rootView
         }
+        .modelContainer(for: [SavedWordRecord.self])
     }
 }

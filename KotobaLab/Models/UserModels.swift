@@ -6,10 +6,15 @@
 //
 
 import Foundation
+import SwiftData
 
-//  For the future structure.
-struct FavoriteItem: Identifiable, Hashable {
-    let id: Int
-    let title: String
-    let url: URL
+@Model
+final class SavedWordRecord {
+    @Attribute(.unique) var wordID: Int64
+    var savedAt: Date
+
+    init(wordID: Int64, savedAt: Date = .now) {
+        self.wordID = wordID
+        self.savedAt = savedAt
+    }
 }

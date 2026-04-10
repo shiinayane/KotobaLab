@@ -16,22 +16,9 @@
 		8DAABF502F7D868900CE4802 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		8D5D61372F8408670070F608 /* Exceptions for "docs" folder in "KotobaLab" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				note/project_overview_for_ai.md,
-			);
-			target = 8D85E6642F745BFA002A040A /* KotobaLab */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8D3B28062F765F81007932B7 /* docs */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				8D5D61372F8408670070F608 /* Exceptions for "docs" folder in "KotobaLab" target */,
-			);
 			path = docs;
 			sourceTree = "<group>";
 		};
