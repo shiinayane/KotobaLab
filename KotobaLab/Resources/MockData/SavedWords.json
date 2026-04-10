@@ -22,5 +22,101 @@
       "meanings": ["to see", "to watch"],
       "partOfSpeech": "verb",
       "examples": ["映画を見る。"]
+    },
+    {
+      "id": "4",
+      "term": "行く",
+      "reading": "いく",
+      "meanings": ["to go"],
+      "partOfSpeech": "verb",
+      "examples": ["学校へ行く。"]
+    },
+    {
+      "id": "5",
+      "term": "来る",
+      "reading": "くる",
+      "meanings": ["to come"],
+      "partOfSpeech": "verb",
+      "examples": ["友達が家に来る。"]
+    },
+    {
+      "id": "6",
+      "term": "する",
+      "reading": "する",
+      "meanings": ["to do"],
+      "partOfSpeech": "verb",
+      "examples": ["宿題をする。"]
+    },
+    {
+      "id": "7",
+      "term": "ある",
+      "reading": "ある",
+      "meanings": ["to exist (inanimate)", "to have"],
+      "partOfSpeech": "verb",
+      "examples": ["机の上に本がある。"]
+    },
+    {
+      "id": "8",
+      "term": "いる",
+      "reading": "いる",
+      "meanings": ["to exist (animate)"],
+      "partOfSpeech": "verb",
+      "examples": ["猫が部屋にいる。"]
+    },
+    {
+      "id": "9",
+      "term": "言う",
+      "reading": "いう",
+      "meanings": ["to say"],
+      "partOfSpeech": "verb",
+      "examples": ["「ありがとう」と言う。"]
+    },
+    {
+      "id": "10",
+      "term": "聞く",
+      "reading": "きく",
+      "meanings": ["to hear", "to ask"],
+      "partOfSpeech": "verb",
+      "examples": ["音楽を聞く。"]
+    },
+    {
+      "id": "11",
+      "term": "話す",
+      "reading": "はなす",
+      "meanings": ["to speak"],
+      "partOfSpeech": "verb",
+      "examples": ["日本語で話す。"]
+    },
+    {
+      "id": "12",
+      "term": "読む",
+      "reading": "よむ",
+      "meanings": ["to read"],
+      "partOfSpeech": "verb",
+      "examples": ["本を読む。"]
+    },
+    {
+      "id": "13",
+      "term": "書く",
+      "reading": "かく",
+      "meanings": ["to write"],
+      "partOfSpeech": "verb",
+      "examples": ["手紙を書く。"]
+    },
+    {
+      "id": "14",
+      "term": "買う",
+      "reading": "かう",
+      "meanings": ["to buy"],
+      "partOfSpeech": "verb",
+      "examples": ["パンを買う。"]
+    },
+    {
+      "id": "15",
+      "term": "売る",
+      "reading": "うる",
+      "meanings": ["to sell"],
+      "partOfSpeech": "verb",
+      "examples": ["古い車を売る。"]
     }
 ]

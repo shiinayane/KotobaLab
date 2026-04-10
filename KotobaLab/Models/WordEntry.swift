@@ -8,7 +8,7 @@
 import Foundation
 
 struct WordEntry: Identifiable, Codable, Hashable {
-    let id: String
+    let id: Int64
     let term: String
     let reading: String
     let meanings: [String]

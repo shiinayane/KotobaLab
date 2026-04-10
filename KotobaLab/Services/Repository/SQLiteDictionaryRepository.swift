@@ -23,9 +23,18 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                 db,
                 //  Simple Prefix Search
                 sql: """
-                    SELECT w.id, w.term, w.reading, m.definition_text
+                    SELECT
+                        w.id,
+                        w.term,
+                        w.reading,
+                        (
+                            SELECT m.definition_text
+                            FROM meanings m
+                            WHERE m.word_id = w.id
+                            ORDER BY m.id
+                            LIMIT 1
+                        ) AS preview_meaning
                     FROM words w
-                    JOIN meanings m ON w.id = m.word_id
                     WHERE w.term LIKE ? OR w.reading LIKE ?
                     LIMIT ?
                     """,
@@ -37,14 +46,49 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                     id: row["id"],
                     term: row["term"],
                     reading: row["reading"],
-                    previewMeaning: row["definition_text"]
+                    previewMeaning: row["preview_meaning"]
                 )
             }
         }
     }
     
     func fetchWordDetail(id: Int64) throws -> WordDetail? {
-        //  Execute SQL here
-        fatalError("Not implemented yet")
+        try dbQueue.read { db in
+            guard let word = try Row.fetchOne(
+                db,
+                sql: """
+                    SELECT id, term, reading
+                    FROM words
+                    WHERE id = ?
+                    LIMIT 1
+                    """,
+                arguments: [id]
+            ) else {
+                return nil
+            }
+            
+            let meaningRows = try Row.fetchAll(
+                db,
+                sql: """
+                    SELECT id, definition_text
+                    FROM meanings
+                    WHERE word_id = ?
+                    ORDER BY id
+                    """,
+                arguments: [id]
+            )
+            
+            return WordDetail(
+                id: word["id"],
+                term: word["term"],
+                reading: word["reading"],
+                meanings: meaningRows.map { row in
+                    Meaning(
+                        id: row["id"],
+                        text: row["definition_text"]
+                    )
+                }
+            )
+        }
     }
 }

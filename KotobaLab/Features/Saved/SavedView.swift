@@ -13,10 +13,10 @@ struct SavedView: View {
     var body: some View {
         List(store.savedWords) { word in
             NavigationLink {
-                WordDetailView(word: word)
+                
             } label: {
                 VStack(alignment: .leading, spacing: 4) {
-                    HStack(alignment: .center, spacing: 8) {
+                    HStack(alignment: .bottom, spacing: 8) {
                         Text(word.term)
                             .font(.headline)
                         
@@ -36,11 +36,17 @@ struct SavedView: View {
         .task {
             store.loadSavedWords()
         }
+        .searchable(
+            text: $store.query
+        )
+        .onChange(of: store.query) { _, _ in
+            store.search()
+        }
     }
 }
 
 #Preview {
-    AppTabContainer(title: "Saved") {
+    TabContainer(title: "Saved") {
         SavedView()
     }
     .environment(AppRouter())

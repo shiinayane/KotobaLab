@@ -8,55 +8,100 @@
 import SwiftUI
 
 struct WordDetailView: View {
-    let word: WordEntry
+    @State private var store: WordDetailStore
     
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                headerSection
-                meaningSection
-            }
-            .padding(16)
-        }
-        .navigationTitle(word.term)
-        .navigationBarTitleDisplayMode(.inline)
+    init(store: WordDetailStore) {
+        _store = State(initialValue: store)
     }
     
-    private var headerSection: some View {
+    var body: some View {
+        content
+        .navigationTitle("Word Detail")
+        .navigationBarTitleDisplayMode(.inline)
+        .task {
+            store.load()
+        }
+    }
+    
+    @ViewBuilder
+    private var content: some View {
+        Group {
+            if store.isLoading {
+                loadingView
+            } else if let detail = store.detail {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        headerSection(detail: detail)
+                        meaningSection(detail: detail)
+                    }
+                    .padding(16)
+                }
+            } else if store.notFound {
+                notFoundView
+            } else if let errorMessage = store.errorMessage {
+                errorView(message: errorMessage)
+            } else {
+                emptyView
+            }
+        }
+    }
+    
+    private var loadingView: some View {
+        ProgressView()
+    }
+    
+    private var notFoundView: some View {
+        ContentUnavailableView(
+            "Not Found",
+            systemImage: "magnifyingglass",
+            description: Text("The word you are looking for is not found.")
+        )
+    }
+    
+    private func errorView(message: String) -> some View {
+        ContentUnavailableView(
+            "Fail to load",
+            systemImage: "exclamationmark.triangle",
+            description: Text(message)
+        )
+    }
+    
+    private var emptyView: some View {
+        ContentUnavailableView(
+            "Empty Content",
+            systemImage: "book.closed"
+        )
+    }
+    
+    private func headerSection(detail: WordDetail) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(word.term)
+            Text(detail.term)
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
-            Text(word.reading)
+            Text(detail.reading)
                 .font(.title3)
                 .foregroundStyle(.secondary)
         }
     }
     
-    private var meaningSection: some View {
+    private func meaningSection(detail: WordDetail) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Meaning")
                 .font(.headline)
             
-            ForEach(word.meanings, id: \.self) { meaning in
-                Text(meaning)
+            ForEach(detail.meanings) { meaning in
+                Text(meaning.text)
             }
         }
     }
 }
 
 #Preview {
-    let mockWord = WordEntry (
-        id: "1",
-        term: "食べる",
-        reading: "たべる",
-        meanings: ["to eat"],
-        partOfSpeech: "verb",
-        examples: ["私はりんごを食べる。"]
-      )
+    let repository = MockDictionaryRepository()
+    let store = WordDetailStore(wordId: 1, repository: repository)
     
     NavigationStack {
-        WordDetailView(word: mockWord)
+        WordDetailView(store: store)
     }
 }

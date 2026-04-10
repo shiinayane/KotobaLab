@@ -18,7 +18,7 @@ struct StudyView: View {
 }
 
 #Preview {
-    AppTabContainer(title: "Study") {
+    TabContainer(title: "Study") {
         StudyView()
     }
     .environment(AppRouter())

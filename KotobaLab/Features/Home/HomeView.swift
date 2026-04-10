@@ -32,7 +32,7 @@ private var RecentSavedSection: some View {
 }
 
 #Preview {
-    AppTabContainer(title: "Home") {
+    TabContainer(title: "Home") {
         HomeView()
     }
     .environment(AppRouter())

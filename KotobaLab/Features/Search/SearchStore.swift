@@ -9,7 +9,7 @@ import Observation
 import Foundation
 
 @Observable
-class SearchStore{
+final class SearchStore {
     var query: String = ""
     var results: [WordSummary] = []
     

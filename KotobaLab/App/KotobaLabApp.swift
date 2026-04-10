@@ -18,11 +18,7 @@ struct KotobaLabApp: App {
             let databaseManager = try DatabaseManager()
             let repository = SQLiteDictionaryRepository(dbQueue: databaseManager.dbQueue)
             
-            let searchStore = SearchStore(repository: repository)
-            
-            self.rootView = RootView(
-                searchStore: searchStore
-            )
+            self.rootView = RootView(repository: repository)
         } catch {
             fatalError("Failed to initialize app dependencies: \(error)")
         }

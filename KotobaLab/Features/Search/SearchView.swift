@@ -8,15 +8,12 @@
 import SwiftUI
 
 struct SearchView: View {
-    @State private var store: SearchStore
-    
-    init(store: SearchStore) {
-        _store = State(initialValue: store)
-    }
+    @Bindable var store: SearchStore
+    let repository: any DictionaryRepositoryProtocol
     
     var body: some View {
         List(store.results) { word in
-            SearchResultRow(word: word)
+            SearchResultRow(word: word, repository: repository)
         }
         .searchable(text: $store.query)
         .onChange(of: store.query) { _, _ in
@@ -27,33 +24,37 @@ struct SearchView: View {
 
 struct SearchResultRow: View {
     let word: WordSummary
+    let repository: any DictionaryRepositoryProtocol
     
     var body: some View {
-        LazyVStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .bottom, spacing: 8) {
-                Text(word.term)
-                    .font(.headline)
-                
-                Text("|")
-                
-                if !word.reading.isEmpty {
-                    Text(word.reading)
-                        .font(.subheadline)
+        NavigationLink {
+            WordDetailView(store: WordDetailStore(wordId: word.id, repository: repository))
+        } label: {
+            LazyVStack(alignment: .leading, spacing: 4) {
+                HStack(alignment: .bottom, spacing: 4) {
+                    Text(word.term)
+                        .font(.headline)
+                    
+                    if !word.reading.isEmpty {
+                        Text("「\(word.reading)」")
+                            .font(.subheadline)
+                    }
                 }
-            }
 
-            Text(word.previewMeaning)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
+                Text(word.previewMeaning)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+            .padding(.vertical, 4)
         }
-        .padding(.vertical, 4)
     }
 }
 
 #Preview {
-    AppTabContainer(title: "Search") {
-        SearchView(store: .previewWithResults())
+    let repository = MockDictionaryRepository()
+    TabContainer(title: "Search") {
+        SearchView(store: .previewWithResults(), repository: repository)
     }
     .environment(AppRouter())
 }

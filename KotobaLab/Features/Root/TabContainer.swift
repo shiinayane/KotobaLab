@@ -1,5 +1,5 @@
 //
-//  AppTabContainer.swift
+//  TabContainer.swift
 //  KotobaLab
 //
 //  Created by 椎名アヤネ on 2026/03/29.
@@ -7,8 +7,7 @@
 
 import SwiftUI
 
-//  Try to use Generics.
-struct AppTabContainer<Content: View>: View {
+struct TabContainer<Content: View>: View {
     let title: String
     let content: () -> Content
     
@@ -32,6 +31,7 @@ struct AppTabContainer<Content: View>: View {
                             Image(systemName: "person.crop.circle.fill")
                                 .font(.title2)
                         }
+                        
                     }
                 }
                 .toolbarTitleDisplayMode(.inlineLarge)

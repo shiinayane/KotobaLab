@@ -18,7 +18,7 @@ struct AnalysisView: View {
 }
 
 #Preview {
-    AppTabContainer(title: "Analysis") {
+    TabContainer(title: "Analysis") {
         AnalysisView()
     }
     .environment(AppRouter())
