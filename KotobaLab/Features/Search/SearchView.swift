@@ -28,7 +28,7 @@ struct SearchResultRow: View {
     
     var body: some View {
         NavigationLink {
-            WordDetailView(store: WordDetailStore(wordId: word.id, repository: repository))
+            WordDetailView(store: WordDetailStore(wordID: word.id, repository: repository))
         } label: {
             LazyVStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .bottom, spacing: 4) {

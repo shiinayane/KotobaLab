@@ -99,7 +99,7 @@ struct WordDetailView: View {
 
 #Preview {
     let repository = MockDictionaryRepository()
-    let store = WordDetailStore(wordId: 1, repository: repository)
+    let store = WordDetailStore(wordID: 1, repository: repository)
     
     NavigationStack {
         WordDetailView(store: store)

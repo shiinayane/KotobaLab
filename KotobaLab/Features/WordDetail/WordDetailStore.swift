@@ -10,15 +10,15 @@ import Foundation
 @Observable
 final class WordDetailStore {
     private let repository: DictionaryRepositoryProtocol
-    let wordId: Int64
+    let wordID: Int64
     
     var detail: WordDetail?
     var isLoading: Bool = false
     var notFound = false
     var errorMessage: String?
     
-    init(wordId: Int64, repository: DictionaryRepositoryProtocol) {
-        self.wordId = wordId
+    init(wordID: Int64, repository: DictionaryRepositoryProtocol) {
+        self.wordID = wordID
         self.repository = repository
     }
     
@@ -30,7 +30,7 @@ final class WordDetailStore {
         notFound = false
         
         do {
-            let fetchedDetail = try repository.fetchWordDetail(id: wordId)
+            let fetchedDetail = try repository.fetchWordDetail(id: wordID)
             
             if let fetchedDetail {
                 detail = fetchedDetail

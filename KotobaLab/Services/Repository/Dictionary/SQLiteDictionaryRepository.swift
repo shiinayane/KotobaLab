@@ -91,4 +91,52 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
             )
         }
     }
+    
+    func fetchWordSummaries(ids: [Int64]) throws -> [WordSummary] {
+        guard !ids.isEmpty else { return [] }
+        
+        return try dbQueue.read { db in
+            
+            let placeholders: String = Array(repeating: "?", count: ids.count).joined(separator: ", ")
+            
+            let rows = try Row.fetchAll(
+                db,
+                sql: """
+                    SELECT
+                        w.id,
+                        w.term,
+                        w.reading,
+                        (
+                            SELECT m.definition_text
+                            FROM meanings m
+                            WHERE m.word_id = w.id
+                            ORDER BY m.id
+                            LIMIT 1
+                        ) AS preview_meaning
+                    FROM words w
+                    WHERE w.id IN (\(placeholders))
+                    """,
+                arguments: StatementArguments(ids)
+            )
+            
+            let summaries: [WordSummary] = rows.map { row in
+                WordSummary(
+                    id: row["id"],
+                    term: row["term"],
+                    reading: row["reading"],
+                    previewMeaning: row["preview_meaning"]
+                )
+            }
+            
+            let summaryByID: [Int64: WordSummary] = Dictionary(uniqueKeysWithValues: summaries.map {
+                ($0.id, $0)
+            })
+            
+            let orderedSummaries: [WordSummary] = ids.compactMap { id in
+                summaryByID[id]
+            }
+            
+            return orderedSummaries
+        }
+    }
 }

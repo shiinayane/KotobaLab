@@ -1,5 +1,5 @@
 //
-//  SwiftDataUserDataRepository.swift
+//  SwiftDataRepository.swift
 //  KotobaLab
 //
 //  Created by 椎名アヤネ on 2026/04/10.
@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-final class SwiftDataUserDataRepository: UserDataRepositoryProtocol {
+final class SwiftDataRepository: UserDataRepositoryProtocol {
     func isWordSaved(wordID: Int64) throws -> Bool {
         fatalError("Need to be completed")
     }
