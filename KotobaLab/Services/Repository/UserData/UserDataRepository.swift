@@ -11,5 +11,5 @@ protocol UserDataRepositoryProtocol {
     func isWordSaved(wordID: Int64) throws -> Bool
     func saveWord(wordID: Int64) throws
     func unsaveWord(wordID: Int64) throws
-    func fetchSavedRecords() throws -> [SavedWordRecord]
+    func fetchSavedWordIDs() throws -> [Int64]
 }
