@@ -8,13 +8,19 @@
 import SwiftUI
 
 struct RootView: View {
-    let repository: DictionaryRepositoryProtocol
+    let dictionaryRepository: any DictionaryRepositoryProtocol
+    let userDataRepository: any UserDataRepositoryProtocol
+    
     @State private var router = AppRouter()
     @State private var searchStore: SearchStore
     
-    init(repository: DictionaryRepositoryProtocol) {
-            self.repository = repository
-            _searchStore = State(initialValue: SearchStore(repository: repository))
+    init(
+        dictionaryRepository: any DictionaryRepositoryProtocol,
+        userDataRepository: any UserDataRepositoryProtocol
+    ) {
+        self.dictionaryRepository = dictionaryRepository
+        self.userDataRepository = userDataRepository
+        _searchStore = State(initialValue: SearchStore(repository: dictionaryRepository))
     }
     
     var body: some View {
@@ -41,7 +47,10 @@ struct RootView: View {
             }
             Tab("Search", systemImage: "magnifyingglass", role: .search) {
                 TabContainer(title: "Search") {
-                    SearchView(store: searchStore, repository: repository)
+                    SearchView(
+                        store: searchStore,
+                        dictionaryRepository: dictionaryRepository
+                    )
                 }
             }
         }
@@ -59,6 +68,11 @@ struct RootView: View {
 }
 
 #Preview {
-    let repository = MockDictionaryRepository()
-    RootView(repository: repository)
+    let dictionaryRepository = MockDictionaryRepository()
+    let userDataRepository = MockUserDataRepository()
+    
+    RootView(
+        dictionaryRepository: dictionaryRepository,
+        userDataRepository: userDataRepository
+    )
 }

@@ -9,11 +9,14 @@ import SwiftUI
 
 struct SearchView: View {
     @Bindable var store: SearchStore
-    let repository: any DictionaryRepositoryProtocol
+    let dictionaryRepository: any DictionaryRepositoryProtocol
     
     var body: some View {
         List(store.results) { word in
-            SearchResultRow(word: word, repository: repository)
+            SearchResultRow(
+                word: word,
+                dictionaryRepository: dictionaryRepository
+            )
         }
         .searchable(text: $store.query)
         .onChange(of: store.query) { _, _ in
@@ -24,11 +27,16 @@ struct SearchView: View {
 
 struct SearchResultRow: View {
     let word: WordSummary
-    let repository: any DictionaryRepositoryProtocol
+    let dictionaryRepository: any DictionaryRepositoryProtocol
     
     var body: some View {
         NavigationLink {
-            WordDetailView(store: WordDetailStore(wordID: word.id, repository: repository))
+            WordDetailView(
+                store: WordDetailStore(
+                    wordID: word.id,
+                    repository: dictionaryRepository
+                )
+            )
         } label: {
             LazyVStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .bottom, spacing: 4) {
@@ -52,9 +60,13 @@ struct SearchResultRow: View {
 }
 
 #Preview {
-    let repository = MockDictionaryRepository()
+    let dictionaryRepository = MockDictionaryRepository()
+    
     TabContainer(title: "Search") {
-        SearchView(store: .previewWithResults(), repository: repository)
+        SearchView(
+            store: .previewWithResults(),
+            dictionaryRepository: dictionaryRepository
+        )
     }
     .environment(AppRouter())
 }
