@@ -10,25 +10,57 @@ import Foundation
 
 @Observable
 final class SavedStore {
+    private let dictionaryRepository: any DictionaryRepositoryProtocol
+    private let userDataRepository: any UserDataRepositoryProtocol
+    
+    var state: SavedViewState = .idle
+    
     var query: String = ""
-    private let repository = WordRepository()
     
-    var savedWords: [WordEntry] = []
-    
-    func loadSavedWords() {
-        savedWords = repository.loadWords()
-    }
-    
-    func search() {
-        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        let words = repository.loadWords()
-        
-        guard !q.isEmpty else {
-            return loadSavedWords()
+    var filteredSavedWords: [WordSummary] {
+        switch state {
+        case .loaded(let words):
+            let normalizedQuery = query
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .lowercased()
+            
+            if normalizedQuery.isEmpty { return words }
+            return words.filter {
+                $0.term.lowercased().contains(normalizedQuery) ||
+                $0.reading.lowercased().contains(normalizedQuery) ||
+                $0.previewMeaning.lowercased().contains(normalizedQuery)
+            }
+        case .idle, .loading, .error:
+            return []
         }
-        
-        savedWords = words.filter{
-            $0.term.contains(query) ||
-            $0.reading.contains(query) }
     }
+    
+    init(
+        dictionaryRepository: any DictionaryRepositoryProtocol,
+        userDataRepository: any UserDataRepositoryProtocol,
+    ) {
+        self.dictionaryRepository = dictionaryRepository
+        self.userDataRepository = userDataRepository
+    }
+    
+    func load() {
+        if case .loading = state { return }
+        
+        state = .loading
+        
+        do {
+            let savedWordIDs = try userDataRepository.fetchSavedWordIDs()
+            let savedWords = try dictionaryRepository.fetchWordSummaries(wordIDs: savedWordIDs)
+            state = .loaded(savedWords)
+        } catch {
+            state = .error(error.localizedDescription)
+        }
+    }
+}
+
+enum SavedViewState {
+    case idle
+    case loading
+    case loaded([WordSummary])
+    case error(String)
 }

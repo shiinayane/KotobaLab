@@ -13,7 +13,7 @@ final class WordDetailStore {
     private let dictionaryRepository: any DictionaryRepositoryProtocol
     private let userDataRepository: any UserDataRepositoryProtocol
     
-    var state: WordDetailViewState = .loading
+    var state: WordDetailViewState = .idle
     var isSaved = false
     
     init(
@@ -27,9 +27,7 @@ final class WordDetailStore {
     }
     
     func load() {
-        if case .loading = state {
-            return
-        }
+        if case .loading = state { return }
         
         state = .loading
         
@@ -63,6 +61,7 @@ final class WordDetailStore {
 }
 
 enum WordDetailViewState {
+    case idle
     case loading
     case loaded(WordDetail)
     case notFound

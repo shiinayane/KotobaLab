@@ -8,46 +8,99 @@
 import SwiftUI
 
 struct SavedView: View {
-    @State private var store = SavedStore()
+    let dependencies: AppDependencies
+    @Bindable var store: SavedStore
     
     var body: some View {
-        List(store.savedWords) { word in
-            NavigationLink {
-                
-            } label: {
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(alignment: .bottom, spacing: 8) {
-                        Text(word.term)
-                            .font(.headline)
-                        
-                        Text("|")
-                        
-                        Text(word.reading)
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                    }
-                    Text(word.meanings[0])
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-
-                }
-            }
-        }
-        .task {
-            store.loadSavedWords()
+        content
+        .onAppear {
+            store.load()
         }
         .searchable(
             text: $store.query
         )
-        .onChange(of: store.query) { _, _ in
-            store.search()
+    }
+    
+    @ViewBuilder
+    private var content: some View {
+        switch store.state {
+        case .idle, .loading:
+            ProgressView()
+        case .loaded(let savedWords):
+            loadedContent(savedWords: savedWords)
+        case .error(let message):
+            errorView(message: message)
         }
+    }
+    
+    @ViewBuilder
+    private func loadedContent(savedWords: [WordSummary]) -> some View {
+        let filteredSavedWords = store.filteredSavedWords
+        
+        if savedWords.isEmpty {
+            emptySavedView()
+        } else if store.query.isEmpty {
+            savedContent(words: savedWords)
+        } else if filteredSavedWords.isEmpty {
+            noResultsView()
+        } else {
+            savedContent(words: filteredSavedWords)
+        }
+    }
+    
+    private func savedContent(words: [WordSummary]) -> some View {
+        List(words) { word in
+            NavigationLink {
+                WordDetailScene(
+                    wordID: word.id,
+                    dependencies: dependencies
+                )
+            } label: {
+                SearchResultRow(word: word)
+            }
+        }
+    }
+    
+    private func emptySavedView() -> some View {
+        ContentUnavailableView(
+            "No saved words",
+            systemImage: "bookmark",
+            description: Text("Words you save will appear here.")
+        )
+    }
+    
+    private func noResultsView() -> some View {
+        ContentUnavailableView(
+            "No results",
+            systemImage: "magnifyingglass",
+            description: Text("No matches for \"\(store.query)\"")
+        )
+    }
+    
+    private func errorView(message: String) -> some View {
+        ContentUnavailableView(
+            "Fail to load",
+            systemImage: "exclamationmark.triangle",
+            description: Text(message)
+        )
     }
 }
 
 #Preview {
-    TabContainer(title: "Saved") {
-        SavedView()
+    let dependencies = AppDependencies(
+        dictionaryRepository: MockDictionaryRepository()
+    )
+    
+    let store = SavedStore(
+        dictionaryRepository: MockDictionaryRepository(),
+        userDataRepository: MockUserDataRepository()
+    )
+    
+    return TabContainer(title: "Saved") {
+        SavedView(
+            dependencies: dependencies,
+            store: store
+        )
     }
     .environment(AppRouter())
 }

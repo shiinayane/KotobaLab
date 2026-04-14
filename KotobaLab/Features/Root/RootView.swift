@@ -30,7 +30,7 @@ struct RootView: View {
             }
             Tab("Saved", systemImage: "bookmark") {
                 TabContainer(title: "Saved") {
-                    SavedView()
+                    SavedScene(dependencies: dependencies)
                 }
             }
             Tab("Search", systemImage: "magnifyingglass", role: .search) {

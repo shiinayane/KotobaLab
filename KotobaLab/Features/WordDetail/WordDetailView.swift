@@ -29,7 +29,7 @@ struct WordDetailView: View {
     @ViewBuilder
     private var content: some View {
         switch store.state {
-        case .loading:
+        case .idle, .loading:
             ProgressView()
         case .loaded(let detail):
             detailContent(detail: detail)
@@ -106,10 +106,6 @@ struct WordDetailView: View {
         dictionaryRepository: MockDictionaryRepository(),
         userDataRepository: MockUserDataRepository()
     )
-    
-    if let detail = try? MockDictionaryRepository().fetchWordDetail(wordID: 1) {
-        store.state = .loaded(detail)
-    }
     
     return NavigationStack {
         WordDetailView(store: store)
