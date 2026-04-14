@@ -52,7 +52,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
         }
     }
     
-    func fetchWordDetail(id: Int64) throws -> WordDetail? {
+    func fetchWordDetail(wordID: Int64) throws -> WordDetail? {
         try dbQueue.read { db in
             guard let word = try Row.fetchOne(
                 db,
@@ -62,7 +62,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                     WHERE id = ?
                     LIMIT 1
                     """,
-                arguments: [id]
+                arguments: [wordID]
             ) else {
                 return nil
             }
@@ -75,7 +75,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                     WHERE word_id = ?
                     ORDER BY id
                     """,
-                arguments: [id]
+                arguments: [wordID]
             )
             
             return WordDetail(
@@ -92,12 +92,12 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
         }
     }
     
-    func fetchWordSummaries(ids: [Int64]) throws -> [WordSummary] {
-        guard !ids.isEmpty else { return [] }
+    func fetchWordSummaries(wordIDs: [Int64]) throws -> [WordSummary] {
+        guard !wordIDs.isEmpty else { return [] }
         
         return try dbQueue.read { db in
             
-            let placeholders: String = Array(repeating: "?", count: ids.count).joined(separator: ", ")
+            let placeholders: String = Array(repeating: "?", count: wordIDs.count).joined(separator: ", ")
             
             let rows = try Row.fetchAll(
                 db,
@@ -116,7 +116,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                     FROM words w
                     WHERE w.id IN (\(placeholders))
                     """,
-                arguments: StatementArguments(ids)
+                arguments: StatementArguments(wordIDs)
             )
             
             let summaries = rows.map { row in
@@ -132,7 +132,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                 ($0.id, $0)
             })
             
-            let orderedSummaries: [WordSummary] = ids.compactMap { id in
+            let orderedSummaries: [WordSummary] = wordIDs.compactMap { id in
                 summaryByID[id]
             }
             

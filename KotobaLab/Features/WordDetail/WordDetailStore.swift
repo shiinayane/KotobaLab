@@ -13,10 +13,8 @@ final class WordDetailStore {
     private let dictionaryRepository: any DictionaryRepositoryProtocol
     private let userDataRepository: any UserDataRepositoryProtocol
     
-    var detail: WordDetail?
-    var isLoading: Bool = false
-    var notFound = false
-    var errorMessage: String?
+    var state: WordDetailViewState = .loading
+    var isSaved = false
     
     init(
         wordID: Int64,
@@ -29,26 +27,44 @@ final class WordDetailStore {
     }
     
     func load() {
-        guard !isLoading else { return }
-        
-        isLoading = true
-        errorMessage = nil
-        notFound = false
-        
-        do {
-            let fetchedDetail = try dictionaryRepository.fetchWordDetail(id: wordID)
-            
-            if let fetchedDetail {
-                detail = fetchedDetail
-            } else {
-                detail = nil
-                notFound = true
-            }
-        } catch {
-            detail = nil
-            errorMessage = error.localizedDescription
+        if case .loading = state {
+            return
         }
         
-        isLoading = false
+        state = .loading
+        
+        do {
+            let fetchedDetail = try dictionaryRepository.fetchWordDetail(wordID: wordID)
+            
+            if let fetchedDetail {
+                state = .loaded(fetchedDetail)
+                isSaved = (try? userDataRepository.isWordSaved(wordID: wordID)) ?? false
+            } else {
+                state = .notFound
+            }
+        } catch {
+            state = .error(error.localizedDescription)
+        }
     }
+    
+    func toggleSaved() {
+        do {
+            if isSaved {
+                try userDataRepository.unsaveWord(wordID: wordID)
+                isSaved = false
+            } else {
+                try userDataRepository.saveWord(wordID: wordID)
+                isSaved = true
+            }
+        } catch {
+            state = .error(error.localizedDescription)
+        }
+    }
+}
+
+enum WordDetailViewState {
+    case loading
+    case loaded(WordDetail)
+    case notFound
+    case error(String)
 }

@@ -64,18 +64,18 @@ final class MockDictionaryRepository: DictionaryRepositoryProtocol {
             .map { $0 }
     }
 
-    func fetchWordDetail(id: Int64) throws -> WordDetail? {
-        return sampleWordDetail[id]
+    func fetchWordDetail(wordID: Int64) throws -> WordDetail? {
+        return sampleWordDetail[wordID]
     }
     
-    func fetchWordSummaries(ids: [Int64]) throws -> [WordSummary] {
-        guard !ids.isEmpty else { return [] }
+    func fetchWordSummaries(wordIDs: [Int64]) throws -> [WordSummary] {
+        guard !wordIDs.isEmpty else { return [] }
         
         let summaryByID: [Int64: WordSummary] = Dictionary(uniqueKeysWithValues: sampleWordSummary.map {
             ($0.id, $0)
         })
         
-        let orderedSummaries: [WordSummary] = ids.compactMap {
+        let orderedSummaries: [WordSummary] = wordIDs.compactMap {
             summaryByID[$0]
         }
         

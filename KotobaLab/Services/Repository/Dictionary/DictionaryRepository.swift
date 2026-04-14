@@ -9,6 +9,6 @@ import Foundation
 
 protocol DictionaryRepositoryProtocol {
     func searchWords(query: String, limit: Int) throws -> [WordSummary]
-    func fetchWordDetail(id: Int64) throws -> WordDetail?
-    func fetchWordSummaries(ids: [Int64]) throws -> [WordSummary]
+    func fetchWordDetail(wordID: Int64) throws -> WordDetail?
+    func fetchWordSummaries(wordIDs: [Int64]) throws -> [WordSummary]
 }

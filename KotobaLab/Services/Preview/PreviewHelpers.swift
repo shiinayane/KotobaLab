@@ -7,7 +7,9 @@
 
 extension SearchStore {
     static func previewWithResults() -> SearchStore {
-        let store = SearchStore(repository: MockDictionaryRepository())
+        let store = SearchStore(
+            dictionaryRepository: MockDictionaryRepository()
+        )
         store.query = "食"
         store.search()
         return store

@@ -14,6 +14,13 @@ struct WordDetailView: View {
         content
         .navigationTitle("Word Detail")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                if case .loaded = store.state {
+                    bookmarkButton
+                }
+            }
+        }
         .task {
             store.load()
         }
@@ -21,52 +28,26 @@ struct WordDetailView: View {
     
     @ViewBuilder
     private var content: some View {
-        Group {
-            if store.isLoading {
-                loadingView
-            } else if let detail = store.detail {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
-                        headerSection(detail: detail)
-                        meaningSection(detail: detail)
-                    }
-                    .padding(16)
-                }
-            } else if store.notFound {
-                notFoundView
-            } else if let errorMessage = store.errorMessage {
-                errorView(message: errorMessage)
-            } else {
-                emptyView
-            }
+        switch store.state {
+        case .loading:
+            ProgressView()
+        case .loaded(let detail):
+            detailContent(detail: detail)
+        case .notFound:
+            notFoundView()
+        case .error(let message):
+            errorView(message: message)
         }
     }
     
-    private var loadingView: some View {
-        ProgressView()
-    }
-    
-    private var notFoundView: some View {
-        ContentUnavailableView(
-            "Not Found",
-            systemImage: "magnifyingglass",
-            description: Text("The word you are looking for is not found.")
-        )
-    }
-    
-    private func errorView(message: String) -> some View {
-        ContentUnavailableView(
-            "Fail to load",
-            systemImage: "exclamationmark.triangle",
-            description: Text(message)
-        )
-    }
-    
-    private var emptyView: some View {
-        ContentUnavailableView(
-            "Empty Content",
-            systemImage: "book.closed"
-        )
+    private func detailContent(detail: WordDetail) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                headerSection(detail: detail)
+                meaningSection(detail: detail)
+            }
+            .padding(16)
+        }
     }
     
     private func headerSection(detail: WordDetail) -> some View {
@@ -91,6 +72,32 @@ struct WordDetailView: View {
             }
         }
     }
+    
+    private var bookmarkButton: some View {
+        Button {
+            store.toggleSaved()
+        } label: {
+            store.isSaved ?
+            Image(systemName: "bookmark.fill") :
+            Image(systemName: "bookmark")
+        }
+    }
+    
+    private func notFoundView() -> some View {
+        ContentUnavailableView(
+            "Not Found",
+            systemImage: "magnifyingglass",
+            description: Text("The word you are looking for is not found.")
+        )
+    }
+    
+    private func errorView(message: String) -> some View {
+        ContentUnavailableView(
+            "Fail to load",
+            systemImage: "exclamationmark.triangle",
+            description: Text(message)
+        )
+    }
 }
 
 #Preview {
@@ -100,7 +107,11 @@ struct WordDetailView: View {
         userDataRepository: MockUserDataRepository()
     )
     
-    NavigationStack {
+    if let detail = try? MockDictionaryRepository().fetchWordDetail(wordID: 1) {
+        store.state = .loaded(detail)
+    }
+    
+    return NavigationStack {
         WordDetailView(store: store)
     }
 }
