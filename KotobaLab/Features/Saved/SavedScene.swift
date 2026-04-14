@@ -32,7 +32,7 @@ struct SavedContainerView: View {
         _store = State(
             initialValue: SavedStore(
                 dictionaryRepository: dependencies.dictionaryRepository,
-                userDataRepository: SwiftDataRepository(context: context)
+                userDataRepository: dependencies.userDataRepositoryFactory.make(context)
             )
         )
     }

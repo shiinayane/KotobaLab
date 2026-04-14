@@ -52,7 +52,10 @@ struct SearchResultRow: View {
 
 #Preview {
     let dependencies = AppDependencies(
-        dictionaryRepository: MockDictionaryRepository()
+        dictionaryRepository: MockDictionaryRepository(),
+        userDataRepositoryFactory: UserDataRepositoryFactory { _ in
+            MockUserDataRepository()
+        }
     )
     
     TabContainer(title: "Search") {

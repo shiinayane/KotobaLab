@@ -13,17 +13,20 @@ struct KotobaLabApp: App {
     private let rootView: RootView
     
     init () {
-        //  For debug
-        //  debugSearchRepository()
         do {
             let databaseManager = try DatabaseManager()
             let dictionaryRepository = SQLiteDictionaryRepository(dbQueue: databaseManager.dbQueue)
             
             let dependencies = AppDependencies(
-                dictionaryRepository: dictionaryRepository
+                dictionaryRepository: dictionaryRepository,
+                userDataRepositoryFactory: UserDataRepositoryFactory { context in
+                    SwiftDataRepository(context: context)
+                }
             )
             
-            self.rootView = RootView(dependencies: dependencies)
+            self.rootView = RootView(
+                dependencies: dependencies
+            )
         } catch {
             fatalError("Failed to initialize app dependencies: \(error)")
         }

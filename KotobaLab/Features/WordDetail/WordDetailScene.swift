@@ -16,26 +16,27 @@ struct WordDetailScene: View {
     var body: some View {
         WordDetailContainerView(
             wordID: wordID,
-            dictionaryRepository: dependencies.dictionaryRepository,
+            dependencies: dependencies,
             context: context
         )
     }
 }
 
 struct WordDetailContainerView: View {
+    let dependencies: AppDependencies
     @State private var store: WordDetailStore
     
     init(
         wordID: Int64,
-        dictionaryRepository: any DictionaryRepositoryProtocol,
+        dependencies: AppDependencies,
         context: ModelContext
     ) {
-        let userDataRepository = SwiftDataRepository(context: context)
+        self.dependencies = dependencies
         _store = State(
             initialValue: WordDetailStore(
                 wordID: wordID,
-                dictionaryRepository: dictionaryRepository,
-                userDataRepository: userDataRepository
+                dictionaryRepository: dependencies.dictionaryRepository,
+                userDataRepository: dependencies.userDataRepositoryFactory.make(context)
             )
         )
     }
