@@ -8,15 +8,19 @@
 import SwiftUI
 
 struct SearchView: View {
+    let dependencies: AppDependencies
     @Bindable var store: SearchStore
-    let dictionaryRepository: any DictionaryRepositoryProtocol
     
     var body: some View {
         List(store.results) { word in
-            SearchResultRow(
-                word: word,
-                dictionaryRepository: dictionaryRepository
-            )
+            NavigationLink {
+                WordDetailScene(
+                    wordID: word.id,
+                    dependencies: dependencies
+                )
+            } label: {
+                SearchResultRow(word: word)
+            }
         }
         .searchable(text: $store.query)
         .onChange(of: store.query) { _, _ in
@@ -27,45 +31,37 @@ struct SearchView: View {
 
 struct SearchResultRow: View {
     let word: WordSummary
-    let dictionaryRepository: any DictionaryRepositoryProtocol
     
     var body: some View {
-        NavigationLink {
-            WordDetailView(
-                store: WordDetailStore(
-                    wordID: word.id,
-                    repository: dictionaryRepository
-                )
-            )
-        } label: {
-            LazyVStack(alignment: .leading, spacing: 4) {
-                HStack(alignment: .bottom, spacing: 4) {
-                    Text(word.term)
-                        .font(.headline)
-                    
-                    if !word.reading.isEmpty {
-                        Text("「\(word.reading)」")
-                            .font(.subheadline)
-                    }
+        LazyVStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .bottom, spacing: 4) {
+                Text(word.term)
+                    .font(.headline)
+                
+                if !word.reading.isEmpty {
+                    Text("「\(word.reading)」")
+                        .font(.subheadline)
                 }
-
-                Text(word.previewMeaning)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
             }
-            .padding(.vertical, 4)
+
+            Text(word.previewMeaning)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
         }
+        .padding(.vertical, 4)
     }
 }
 
 #Preview {
-    let dictionaryRepository = MockDictionaryRepository()
+    let dependencies = AppDependencies(
+        dictionaryRepository: MockDictionaryRepository()
+    )
     
     TabContainer(title: "Search") {
         SearchView(
-            store: .previewWithResults(),
-            dictionaryRepository: dictionaryRepository
+            dependencies: dependencies,
+            store: .previewWithResults()
         )
     }
     .environment(AppRouter())

@@ -8,11 +8,7 @@
 import SwiftUI
 
 struct WordDetailView: View {
-    @State private var store: WordDetailStore
-    
-    init(store: WordDetailStore) {
-        _store = State(initialValue: store)
-    }
+    @Bindable var store: WordDetailStore
     
     var body: some View {
         content
@@ -98,8 +94,11 @@ struct WordDetailView: View {
 }
 
 #Preview {
-    let repository = MockDictionaryRepository()
-    let store = WordDetailStore(wordID: 1, repository: repository)
+    let store = WordDetailStore(
+        wordID: 1,
+        dictionaryRepository: MockDictionaryRepository(),
+        userDataRepository: MockUserDataRepository()
+    )
     
     NavigationStack {
         WordDetailView(store: store)

@@ -17,9 +17,13 @@ struct KotobaLabApp: App {
         //  debugSearchRepository()
         do {
             let databaseManager = try DatabaseManager()
-            let repository = SQLiteDictionaryRepository(dbQueue: databaseManager.dbQueue)
+            let dictionaryRepository = SQLiteDictionaryRepository(dbQueue: databaseManager.dbQueue)
             
-            self.rootView = RootView(repository: repository)
+            let dependencies = AppDependencies(
+                dictionaryRepository: dictionaryRepository
+            )
+            
+            self.rootView = RootView(dependencies: dependencies)
         } catch {
             fatalError("Failed to initialize app dependencies: \(error)")
         }
@@ -28,7 +32,9 @@ struct KotobaLabApp: App {
     var body: some Scene {
         WindowGroup {
             rootView
+                .modelContainer(for: [
+                    SavedWordRecord.self
+                ])
         }
-        .modelContainer(for: [SavedWordRecord.self])
     }
 }

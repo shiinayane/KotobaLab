@@ -9,17 +9,23 @@ import Foundation
 
 @Observable
 final class WordDetailStore {
-    private let repository: DictionaryRepositoryProtocol
     let wordID: Int64
+    private let dictionaryRepository: any DictionaryRepositoryProtocol
+    private let userDataRepository: any UserDataRepositoryProtocol
     
     var detail: WordDetail?
     var isLoading: Bool = false
     var notFound = false
     var errorMessage: String?
     
-    init(wordID: Int64, repository: DictionaryRepositoryProtocol) {
+    init(
+        wordID: Int64,
+        dictionaryRepository: any DictionaryRepositoryProtocol,
+        userDataRepository: any UserDataRepositoryProtocol
+    ) {
         self.wordID = wordID
-        self.repository = repository
+        self.dictionaryRepository = dictionaryRepository
+        self.userDataRepository = userDataRepository
     }
     
     func load() {
@@ -30,7 +36,7 @@ final class WordDetailStore {
         notFound = false
         
         do {
-            let fetchedDetail = try repository.fetchWordDetail(id: wordID)
+            let fetchedDetail = try dictionaryRepository.fetchWordDetail(id: wordID)
             
             if let fetchedDetail {
                 detail = fetchedDetail

@@ -119,7 +119,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                 arguments: StatementArguments(ids)
             )
             
-            let summaries: [WordSummary] = rows.map { row in
+            let summaries = rows.map { row in
                 WordSummary(
                     id: row["id"],
                     term: row["term"],

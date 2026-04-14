@@ -13,11 +13,13 @@ final class SearchStore {
     var query: String = ""
     var results: [WordSummary] = []
     
-    private let repository: DictionaryRepositoryProtocol
+    private let dictionaryRepository: any DictionaryRepositoryProtocol
     private var searchTask: Task<Void, Never>?
     
-    init(repository: DictionaryRepositoryProtocol) {
-        self.repository = repository
+    init(
+        dictionaryRepository: any DictionaryRepositoryProtocol
+    ) {
+        self.dictionaryRepository = dictionaryRepository
     }
     
     func search() {
@@ -29,7 +31,7 @@ final class SearchStore {
         }
         
         do {
-            results = try repository.searchWords(query: q, limit: 20)
+            results = try dictionaryRepository.searchWords(query: q, limit: 20)
         } catch {
             print("Search failed:", error)
             results = []
