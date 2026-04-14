@@ -39,8 +39,15 @@ struct SavedContainerView: View {
     
     var body: some View {
         SavedView(
-            dependencies: dependencies,
-            store: store
+            store: store,
+            makeDestination: { wordID in
+                AnyView(
+                    WordDetailScene(
+                        wordID: wordID,
+                        dependencies: dependencies
+                    )
+                )
+            }
         )
     }
 }

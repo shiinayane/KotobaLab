@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct SavedView: View {
-    let dependencies: AppDependencies
     @Bindable var store: SavedStore
+    let makeDestination: (Int64) -> AnyView
     
     var body: some View {
         content
@@ -51,10 +51,7 @@ struct SavedView: View {
     private func savedContent(words: [WordSummary]) -> some View {
         List(words) { word in
             NavigationLink {
-                WordDetailScene(
-                    wordID: word.id,
-                    dependencies: dependencies
-                )
+                makeDestination(word.id)
             } label: {
                 SearchResultRow(word: word)
             }
@@ -98,8 +95,15 @@ struct SavedView: View {
     
     return TabContainer(title: "Saved") {
         SavedView(
-            dependencies: dependencies,
-            store: store
+            store: store,
+            makeDestination: { wordID in
+                AnyView(
+                    WordDetailScene(
+                        wordID: wordID,
+                        dependencies: dependencies
+                    )
+                )
+            }
         )
     }
     .environment(AppRouter())

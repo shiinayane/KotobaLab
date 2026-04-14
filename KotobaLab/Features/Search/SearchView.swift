@@ -8,16 +8,13 @@
 import SwiftUI
 
 struct SearchView: View {
-    let dependencies: AppDependencies
     @Bindable var store: SearchStore
+    let makeDestination: (Int64) -> AnyView
     
     var body: some View {
         List(store.results) { word in
             NavigationLink {
-                WordDetailScene(
-                    wordID: word.id,
-                    dependencies: dependencies
-                )
+                makeDestination(word.id)
             } label: {
                 SearchResultRow(word: word)
             }
@@ -60,8 +57,15 @@ struct SearchResultRow: View {
     
     TabContainer(title: "Search") {
         SearchView(
-            dependencies: dependencies,
-            store: .previewWithResults()
+            store: .previewWithResults(),
+            makeDestination: { wordID in
+                AnyView(
+                    WordDetailScene(
+                        wordID: wordID,
+                        dependencies: dependencies
+                    )
+                )
+            }
         )
     }
     .environment(AppRouter())

@@ -23,8 +23,15 @@ struct SearchScene: View {
     
     var body: some View {
         return SearchView(
-            dependencies: dependencies,
-            store: store
+            store: store,
+            makeDestination: { wordID in
+                AnyView(
+                    WordDetailScene(
+                        wordID: wordID,
+                        dependencies: dependencies
+                    )
+                )
+            }
         )
     }
 }
