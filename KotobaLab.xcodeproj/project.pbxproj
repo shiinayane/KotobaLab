@@ -27,9 +27,9 @@
 			path = scripts;
 			sourceTree = "<group>";
 		};
-		8D3B28692F7D002F007932B7 /* data */ = {
+		8D3B28692F7D002F007932B7 /* dataset */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = data;
+			path = dataset;
 			sourceTree = "<group>";
 		};
 		8D5D61282F7E44E50070F608 /* logs */ = {
@@ -65,7 +65,7 @@
 				8DCF01A62F8E8CD5007B492A /* imgs */,
 				8D5D61282F7E44E50070F608 /* logs */,
 				8DAABF502F7D868900CE4802 /* .gitignore */,
-				8D3B28692F7D002F007932B7 /* data */,
+				8D3B28692F7D002F007932B7 /* dataset */,
 				8D3B28302F768193007932B7 /* README.md */,
 				8D3B281E2F766500007932B7 /* scripts */,
 				8D3B28062F765F81007932B7 /* docs */,

@@ -20,7 +20,7 @@ struct KotobaLabApp: App {
             let dependencies = AppDependencies(
                 dictionaryRepository: dictionaryRepository,
                 userDataRepositoryFactory: UserDataRepositoryFactory { context in
-                    SwiftDataRepository(context: context)
+                    SwiftDataUserDataRepository(context: context)
                 }
             )
             

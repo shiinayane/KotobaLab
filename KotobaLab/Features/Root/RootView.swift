@@ -54,7 +54,10 @@ struct RootView: View {
 
 #Preview {
     let dependencies = AppDependencies(
-        dictionaryRepository: MockDictionaryRepository()
+        dictionaryRepository: MockDictionaryRepository(),
+        userDataRepositoryFactory: UserDataRepositoryFactory { _ in
+            MockUserDataRepository()
+        }
     )
     
     RootView(dependencies: dependencies)

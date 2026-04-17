@@ -8,5 +8,5 @@
 import Foundation
 
 enum AppRoute: Hashable {
-    case wordDetail(WordEntry)
+    case wordDetail(WordDetail)
 }

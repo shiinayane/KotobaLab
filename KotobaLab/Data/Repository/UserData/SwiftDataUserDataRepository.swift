@@ -1,5 +1,5 @@
 //
-//  SwiftDataRepository.swift
+//  SwiftDataUserDataRepository.swift
 //  KotobaLab
 //
 //  Created by 椎名アヤネ on 2026/04/10.
@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-final class SwiftDataRepository: UserDataRepositoryProtocol {
+final class SwiftDataUserDataRepository: UserDataRepositoryProtocol {
     private let context: ModelContext
     
     init(context: ModelContext) {

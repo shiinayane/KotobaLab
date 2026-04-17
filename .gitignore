@@ -95,6 +95,6 @@ venv/
 # ================================
 # Project Related
 # ================================
-data/
+/dataset/
 TestView/
 docs/note/
