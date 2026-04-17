@@ -29,11 +29,14 @@ struct SavedContainerView: View {
         context: ModelContext
     ) {
         self.dependencies = dependencies
+        
+        let useCase = LoadSavedWordsUseCase(
+            dictionaryRepository: dependencies.dictionaryRepository,
+            userDataRepository: dependencies.userDataRepositoryFactory.make(context)
+        )
+        
         _store = State(
-            initialValue: SavedStore(
-                dictionaryRepository: dependencies.dictionaryRepository,
-                userDataRepository: dependencies.userDataRepositoryFactory.make(context)
-            )
+            initialValue: SavedStore(loadSavedWordsUseCase: useCase)
         )
     }
     

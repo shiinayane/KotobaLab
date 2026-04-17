@@ -10,13 +10,14 @@ import Foundation
 
 @Observable
 final class SavedStore {
-    private let dictionaryRepository: any DictionaryRepositoryProtocol
-    private let userDataRepository: any UserDataRepositoryProtocol
+    private let loadSavedWordsUseCase: LoadSavedWordsUseCase
+    
+    init(loadSavedWordsUseCase: LoadSavedWordsUseCase) {
+        self.loadSavedWordsUseCase = loadSavedWordsUseCase
+    }
     
     var state: SavedViewState = .idle
-    
     var query: String = ""
-    
     var filteredSavedWords: [WordSummary] {
         switch state {
         case .loaded(let words):
@@ -35,22 +36,13 @@ final class SavedStore {
         }
     }
     
-    init(
-        dictionaryRepository: any DictionaryRepositoryProtocol,
-        userDataRepository: any UserDataRepositoryProtocol,
-    ) {
-        self.dictionaryRepository = dictionaryRepository
-        self.userDataRepository = userDataRepository
-    }
-    
     func load() {
         if case .loading = state { return }
         
         state = .loading
         
         do {
-            let savedWordIDs = try userDataRepository.fetchSavedWordIDs()
-            let savedWords = try dictionaryRepository.fetchWordSummaries(wordIDs: savedWordIDs)
+            let savedWords = try loadSavedWordsUseCase.execute()
             state = .loaded(savedWords)
         } catch {
             state = .error(error.localizedDescription)

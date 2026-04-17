@@ -91,14 +91,14 @@ struct SavedView: View {
         }
     )
     
-    let store = SavedStore(
+    let useCase = LoadSavedWordsUseCase(
         dictionaryRepository: MockDictionaryRepository(),
         userDataRepository: MockUserDataRepository()
     )
     
     return TabContainer(title: "Saved") {
         SavedView(
-            store: store,
+            store: SavedStore(loadSavedWordsUseCase: useCase),
             makeDestination: { wordID in
                 AnyView(
                     WordDetailScene(
