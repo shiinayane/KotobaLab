@@ -7,9 +7,9 @@
 
 extension SearchStore {
     static func previewWithResults() -> SearchStore {
-        let store = SearchStore(
-            dictionaryRepository: MockDictionaryRepository()
-        )
+        let useCase = SearchWordsUseCase(dictionaryRepository: MockDictionaryRepository())
+        
+        let store = SearchStore(searchWordsUseCase: useCase)
         store.query = "食"
         store.search()
         return store

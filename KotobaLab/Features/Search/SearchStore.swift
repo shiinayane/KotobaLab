@@ -9,31 +9,22 @@ import Observation
 import Foundation
 
 @Observable
+@MainActor
 final class SearchStore {
     var query: String = ""
     var results: [WordSummary] = []
     
-    private let dictionaryRepository: any DictionaryRepositoryProtocol
+    private let searchWordsUseCase: SearchWordsUseCase
     private var searchTask: Task<Void, Never>?
     
-    init(
-        dictionaryRepository: any DictionaryRepositoryProtocol
-    ) {
-        self.dictionaryRepository = dictionaryRepository
+    init(searchWordsUseCase: SearchWordsUseCase) {
+        self.searchWordsUseCase = searchWordsUseCase
     }
     
     func search() {
-        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        guard !q.isEmpty else {
-            results = []
-            return
-        }
-        
         do {
-            results = try dictionaryRepository.searchWords(query: q, limit: 20)
+            results = try searchWordsUseCase.execute(query: query)
         } catch {
-            print("Search failed:", error)
             results = []
         }
     }
@@ -46,9 +37,7 @@ final class SearchStore {
             
             guard !Task.isCancelled else { return }
             
-            await MainActor.run {
-                self.search()
-            }
+            self.search()
         }
     }
 }
