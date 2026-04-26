@@ -16,6 +16,17 @@
 		8DAABF502F7D868900CE4802 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8D0924582F9E6F90001BA48D /* Exceptions for "KotobaLab" folder in "KotobaLab" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Features/TestView/ContentView.swift,
+				Features/TestView/ShopHomeDemoView.swift,
+			);
+			target = 8D85E6642F745BFA002A040A /* KotobaLab */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8D3B28062F765F81007932B7 /* docs */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -39,6 +50,9 @@
 		};
 		8D85E6672F745BFA002A040A /* KotobaLab */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8D0924582F9E6F90001BA48D /* Exceptions for "KotobaLab" folder in "KotobaLab" target */,
+			);
 			path = KotobaLab;
 			sourceTree = "<group>";
 		};
