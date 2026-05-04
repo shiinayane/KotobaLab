@@ -53,7 +53,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
     }
     
     func fetchWordDetail(wordID: Int64) throws -> WordDetail? {
-        try dbQueue.read { db in
+        try dbQueue.read { db -> WordDetail? in
             guard let word = try Row.fetchOne(
                 db,
                 sql: """

@@ -12,7 +12,7 @@ final class DatabaseManager {
     let dbQueue: DatabaseQueue
     
     init() throws {
-        let dbURL = try Self.prepareDatabaseFile(named: "dictionary_app.sqlite")
+        let dbURL = try Self.prepareDatabaseFile(named: "dictionary.sqlite")
         dbQueue = try DatabaseQueue(path: dbURL.path)
     }
     
@@ -29,7 +29,7 @@ final class DatabaseManager {
         let destinationURL = appSupportURL.appendingPathComponent(fileName)
         
         if !fileManager.fileExists(atPath: destinationURL.path) {
-            guard let bundleURL = Bundle.main.url(forResource: "dictionary_app", withExtension: "sqlite") else {
+            guard let bundleURL = Bundle.main.url(forResource: "dictionary", withExtension: "sqlite") else {
                 throw DatabaseError.databaseFileNotFound
             }
             

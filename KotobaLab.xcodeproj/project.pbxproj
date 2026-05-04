@@ -28,14 +28,14 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		8D0924732FA4C39F001BA48D /* Tools */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Tools;
+			sourceTree = "<group>";
+		};
 		8D3B28062F765F81007932B7 /* docs */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = docs;
-			sourceTree = "<group>";
-		};
-		8D3B281E2F766500007932B7 /* scripts */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = scripts;
 			sourceTree = "<group>";
 		};
 		8D3B28692F7D002F007932B7 /* dataset */ = {
@@ -76,12 +76,12 @@
 		8D85E65C2F745BFA002A040A = {
 			isa = PBXGroup;
 			children = (
+				8D0924732FA4C39F001BA48D /* Tools */,
 				8DCF01A62F8E8CD5007B492A /* imgs */,
 				8D5D61282F7E44E50070F608 /* logs */,
 				8DAABF502F7D868900CE4802 /* .gitignore */,
 				8D3B28692F7D002F007932B7 /* dataset */,
 				8D3B28302F768193007932B7 /* README.md */,
-				8D3B281E2F766500007932B7 /* scripts */,
 				8D3B28062F765F81007932B7 /* docs */,
 				8D85E6672F745BFA002A040A /* KotobaLab */,
 				8D85E6662F745BFA002A040A /* Products */,
