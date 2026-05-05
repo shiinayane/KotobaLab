@@ -53,7 +53,7 @@ struct SavedView: View {
             NavigationLink {
                 makeDestination(word.id)
             } label: {
-                SearchResultRow(word: word)
+                WordSummaryRow(word: word)
             }
         }
     }

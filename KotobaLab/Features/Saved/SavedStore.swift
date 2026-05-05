@@ -28,7 +28,7 @@ final class SavedStore {
             if normalizedQuery.isEmpty { return words }
             return words.filter {
                 $0.term.lowercased().contains(normalizedQuery) ||
-                $0.reading.lowercased().contains(normalizedQuery) ||
+                $0.displayName.lowercased().contains(normalizedQuery) ||
                 $0.previewMeaning.lowercased().contains(normalizedQuery)
             }
         case .idle, .loading, .error:

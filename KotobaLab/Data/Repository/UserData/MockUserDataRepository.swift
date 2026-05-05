@@ -8,19 +8,14 @@
 import Foundation
 
 final class MockUserDataRepository: UserDataRepositoryProtocol {
-    var savedWordsRecord: [MockSavedWordsRecord] = [
-        MockSavedWordsRecord(
-            wordID: 1,
-            savedAt: Date.now.addingTimeInterval(100)
-        ),
-        MockSavedWordsRecord(
-            wordID: 2,
-            savedAt: Date.now
-        ),
-    ]
+    private var mockRecords: [SavedWordRecordData]
+    
+    init(savedWordsRecord: [SavedWordRecordData] = PreviewData.savedWordRecords) {
+        self.mockRecords = savedWordsRecord
+    }
     
     func isWordSaved(wordID: Int64) throws -> Bool {
-        return savedWordsRecord.contains {
+        return mockRecords.contains {
             $0.wordID == wordID
         }
     }
@@ -28,30 +23,25 @@ final class MockUserDataRepository: UserDataRepositoryProtocol {
     func saveWord(wordID: Int64) throws {
         guard try (!isWordSaved(wordID: wordID)) else { return }
         
-        let record = MockSavedWordsRecord(
+        let record = SavedWordRecordData(
             wordID: wordID,
             savedAt: Date.now
         )
-        savedWordsRecord.append(record)
+        mockRecords.append(record)
     }
     
     func unsaveWord(wordID: Int64) throws {
-        guard let index = savedWordsRecord.firstIndex(where: {
+        guard let index = mockRecords.firstIndex(where: {
             $0.wordID == wordID
         }) else {
             return
         }
-        savedWordsRecord.remove(at: index)
+        mockRecords.remove(at: index)
     }
     
     func fetchSavedWordIDs() throws -> [Int64] {
-        return savedWordsRecord
+        return mockRecords
             .sorted { $0.savedAt > $1.savedAt }
             .map { $0.wordID }
     }
-}
-
-struct MockSavedWordsRecord {
-    let wordID: Int64
-    let savedAt: Date
 }

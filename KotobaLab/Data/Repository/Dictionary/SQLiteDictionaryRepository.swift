@@ -28,10 +28,17 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                         w.term,
                         w.reading,
                         (
+                            SELECT m.part_of_speech
+                            FROM meanings m
+                            WHERE m.word_id = w.id
+                            ORDER BY m.sequence
+                            LIMIT 1
+                        ) AS preview_pos,
+                        (
                             SELECT m.definition_text
                             FROM meanings m
                             WHERE m.word_id = w.id
-                            ORDER BY m.id
+                            ORDER BY m.sequence
                             LIMIT 1
                         ) AS preview_meaning
                     FROM words w
@@ -46,6 +53,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                     id: row["id"],
                     term: row["term"],
                     reading: row["reading"],
+                    previewPartOfSpeech: row["preview_pos"],
                     previewMeaning: row["preview_meaning"]
                 )
             }
@@ -70,7 +78,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
             let meaningRows = try Row.fetchAll(
                 db,
                 sql: """
-                    SELECT id, definition_text
+                    SELECT id, part_of_speech, definition_text
                     FROM meanings
                     WHERE word_id = ?
                     ORDER BY id
@@ -85,7 +93,8 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                 meanings: meaningRows.map { row in
                     Meaning(
                         id: row["id"],
-                        text: row["definition_text"]
+                        partOfSpeech: row["part_of_speech"],
+                        definition: row["definition_text"]
                     )
                 }
             )
@@ -107,10 +116,17 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                         w.term,
                         w.reading,
                         (
+                            SELECT m.part_of_speech
+                            FROM meanings m
+                            WHERE m.word_id = w.id
+                            ORDER BY m.sequence
+                            LIMIT 1
+                        ) AS preview_pos,
+                        (
                             SELECT m.definition_text
                             FROM meanings m
                             WHERE m.word_id = w.id
-                            ORDER BY m.id
+                            ORDER BY m.sequence
                             LIMIT 1
                         ) AS preview_meaning
                     FROM words w
@@ -124,6 +140,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                     id: row["id"],
                     term: row["term"],
                     reading: row["reading"],
+                    previewPartOfSpeech: row["preview_pos"],
                     previewMeaning: row["preview_meaning"]
                 )
             }

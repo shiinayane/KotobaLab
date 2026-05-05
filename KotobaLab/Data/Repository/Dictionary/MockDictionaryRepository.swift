@@ -7,47 +7,17 @@
 
 import Foundation
 
-final class MockDictionaryRepository: DictionaryRepositoryProtocol {
-    let sampleWordSummary: [WordSummary] = [
-        WordSummary(
-            id: 1,
-            term: "食べる",
-            reading: "たべる",
-            previewMeaning: "to eat"
-        ),
-        WordSummary(
-            id: 2,
-            term: "食器",
-            reading: "しょっき",
-            previewMeaning: "tableware"
-        ),
-        WordSummary(
-            id: 3,
-            term: "食欲",
-            reading: "しょくよく",
-            previewMeaning: "appetite"
-        )
-    ]
+final class MockDictionaryRepository: DictionaryRepositoryProtocol {    
+    private var mockWordSummaries: [WordSummary]
+    private var mockWordDetails: [WordDetail]
     
-    let sampleWordDetail: [Int64: WordDetail] = [
-        1: WordDetail(
-            id: 1,
-            term: "食べる",
-            reading: "たべる",
-            meanings: [
-                Meaning(id: 1, text: "to eat"),
-                Meaning(id: 2, text: "to live on")
-            ]
-        ),
-        2: WordDetail(
-            id: 2,
-            term: "食器",
-            reading: "しょっき",
-            meanings: [
-                Meaning(id: 3, text: "tableware")
-            ]
-        )
-    ]
+    init(
+        mockWordSummary: [WordSummary] = PreviewData.wordSummaries,
+        mockWordDetail: [WordDetail] = PreviewData.wordDetails
+    ) {
+        self.mockWordSummaries = mockWordSummary
+        self.mockWordDetails = mockWordDetail
+    }
     
     func searchWords(query: String, limit: Int) throws -> [WordSummary] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -56,22 +26,22 @@ final class MockDictionaryRepository: DictionaryRepositoryProtocol {
             return []
         }
 
-        return sampleWordSummary
+        return mockWordSummaries
             .filter {
-                $0.term.contains(trimmed) || $0.reading.contains(trimmed)
+                $0.term.contains(trimmed) || $0.displayName.contains(trimmed)
             }
             .prefix(limit)
             .map { $0 }
     }
 
     func fetchWordDetail(wordID: Int64) throws -> WordDetail? {
-        return sampleWordDetail[wordID]
+        return mockWordDetails.first(where: { $0.id == wordID })
     }
     
     func fetchWordSummaries(wordIDs: [Int64]) throws -> [WordSummary] {
         guard !wordIDs.isEmpty else { return [] }
         
-        let summaryByID: [Int64: WordSummary] = Dictionary(uniqueKeysWithValues: sampleWordSummary.map {
+        let summaryByID: [Int64: WordSummary] = Dictionary(uniqueKeysWithValues: mockWordSummaries.map {
             ($0.id, $0)
         })
         

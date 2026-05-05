@@ -16,37 +16,13 @@ struct SearchView: View {
             NavigationLink {
                 makeDestination(word.id)
             } label: {
-                SearchResultRow(word: word)
+                WordSummaryRow(word: word)
             }
         }
         .searchable(text: $store.query)
         .onChange(of: store.query) { _, _ in
             store.debouncedSearch()
         }
-    }
-}
-
-struct SearchResultRow: View {
-    let word: WordSummary
-    
-    var body: some View {
-        LazyVStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .bottom, spacing: 4) {
-                Text(word.term)
-                    .font(.headline)
-                
-                if !word.reading.isEmpty {
-                    Text("「\(word.reading)」")
-                        .font(.subheadline)
-                }
-            }
-
-            Text(word.previewMeaning)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-        }
-        .padding(.vertical, 4)
     }
 }
 

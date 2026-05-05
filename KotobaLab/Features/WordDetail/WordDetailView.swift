@@ -56,7 +56,7 @@ struct WordDetailView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
-            Text(detail.reading)
+            Text(detail.displayName)
                 .font(.title3)
                 .foregroundStyle(.secondary)
         }
@@ -68,7 +68,15 @@ struct WordDetailView: View {
                 .font(.headline)
             
             ForEach(detail.meanings) { meaning in
-                Text(meaning.text)
+                VStack(alignment: .leading, spacing: 4) {
+                    if let pos = meaning.partOfSpeech {
+                        Text(pos)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    Text(meaning.definition)
+                }
             }
         }
     }

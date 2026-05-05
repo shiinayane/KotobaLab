@@ -23,6 +23,4 @@ struct SearchWordsUseCase {
         
         return try dictionaryRepository.searchWords(query: q, limit: 20)
     }
-    
-    
 }
