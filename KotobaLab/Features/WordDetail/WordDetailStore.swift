@@ -9,21 +9,18 @@ import Foundation
 
 @Observable
 final class WordDetailStore {
-    let wordID: Int64
-    private let dictionaryRepository: any DictionaryRepositoryProtocol
-    private let userDataRepository: any UserDataRepositoryProtocol
+    private let loadWordDetailUseCase: LoadWordDetailUseCase
+    private let toggleSavedWordUseCase: ToggleSavedWordUseCase
     
     var state: WordDetailViewState = .idle
     var isSaved = false
     
     init(
-        wordID: Int64,
-        dictionaryRepository: any DictionaryRepositoryProtocol,
-        userDataRepository: any UserDataRepositoryProtocol
+        loadWordDetailUseCase: LoadWordDetailUseCase,
+         toggleSavedWordUseCase: ToggleSavedWordUseCase
     ) {
-        self.wordID = wordID
-        self.dictionaryRepository = dictionaryRepository
-        self.userDataRepository = userDataRepository
+        self.loadWordDetailUseCase = loadWordDetailUseCase
+        self.toggleSavedWordUseCase = toggleSavedWordUseCase
     }
     
     func load() {
@@ -32,11 +29,11 @@ final class WordDetailStore {
         state = .loading
         
         do {
-            let fetchedDetail = try dictionaryRepository.fetchWordDetail(wordID: wordID)
+            let displayData = try loadWordDetailUseCase.execute()
             
-            if let fetchedDetail {
-                state = .loaded(fetchedDetail)
-                isSaved = (try? userDataRepository.isWordSaved(wordID: wordID)) ?? false
+            if let displayData {
+                state = .loaded(displayData.detail)
+                isSaved = displayData.isSaved
             } else {
                 state = .notFound
             }
@@ -47,13 +44,7 @@ final class WordDetailStore {
     
     func toggleSaved() {
         do {
-            if isSaved {
-                try userDataRepository.unsaveWord(wordID: wordID)
-                isSaved = false
-            } else {
-                try userDataRepository.saveWord(wordID: wordID)
-                isSaved = true
-            }
+            isSaved = try toggleSavedWordUseCase.execute()
         } catch {
             state = .error(error.localizedDescription)
         }

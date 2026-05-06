@@ -109,10 +109,19 @@ struct WordDetailView: View {
 }
 
 #Preview {
-    let store = WordDetailStore(
+    let loadWordDetailUseCase = LoadWordDetailUseCase(
         wordID: 1,
         dictionaryRepository: MockDictionaryRepository(),
         userDataRepository: MockUserDataRepository()
+    )
+    let toggleSavedWordUseCase = ToggleSavedWordUseCase(
+        wordID: 1,
+        userDataRepository: MockUserDataRepository()
+    )
+    
+    let store = WordDetailStore(
+        loadWordDetailUseCase: loadWordDetailUseCase,
+        toggleSavedWordUseCase: toggleSavedWordUseCase
     )
     
     return NavigationStack {

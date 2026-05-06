@@ -32,11 +32,22 @@ struct WordDetailContainerView: View {
         context: ModelContext
     ) {
         self.dependencies = dependencies
+        let userDataRepository = dependencies.userDataRepositoryFactory.make(context)
+        
+        let loadWordDetailUseCase = LoadWordDetailUseCase(
+            wordID: wordID,
+            dictionaryRepository: dependencies.dictionaryRepository,
+            userDataRepository: userDataRepository
+        )
+        let toggleSavedWordUseCase = ToggleSavedWordUseCase(
+            wordID: wordID,
+            userDataRepository: userDataRepository
+        )
+        
         _store = State(
             initialValue: WordDetailStore(
-                wordID: wordID,
-                dictionaryRepository: dependencies.dictionaryRepository,
-                userDataRepository: dependencies.userDataRepositoryFactory.make(context)
+                loadWordDetailUseCase: loadWordDetailUseCase,
+                toggleSavedWordUseCase: toggleSavedWordUseCase
             )
         )
     }

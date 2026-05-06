@@ -35,3 +35,8 @@ struct Meaning: Identifiable, Hashable {
     let partOfSpeech: String?
     let definition: String
 }
+
+struct WordDetailDisplayData {
+    let detail: WordDetail
+    let isSaved: Bool
+}
