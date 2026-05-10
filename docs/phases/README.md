@@ -1,26 +1,38 @@
 # Phase Records
 
-Use this directory for milestone records and implementation phase notes.
+Status: Active
+Last updated: 2026-05-10
 
-Suggested naming:
+This directory contains milestone records and phase summaries.
+
+Roadmap phases describe planned direction. Files in this directory should record completed work or an active phase that is being executed.
+
+## Naming
+
+Use stable, numbered filenames:
 
 ```text
+phase-00-current-mvp.md
 phase-01-database-pipeline.md
 phase-02-core-experience.md
 phase-03-architecture-tests.md
 ```
 
-Each phase note should include:
+## Template
+
+Each phase record should include:
 
 - Goal
 - Scope
 - Non-goals
+- Completed work
 - Key decisions
 - Verification
-- Remaining risks
+- Known risks
+- Next phase
 
-Current records:
+## Current Records
 
 - [Phase 0: Current MVP Baseline](phase-00-current-mvp.md)
 
-Temporary notes should stay in `docs/_local/`.
+Temporary notes belong in `docs/_local/`.

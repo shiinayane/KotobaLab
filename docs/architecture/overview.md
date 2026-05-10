@@ -1,20 +1,24 @@
 # Architecture Overview
 
-Date: 2026-04-27
+Status: Active
+Last updated: 2026-05-10
 
 ## Summary
 
-KotobaLab 当前采用轻量分层架构，可以理解为：
+KotobaLab currently uses a lightweight layered architecture:
 
 ```text
-MVVM + UseCase + Repository
+SwiftUI View
+-> Store
+-> UseCase
+-> Repository Protocol
+-> Repository Implementation
+-> SQLite / SwiftData
 ```
 
-它不是完整 Clean Architecture，也不需要现在变成完整 Clean Architecture。当前最重要的是保持依赖方向清楚、Feature 可测试、数据层可替换。
+This is best described as MVVM with UseCase and Repository boundaries. It is not a full Clean Architecture implementation, and it does not need to become one yet. The current priority is to keep dependency direction clear, keep features testable, and keep the data layer replaceable.
 
-## Layer Map
-
-当前主要目录：
+## Directory Map
 
 ```text
 KotobaLab
@@ -34,9 +38,69 @@ KotobaLab
 └── Shared
 ```
 
+## Layer Responsibilities
+
+### App
+
+The `App` layer creates root dependencies and assembles the app shell.
+
+Current examples:
+
+- `KotobaLabApp`
+- `AppDependencies`
+- `TabContainer`
+
+### Domain
+
+The `Domain` layer owns technology-neutral app concepts.
+
+It contains:
+
+- Entities such as `WordSummary`, `WordDetail`, and `Meaning`.
+- Repository protocols such as `DictionaryRepositoryProtocol` and `UserDataRepositoryProtocol`.
+- Use cases such as `SearchWordsUseCase`, `LoadSavedWordsUseCase`, `LoadWordDetailUseCase`, and `ToggleSavedWordUseCase`.
+
+Domain should not depend on SwiftUI, SwiftData, GRDB, SQLite rows, or app framework details.
+
+### Data
+
+The `Data` layer owns concrete persistence and repository implementations.
+
+Current data sources:
+
+- SQLite via GRDB for dictionary content.
+- SwiftData for user-generated data such as saved words.
+- Mock repositories for previews and tests.
+
+### Features
+
+Each feature should keep UI rendering, UI state, and dependency assembly separate.
+
+Current pattern:
+
+```text
+FeatureScene
+-> FeatureStore
+-> FeatureView
+```
+
+The scene assembles dependencies, the store owns UI state, and the view renders state.
+
+## MVVM Mapping
+
+The project uses `Store` instead of `ViewModel`, but the role is the same.
+
+| MVVM concept | Current implementation |
+| --- | --- |
+| View | `SearchView`, `SavedView`, `WordDetailView` |
+| ViewModel | `SearchStore`, `SavedStore`, `WordDetailStore` |
+| Model | `WordSummary`, `WordDetail`, `Meaning` |
+| Service boundary | Repository protocols |
+| Data source | SQLite, SwiftData |
+
 ## Dependency Direction
 
-目标依赖方向：
+The intended dependency flow is:
 
 ```text
 App / Scene
@@ -48,263 +112,70 @@ App / Scene
   -> SQLite / SwiftData
 ```
 
-View 不应该直接依赖 SQLite、SwiftData 或 concrete repository。
-
-Domain 不应该依赖 SwiftUI、SwiftData、GRDB 或 app framework implementation details。
-
-## Feature Structure
-
-当前核心 Feature：
-
-- `Features/Search`
-- `Features/Saved`
-- `Features/WordDetail`
-
-每个核心 Feature 大致分为：
-
-- `Scene`: 组装 dependencies，创建 Store。
-- `Store`: 持有 UI state，调用 UseCase / Repository。
-- `View`: 只负责渲染和用户交互。
-
-例子：
-
-```text
-SearchScene
--> SearchStore
--> SearchWordsUseCase
--> DictionaryRepositoryProtocol
--> SQLiteDictionaryRepository
-```
-
-## MVVM Mapping
-
-当前项目里没有使用 `ViewModel` 命名，而是使用 `Store`。
-
-对应关系：
-
-| MVVM 概念 | 当前实现 |
-| --- | --- |
-| View | `SearchView`, `SavedView`, `WordDetailView` |
-| ViewModel | `SearchStore`, `SavedStore`, `WordDetailStore` |
-| Model | `WordSummary`, `WordDetail`, `Meaning` |
-| Service / Repository | `DictionaryRepositoryProtocol`, `UserDataRepositoryProtocol` |
-| Data source | SQLite, SwiftData |
-
-因此当前架构可以称为：
-
-```text
-MVVM with UseCase and Repository boundaries
-```
-
-## Domain Layer
-
-Domain 当前包含：
-
-- Entity
-- Repository Protocol
-- UseCase
-
-### Entity
-
-`Domain/Entity/DictionaryModels.swift` 定义 app 内部使用的词典模型：
-
-- `WordSummary`
-- `WordDetail`
-- `Meaning`
-- `SavedWordSummary`
-
-这些模型应该保持技术无关，不暴露 SQLite row、SwiftData model 或网络 DTO。
-
-### Repository Protocol
-
-`DictionaryRepositoryProtocol` 负责词典内容：
-
-- search words
-- fetch word detail
-- fetch summaries by ids
-
-`UserDataRepositoryProtocol` 负责用户数据：
-
-- check saved state
-- save word
-- unsave word
-- fetch saved word ids
-
-Protocol 应该只暴露领域模型或领域 ID，不暴露底层技术细节。
-
-### UseCase
-
-当前已有：
-
-- `SearchWordsUseCase`
-- `LoadSavedWordsUseCase`
-
-UseCase 的职责是表达业务动作，而不是管理 UI state。
-
-好的边界：
-
-```swift
-func execute() throws -> [WordSummary]
-```
-
-不推荐：
-
-```swift
-func execute() {
-    state = .loading
-    ...
-}
-```
-
-UI state 属于 Store。
-
-## Data Layer
-
-Data 当前包含：
-
-- `DatabaseManager`
-- `SQLiteDictionaryRepository`
-- `SwiftDataUserDataRepository`
-- mock / preview repository
-- SwiftData persistence model
-
-### SQLite
-
-SQLite 负责词典主库。适合：
-
-- 大量只读词典内容。
-- 可控 schema。
-- 搜索索引。
-- 批量导入。
-
-当前需要补强：
-
-- 可重复生成 pipeline。
-- 数据库体积控制。
-- `meanings.word_id` 查询索引。
-- Search summary / Detail data 分层。
-
-### SwiftData
-
-SwiftData 负责用户数据。适合：
-
-- 收藏。
-- 未来 notes。
-- 学习进度。
-- 本地用户状态。
-
-`SavedWordRecord` 属于 Data/Persistence，不应该进入 Domain。
-
-## App and Dependency Injection
-
-`KotobaLabApp` 负责创建基础 dependencies：
-
-```text
-DatabaseManager
--> SQLiteDictionaryRepository
--> AppDependencies
--> RootView
-```
-
-`AppDependencies` 当前包含：
-
-- `dictionaryRepository`
-- `userDataRepositoryFactory`
-
-`userDataRepositoryFactory` 通过 SwiftData `ModelContext` 创建 user data repository。这是合理的，因为 `ModelContext` 来自 View environment，只能在 Scene / View 组装阶段拿到。
-
-## Navigation
-
-当前已有：
-
-- `AppRouter`
-- `AppRoute`
-- `AppSheet`
-
-实际 Word Detail 导航目前主要通过 View closure 构造 destination，而不是完全通过 `AppRouter.path`。
-
-短期可以接受。等导航复杂后再统一路由模型，避免现在过早抽象。
-
-## State Management
-
-当前 Store 使用 Observation：
-
-- `@Observable`
-- `@Bindable`
-- `@State`
-
-核心 View state 使用 enum 表达，例如：
-
-- `SavedViewState`
-- `WordDetailViewState`
-
-这是好的方向。后续 Search 也应该补明确状态，而不是只有 `query` 和 `results`。
-
-建议 Search 后续状态：
-
-```swift
-enum SearchViewState {
-    case idle
-    case loading
-    case loaded([WordSummary])
-    case empty
-    case error(String)
-}
-```
+Views should not directly depend on SQLite, SwiftData, GRDB, or concrete repositories.
+
+## Current Strengths
+
+- The core app is no longer view-driven only.
+- Use cases now cover search, saved-word loading, word-detail loading, and saved-state toggling.
+- Mock repositories make use case tests straightforward.
+- The dictionary database has moved toward a reproducible build pipeline.
+- The documentation structure now separates product, dictionary, architecture, roadmap, and phase records.
 
 ## Current Weak Points
 
-### Synchronous I/O
+### Synchronous Repository APIs
 
-Repository API 目前是同步 `throws`。随着数据库变大，Store 直接调用同步 repository 会有 UI 卡顿风险。
+Repository protocols are still synchronous. Because stores run on the main actor, database work can still block UI work if queries become expensive.
 
-中期建议：
+Future direction:
 
-- 将 dictionary repository 改成 async。
-- 或用 dedicated database actor 包住 SQLite 查询。
-- Store 只在 MainActor 更新 state。
+- Make dictionary repository APIs async.
+- Or isolate SQLite access behind a dedicated database actor.
+- Keep state mutation on the main actor.
 
-### Testing Gap
+### Search Query Plan
 
-当前没有 test target。
+The `meanings.word_id` lookup now uses an index, but the current prefix search still scans `words` for `term LIKE ? OR reading LIKE ?`.
 
-优先补：
+Future direction:
 
-- UseCase tests。
-- query normalizer tests。
-- repository tests with small fixture DB。
-- dictionary pipeline tests。
+- Add query benchmarks.
+- Consider a dedicated search table.
+- Consider FTS only after measuring actual search needs.
 
-UI test 可以后置。
+### Dependency Pinning
+
+GRDB is still referenced through the `master` branch.
+
+Future direction:
+
+- Pin GRDB to a released version or a version range.
 
 ### Target Hygiene
 
-Xcode file-system synchronized group 会让目录下本地实验文件进入 target。需要保证：
-
-- 正式代码在 `KotobaLab/`。
-- 本地实验代码不要放在 app target 同步目录。
-- 或显式提交并说明用途。
+The project now has target exceptions for `Features/TestView`, which is an improvement. The long-term goal is still to keep local experiments out of the app target entirely.
 
 ## Near-term Architecture Tasks
 
-1. 给 Search / Saved / Detail 的 Store 补测试。
-2. 设计 async repository 或 database actor 边界。
-3. 把 Search state 改成 enum。
-4. 增加 `ToggleSavedWordUseCase`。
-5. 增加 `LoadWordDetailUseCase`，组合详情和收藏状态。
-6. 清理 target 内未跟踪实验文件。
-7. 固定 GRDB 版本。
+1. Pin GRDB to a versioned dependency.
+2. Add repository tests using a small SQLite fixture database.
+3. Add DictionaryBuilder pipeline tests.
+4. Add explicit search state instead of only `query` and `results`.
+5. Design async repository or database actor boundaries.
+6. Decide the final delivery path for `dictionary.sqlite`.
 
-## Rule of Thumb
+## Placement Rules
 
-新增功能时按这个问题判断放哪：
+Use these rules when adding new code:
 
-- UI 展示和交互：放 `Features/*/*View.swift`
-- UI 状态和用户动作编排：放 `Features/*/*Store.swift`
-- 业务动作：放 `Domain/UseCase`
-- 技术无关模型：放 `Domain/Entity`
-- 数据访问协议：放 `Domain/Repository`
-- SQLite / SwiftData 实现：放 `Data/Repository`
-- App 级组装：放 `App` 或 `*Scene`
+- UI rendering: `Features/<Feature>/<Feature>View.swift`
+- UI state and user action orchestration: `Features/<Feature>/<Feature>Store.swift`
+- Feature assembly: `Features/<Feature>/<Feature>Scene.swift`
+- Business operation: `Domain/UseCase`
+- Technology-neutral model: `Domain/Entity`
+- Data access contract: `Domain/Repository`
+- SQLite or SwiftData implementation: `Data/Repository`
+- App-level composition: `App`
 
-不要为了“更像架构”而加层。只有当一个层能降低重复、隔离变化或提高测试性时，再引入它。
+Do not add a new layer unless it reduces duplication, isolates real change, or improves testability.

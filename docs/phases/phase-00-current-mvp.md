@@ -1,186 +1,160 @@
 # Phase 0: Current MVP Baseline
 
-Date: 2026-04-27
+Status: Historical
+Last updated: 2026-05-10
 
 ## Goal
 
-Phase 0 的目标是确认 KotobaLab 已经完成一个可运行的最小 MVP：
+Phase 0 confirms that KotobaLab has a working MVP loop:
 
 ```text
 Search -> Word Detail -> Save / Unsave -> Saved List -> Word Detail
 ```
 
-这一阶段的重点不是功能完整，而是跑通基础产品闭环、数据访问链路和 SwiftUI 状态驱动 UI。
+The goal is not feature completeness. The goal is to prove the core product loop, data access path, and SwiftUI state-driven UI.
 
 ## Current Status
 
-当前项目已经具备以下基础能力：
+The current app can:
 
-- 可以从本地 SQLite 词典数据库搜索词条。
-- 可以进入词条详情页查看基础释义。
-- 可以收藏和取消收藏词条。
-- 可以在 Saved 页查看已收藏词条。
-- Search / Saved / WordDetail 已经有对应 Store。
-- Domain 层已有基础 Entity、Repository Protocol 和 UseCase。
-- Data 层已有 SQLite dictionary repository 和 SwiftData user data repository。
-- Scene 层负责组装依赖并把 View 与 Store 连接起来。
+- Search dictionary entries from a local SQLite database.
+- Open a word detail page.
+- Save and unsave words.
+- Show saved words.
+- Reopen word detail from the saved list.
 
-## Completed Scope
+The architecture now includes:
+
+- Domain entities.
+- Repository protocols.
+- Use cases for search, saved-word loading, detail loading, and saved-state toggling.
+- SQLite repository for dictionary data.
+- SwiftData repository for user data.
+- Mock repositories for previews and tests.
+
+## Completed Work
 
 ### Product
 
-- 基础 Tab 结构已经存在。
-- Search 页、Saved 页、Word Detail 页已经构成核心路径。
-- README 中已有当前 MVP 功能说明和截图。
+- Basic app shell and tab structure.
+- Search page.
+- Word detail page.
+- Saved page.
+- Minimal settings, study, analysis, and home placeholders.
 
-### Data
+### Dictionary
 
-- 词典内容使用 SQLite。
-- 用户收藏状态使用 SwiftData。
-- `DatabaseManager` 负责从 app bundle 准备 `dictionary_app.sqlite`。
-- `SQLiteDictionaryRepository` 提供搜索、详情、批量 summary 查询。
-- `SwiftDataUserDataRepository` 提供收藏状态读写。
+- A new `Tools/DictionaryBuilder` pipeline exists.
+- The app dictionary database has been reduced from roughly 1.3GB to roughly 52MB.
+- Raw import payloads are no longer kept in the app dictionary database.
+- The schema now stores structured words and meanings.
+- `meanings.word_id` is indexed.
 
 ### Architecture
 
-当前架构接近：
+- The project uses a lightweight MVVM + UseCase + Repository structure.
+- `WordDetailStore` now delegates loading and saved-state toggling to use cases.
+- Domain models are more focused on app-facing data.
+- Data repositories are separated from domain protocols.
 
-```text
-SwiftUI View
--> Store
--> UseCase
--> Repository Protocol
--> Repository Implementation
--> SQLite / SwiftData
-```
+### Testing
 
-这可以视为 MVVM + UseCase + Repository 的轻量架构。
+The project now has a `KotobaLabTests` target.
 
-### Documentation
+Current test coverage includes:
 
-已经整理出正式文档目录：
-
-- `docs/product/`
-- `docs/dictionary/`
-- `docs/architecture/`
-- `docs/roadmap/`
-- `docs/phases/`
-
-本地笔记已迁移到 `docs/_local/`，并由 `.gitignore` 排除。
-
-## Key Decisions
-
-### SQLite for Dictionary Content
-
-词典内容是大量只读或读多写少数据，且搜索性能很重要。因此当前选择 SQLite 作为词典主库是合理的。
-
-### SwiftData for User Data
-
-收藏、未来的 notes、学习进度等用户数据更贴近 SwiftUI 状态和 Apple 生态，因此当前选择 SwiftData 作为用户数据层是合理的。
-
-### Store as ViewModel
-
-项目没有使用传统命名的 `ViewModel`，而是使用 `SearchStore`、`SavedStore`、`WordDetailStore`。这些 Store 实际承担 ViewModel 职责：
-
-- 持有 View state。
-- 调用 UseCase 或 Repository。
-- 将业务结果转换为 UI 可消费状态。
+- `SearchWordsUseCaseTests`
+- `LoadSavedWordsUseCaseTests`
+- `ToggleSavedWordUseCaseTests`
+- `LoadWordDetailUseCaseTests`
 
 ## Verification
 
-已在本地执行过一次 iOS generic build：
+The following command was run:
 
 ```bash
-xcodebuild \
+xcodebuild test \
   -project KotobaLab.xcodeproj \
   -scheme KotobaLab \
-  -destination 'generic/platform=iOS' \
-  -derivedDataPath /tmp/KotobaLabDerived \
-  build
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
+  -derivedDataPath /tmp/KotobaLabReviewDerived
 ```
 
-结果：
+Result:
 
 ```text
-BUILD SUCCEEDED
+TEST SUCCEEDED
 ```
 
-注意：项目当前没有 test target，所以还没有自动化行为回归验证。
+Ten use case tests passed.
+
+## Key Decisions
+
+### SQLite for Dictionary Data
+
+Dictionary content stays in SQLite because it is structured, read-heavy, and search-oriented.
+
+### SwiftData for User Data
+
+User-generated data such as saved words stays in SwiftData because it is app-local state and integrates well with SwiftUI.
+
+### Store as ViewModel
+
+The project uses `Store` names instead of `ViewModel` names. These stores perform the ViewModel role.
 
 ## Known Risks
 
-### Dictionary DB Delivery
+### Dictionary Delivery
 
-`KotobaLab/Resources/dictionary_app.sqlite` 是运行必需资源，但 sqlite 文件目前被 `.gitignore` 忽略。新环境 clone 后无法保证 app 可运行。
+`dictionary.sqlite` is still ignored by the generic `*.sqlite` rule. The project needs a clear delivery strategy:
 
-需要在 Phase 1 明确：
+- Generate it locally from `Tools/DictionaryBuilder`.
+- Download it from a release artifact.
+- Or explicitly track a small fixture database and distribute the full database separately.
 
-- 提交 sample DB。
-- 通过脚本生成 DB。
-- 或通过 release artifact / remote asset 分发 DB。
+### Search Performance
 
-### Database Size and Query Plan
+The `meanings` lookup is improved, but the current prefix search still scans `words`.
 
-当前本地词典数据库约 1.3GB。`words` 和 `meanings` 都是 42 万级记录。
+This is acceptable for the current 52MB database, but it should be measured before the dictionary grows.
 
-当前缺少 `meanings.word_id` 索引，Search 列表预览和 Word Detail 查询会扫 `meanings` 全表。
+### Synchronous Data Access
 
-Phase 1 需要优先处理：
-
-- 数据库体积审计。
-- raw JSON 是否进入 app bundle。
-- `meanings(word_id, sequence)` 索引。
-- search summary / detail schema 拆分。
-
-### Main Thread I/O
-
-Repository Protocol 当前是同步 `throws` API，SearchStore 又是 `@MainActor`。数据库 I/O 可能压在 UI 调用链上。
-
-Phase 2 / Phase 3 需要考虑：
-
-- async repository。
-- database actor。
-- 明确 loading / error / cancellation 状态。
-
-### Target Hygiene
-
-当前 Xcode 使用 file-system synchronized group，未跟踪的 `KotobaLab/Features/TestView` 曾被构建日志显示参与主 target 编译。
-
-需要清理：
-
-- 实验代码放到 target 外。
-- 或正式提交并标明用途。
-- 或配置 target 排除规则。
+Repository APIs are still synchronous. If search or detail queries become more expensive, stores can still block main-actor work.
 
 ### Dependency Pinning
 
-GRDB 当前依赖 master branch。后续应该改成版本范围或 exact version，避免不可预期升级。
+GRDB is still configured from the `master` branch. This should be changed to a stable version.
 
-## Non-goals for Phase 0
+### Tooling Hygiene
 
-这些内容不属于当前阶段：
+Python cache files and local generated outputs should stay ignored and should not be committed.
 
-- 完整后端。
-- AI 功能。
-- 账号系统。
-- 云同步。
-- 完整学习系统。
-- 大规模 UI polish。
+## Non-goals
+
+The following are not part of Phase 0:
+
+- Backend service.
+- AI features.
+- Account system.
+- Cloud sync.
+- Full study system.
+- Full UI polish.
 
 ## Next Phase
 
-下一阶段进入：
+Recommended next phase:
 
 ```text
-Phase 1: Database Pipeline and Size Reduction
+Phase 1: Dictionary Pipeline Stabilization
 ```
 
-建议优先任务：
+Suggested tasks:
 
-1. 用 `dbstat` 审计 SQLite 体积。
-2. 计算 raw JSON 字段占比。
-3. 增加 `meanings(word_id, sequence)` 索引。
-4. 设计 search summary / detail 分层 schema。
-5. 更新 `scripts/build_dictionary_db.py`。
-6. 生成瘦身版 `dictionary_app.sqlite`。
-7. 回归验证 Search / Detail / Saved。
+1. Add CLI arguments to `Tools/DictionaryBuilder`.
+2. Document the exact dictionary build command.
+3. Add a small SQLite fixture for tests.
+4. Add pipeline tests for parsing and export.
+5. Decide how `dictionary.sqlite` is delivered.
+6. Benchmark current search queries.
+7. Pin GRDB to a stable version.

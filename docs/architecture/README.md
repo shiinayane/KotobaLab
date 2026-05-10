@@ -1,15 +1,18 @@
-# Architecture Notes
+# Architecture
 
-Use this directory for long-lived architecture documents.
+Status: Active
+Last updated: 2026-05-10
 
-Suggested future files:
+Long-lived architecture documents live here.
 
-- `mvvm_clean_lite.md`: MVVM + UseCase + Repository boundaries.
-- `testing_strategy.md`: unit, pipeline, and UI test strategy.
-- `dependency_injection.md`: `AppDependencies`, scene assembly, and preview/mock rules.
+## Current Documents
 
-Current entry:
+- [Overview](overview.md): current MVVM + UseCase + Repository structure.
 
-- [Architecture overview](overview.md)
+## Planned Documents
 
-Keep implementation logs in `docs/phases/`, not here.
+- Planned: `testing_strategy.md`: unit, pipeline, repository, and UI testing strategy.
+- Planned: `dependency_injection.md`: `AppDependencies`, scene assembly, and preview/mock rules.
+- Planned: `concurrency.md`: repository async boundaries and database actor design.
+
+Implementation logs belong in `docs/phases/`, not here.
