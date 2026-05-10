@@ -10,7 +10,6 @@ import Testing
 @testable import KotobaLab
 
 struct ToggleSavedWordUseCaseTests {
-    
     @Test
     @MainActor
     func toggleSavedWord_whenWordIsNotSaved_shouldSavedWord() throws {
@@ -37,7 +36,7 @@ struct ToggleSavedWordUseCaseTests {
             savedWordsRecord: [
                 SavedWordRecordData(
                     wordID: 1,
-                    savedAt: Date()
+                    savedAt: Date(timeIntervalSince1970: 100)
                 )
             ]
         )

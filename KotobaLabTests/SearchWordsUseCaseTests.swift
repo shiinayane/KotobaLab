@@ -5,12 +5,10 @@
 //  Created by 椎名アヤネ on 2026/05/10.
 //
 
-import Foundation
 import Testing
 @testable import KotobaLab
 
 struct SearchWordsUseCaseTests {
-    
     @Test
     @MainActor
     func searchWords_whenQueryIsEmpty_shouldReturnEmptyArray() throws {
