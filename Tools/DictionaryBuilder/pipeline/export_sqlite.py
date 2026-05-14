@@ -38,9 +38,9 @@ def insert_word(conn: sqlite3.Connection, word: WordRecord) -> int:
             word.sequence
         ),
     )
-    
+
     word_id = cursor.lastrowid
-    
+
     if word_id is None:
         raise RuntimeError("Failed to get last inserted word_id")
 

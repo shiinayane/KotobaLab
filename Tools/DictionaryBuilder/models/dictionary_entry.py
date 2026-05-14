@@ -16,13 +16,15 @@ class ParsedDictionaryEntry:
     part_of_speech: str | None
     glosses: list[str]
     forms: list[str]
-    
+
+
 @dataclass(frozen=True)
 class WordRecord:
     term: str
     reading: str | None
     sequence: int | None
-    
+
+
 @dataclass(frozen=True)
 class MeaningRecord:
     sequence: int

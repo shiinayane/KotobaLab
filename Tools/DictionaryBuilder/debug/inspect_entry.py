@@ -4,10 +4,13 @@
 #
 #  Created by 椎名アヤネ on 2026/05/01.
 #
-
-import json
 import sys
 from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(BASE_DIR))
+
+import json
 from typing import Any
 import pprint
 from pipeline.parse import parse_semantic

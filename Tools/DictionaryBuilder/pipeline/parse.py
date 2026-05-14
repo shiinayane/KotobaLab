@@ -39,7 +39,7 @@ def parse_semantic(entry: list[Any]) -> dict:
 
             if tag == "li" and in_glossary:
                 if isinstance(content, str):
-                        result["glosses"].append(content.strip())
+                    result["glosses"].append(content.strip())
 
             # --------------------------
             # 3. 提取 forms（变体）
@@ -87,9 +87,10 @@ def parse_semantic(entry: list[Any]) -> dict:
 
     return result
 
+
 def parse_entry(entry: list[Any]) -> ParsedDictionaryEntry:
     semantic = parse_semantic(entry)
-    
+
     return ParsedDictionaryEntry(
         term=entry[0],
         reading=entry[1] or None,

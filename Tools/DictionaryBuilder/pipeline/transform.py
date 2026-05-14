@@ -14,13 +14,14 @@ def to_word_record(entry: ParsedDictionaryEntry) -> WordRecord:
         reading=entry.reading,
         sequence=entry.sequence
     )
-    
+
+
 def to_meaning_records(entry: ParsedDictionaryEntry) -> list[MeaningRecord]:
     if not entry.glosses:
         return []
-    
+
     definition_text = "; ".join(entry.glosses)
-    
+
     return [
         MeaningRecord(
             sequence=1,
