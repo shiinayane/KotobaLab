@@ -14,6 +14,12 @@ final class DatabaseManager {
     init() throws {
         let dbURL = try Self.prepareDatabaseFile(named: "dictionary.sqlite")
         dbQueue = try DatabaseQueue(path: dbURL.path)
+        
+        try dbQueue.inDatabase { db in
+            // Enable SQLite LIKE prefix index optimization.
+            // Required for efficient `LIKE 'prefix%'` searches on words.term / reading.
+            try db.execute(sql: "PRAGMA case_sensitive_like = ON")
+        }
     }
     
     private static func prepareDatabaseFile(named fileName: String) throws -> URL {
