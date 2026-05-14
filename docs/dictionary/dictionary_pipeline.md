@@ -1,7 +1,7 @@
 # Dictionary Pipeline
 
 Status: Active
-Last updated: 2026-05-10
+Last updated: 2026-05-14
 
 KotobaLab uses a local dictionary database generated from source dictionary data.
 
@@ -36,6 +36,7 @@ Important files:
 - `pipeline/transform.py`: conversion into app database records.
 - `pipeline/export_sqlite.py`: SQLite export logic.
 - `debug/inspect_entry.py`: entry inspection helper.
+- `debug/benchmark_search.py`: search query plan and latency benchmark helper.
 
 ## Current Output
 
@@ -53,16 +54,13 @@ KotobaLab/Resources/dictionary.sqlite
 
 ## Current Local Setup
 
-The builder does not have CLI arguments yet. From the repository root, run it in the builder directory so the current relative paths resolve correctly:
+From the repository root, generate the app resource database with:
 
 ```bash
-(cd Tools/DictionaryBuilder && python3 main.py)
-```
-
-After the build finishes, install the generated database into the app resources:
-
-```bash
-cp Tools/DictionaryBuilder/output/dictionary.sqlite KotobaLab/Resources/dictionary.sqlite
+python3 Tools/DictionaryBuilder/main.py \
+  --source dataset/source/jitendex-yomitan \
+  --schema Tools/DictionaryBuilder/schema/dictionary_schema.sql \
+  --output KotobaLab/Resources/dictionary.sqlite
 ```
 
 Verify the app resource exists:
@@ -71,7 +69,7 @@ Verify the app resource exists:
 ls -lh KotobaLab/Resources/dictionary.sqlite
 ```
 
-This is the temporary happy path for local development. It should be replaced by an argument-driven command when DictionaryBuilder is stabilized.
+This is the current local development path. The production delivery strategy is still undecided.
 
 ## Current Schema Summary
 
@@ -86,18 +84,9 @@ This keeps the app database much smaller and closer to a product database.
 
 ## Current Risks
 
-### Hard-coded Paths
+### Build Command
 
-`Tools/DictionaryBuilder/main.py` currently uses hard-coded relative paths.
-
-The builder should support CLI arguments:
-
-```bash
-python3 Tools/DictionaryBuilder/main.py \
-  --source dataset/source/jitendex-yomitan \
-  --schema Tools/DictionaryBuilder/schema/dictionary_schema.sql \
-  --output KotobaLab/Resources/dictionary.sqlite
-```
+`Tools/DictionaryBuilder/main.py` supports CLI arguments for source, schema, and output paths. This is good enough for local generation, but the project still needs a CI/release story for how the generated database is provided to new environments.
 
 ### Delivery Strategy
 
@@ -113,14 +102,24 @@ Possible options:
 
 ### Search Index
 
-`meanings.word_id` is now indexed, but word search still needs measurement.
+`meanings.word_id` is now indexed.
 
-The next decision should be based on query timings and query plans, not on guessing.
+Prefix search has a measured dependency on SQLite `LIKE` behavior. Without `PRAGMA case_sensitive_like = ON`, SQLite scans `words`. With the PRAGMA enabled, the same prefix search can use `idx_words_term`.
+
+Benchmark record:
+
+| Setting | Query | Average time | Query plan |
+| --- | --- | ---: | --- |
+| Before `PRAGMA case_sensitive_like = ON` | `見る` | ~16.8 ms | `SCAN words` |
+| Before `PRAGMA case_sensitive_like = ON` | `zzzznotfound` | ~16.2 ms | `SCAN words` |
+| After `PRAGMA case_sensitive_like = ON` | `見る` | ~0.034 ms | `SEARCH words USING INDEX idx_words_term` |
+| After `PRAGMA case_sensitive_like = ON` | `zzzznotfound` | ~0.012 ms | `SEARCH words USING INDEX idx_words_term` |
+
+The app enables this PRAGMA in `DatabaseManager`.
 
 ## Next Steps
 
-1. Add CLI arguments to DictionaryBuilder.
-2. Document the official build command.
-3. Add a small fixture database for repository tests.
-4. Add pipeline tests for parsing and export.
-5. Benchmark current search and detail queries.
+1. Decide the production delivery path for `dictionary.sqlite`.
+2. Add a small fixture database for repository tests.
+3. Add pipeline tests for parsing and export.
+4. Keep benchmark records current when schema or search SQL changes.

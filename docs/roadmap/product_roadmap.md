@@ -1,7 +1,7 @@
 # Product Roadmap
 
 Status: Active
-Last updated: 2026-05-10
+Last updated: 2026-05-14
 
 ## Positioning
 
@@ -41,11 +41,10 @@ Make the dictionary database reproducible, lean, and measurable.
 
 Tasks:
 
-- Add CLI arguments to DictionaryBuilder.
-- Document the official database build command.
+- Keep the DictionaryBuilder CLI command documented.
 - Keep raw source data out of the app database.
 - Add database size checks.
-- Add query plan checks for important queries.
+- Keep query plan checks for important queries.
 - Add a small fixture database for tests.
 - Decide how the production database is delivered.
 
@@ -204,12 +203,11 @@ word_id + prompt_version + user_level + language
 
 Immediate next priorities:
 
-1. Stabilize DictionaryBuilder CLI.
-2. Document database generation and delivery.
-3. Pin GRDB.
-4. Add fixture database tests.
-5. Benchmark search queries.
-6. Improve core Search and Word Detail UX.
+1. Decide database generation and delivery.
+2. Pin GRDB.
+3. Add fixture database tests.
+4. Keep search benchmark records current.
+5. Improve core Search and Word Detail UX.
 
 ## What Not To Do Next
 

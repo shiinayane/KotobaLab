@@ -1,7 +1,7 @@
 # Dictionary Database Strategy
 
 Status: Active
-Last updated: 2026-05-10
+Last updated: 2026-05-14
 
 ## Summary
 
@@ -93,7 +93,7 @@ They should stay in:
 ## Recommended Next Steps
 
 1. Keep the current lean schema.
-2. Add benchmarks for search and detail queries.
+2. Keep search and detail query benchmarks documented when query SQL or schema changes.
 3. Consider a dedicated search table if prefix search becomes slow.
 4. Consider FTS only if real requirements need it.
 5. Keep raw source data out of the app bundle.

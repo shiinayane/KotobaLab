@@ -1,7 +1,7 @@
 # MVP Product Requirements
 
 Status: Active
-Last updated: 2026-05-10
+Last updated: 2026-05-14
 
 ## Product
 
@@ -118,7 +118,7 @@ Current implementation status:
 Main remaining MVP gaps:
 
 - document and stabilize dictionary database delivery
-- improve or benchmark search query performance
+- keep search query performance measured as schema and SQL change
 - pin GRDB dependency
 - move repository APIs toward async boundaries if needed
 - improve core page UX and empty states

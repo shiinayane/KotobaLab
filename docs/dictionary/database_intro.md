@@ -1,7 +1,7 @@
 # Dictionary Database Overview
 
 Status: Active
-Last updated: 2026-05-10
+Last updated: 2026-05-14
 
 This document describes the current app-facing dictionary database. Design rationale and future storage rules belong in [Dictionary Database Strategy](database_strategy.md).
 
@@ -84,14 +84,19 @@ The app loads saved word ids from SwiftData, then resolves those ids through the
 
 ## Current Limits
 
-The current schema is good enough for the MVP, but search still needs better measurement.
+The current schema is good enough for the MVP, but search behavior depends on SQLite connection configuration.
 
 Known limits:
 
-- prefix search still scans `words`
+- prefix search scans `words` unless `PRAGMA case_sensitive_like = ON` is enabled
 - there is no dedicated search ranking yet
 - there is no FTS table yet
 - there is no fixture database for repository tests yet
+
+Current measured result:
+
+- before `PRAGMA case_sensitive_like = ON`: `見る` ~16.8 ms, `zzzznotfound` ~16.2 ms, plan `SCAN words`
+- after `PRAGMA case_sensitive_like = ON`: `見る` ~0.034 ms, `zzzznotfound` ~0.012 ms, plan `SEARCH words USING INDEX idx_words_term`
 
 ## Next Step
 

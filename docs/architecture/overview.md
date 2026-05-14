@@ -1,7 +1,7 @@
 # Architecture Overview
 
 Status: Active
-Last updated: 2026-05-10
+Last updated: 2026-05-14
 
 ## Summary
 
@@ -136,11 +136,16 @@ Future direction:
 
 ### Search Query Plan
 
-The `meanings.word_id` lookup now uses an index, but the current prefix search still scans `words` for `term LIKE ? OR reading LIKE ?`.
+The `meanings.word_id` lookup now uses an index. Prefix search depends on `PRAGMA case_sensitive_like = ON`; without it SQLite scans `words`, and with it SQLite can use `idx_words_term`.
+
+Current benchmark record:
+
+- before PRAGMA: `見る` ~16.8 ms, `zzzznotfound` ~16.2 ms, plan `SCAN words`
+- after PRAGMA: `見る` ~0.034 ms, `zzzznotfound` ~0.012 ms, plan `SEARCH words USING INDEX idx_words_term`
 
 Future direction:
 
-- Add query benchmarks.
+- Keep benchmark records current.
 - Consider a dedicated search table.
 - Consider FTS only after measuring actual search needs.
 
