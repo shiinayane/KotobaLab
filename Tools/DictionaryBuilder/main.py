@@ -39,6 +39,13 @@ def parse_args():
         default=OUTPUT_DB,
         help="Path to the output SQLite database."
     )
+    
+    parser.add_argument(
+        "--schema",
+        type=Path,
+        default=SCHEMA_PATH,
+        help="Path to the schema of the SQLite database."
+    )
 
     return parser.parse_args()
 
@@ -49,7 +56,8 @@ def main():
     args = parse_args()
 
     source_dir = args.source
-    output_path = args.output
+    output_db = args.output
+    schema_path = args.schema
 
     if not source_dir.exists():
         raise FileNotFoundError(f"Source directory not found: {source_dir}")
@@ -58,9 +66,12 @@ def main():
         raise NotADirectoryError(
             f"Source Path is not a directory: {source_dir}")
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_db.parent.mkdir(parents=True, exist_ok=True)
+    
+    if not schema_path.exists():
+        raise FileNotFoundError(f"Schema of the database not found: {schema_path}")
 
-    conn = create_database(output_path, SCHEMA_PATH)
+    conn = create_database(output_db, schema_path)
 
     total_entries = 0
     inserted_entries = 0
@@ -94,7 +105,7 @@ def main():
     print("\n✅ Done")
     print(f"Total entries:  {total_entries}")
     print(f"Inserted entries: {inserted_entries}")
-    print(f"DB path: {output_path.resolve()}")
+    print(f"DB path: {output_db.resolve()}")
 
 
 if __name__ == "__main__":
