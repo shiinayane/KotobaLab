@@ -15,6 +15,10 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
         self.dbQueue = dbQueue
     }
     
+    convenience init(databaseManager: DatabaseManager) {
+        self.init(dbQueue: databaseManager.dbQueue)
+    }
+    
     func searchWords(query: String, limit: Int) throws -> [WordSummary] {
         let pattern = "\(query)%"
         

@@ -11,10 +11,20 @@ import GRDB
 final class DatabaseManager {
     let dbQueue: DatabaseQueue
     
-    init() throws {
-        let dbURL = try Self.prepareDatabaseFile(named: "dictionary.sqlite")
+    init(databaseName: String = "dictionary.sqlite") throws {
+        let dbURL = try Self.prepareDatabaseFile(named: databaseName)
         dbQueue = try DatabaseQueue(path: dbURL.path)
         
+        try Self.configure(dbQueue)
+    }
+    
+    init(databaseURL: URL) throws {
+        dbQueue = try DatabaseQueue(path: databaseURL.path)
+        
+        try Self.configure(dbQueue)
+    }
+    
+    private static func configure(_ dbQueue: DatabaseQueue) throws {
         try dbQueue.inDatabase { db in
             // Enable SQLite LIKE prefix index optimization.
             // Required for efficient `LIKE 'prefix%'` searches on words.term / reading.
