@@ -75,7 +75,7 @@ logs/
 *.sqlite
 *.sqlite3
 *.db
-!KotobaLabTests/Fixture/test_dictionary.sqlite
+!KotobaLabTests/Fixtures/test_dictionary.sqlite
 
 
 # ================================
