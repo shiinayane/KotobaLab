@@ -1,7 +1,7 @@
 # Dictionary Pipeline
 
 Status: Active
-Last updated: 2026-05-20
+Last updated: 2026-05-21
 
 KotobaLab uses a local dictionary database generated from source dictionary data.
 
@@ -104,6 +104,19 @@ The production delivery path is **GitHub Release artifact**:
 
 ### Re-generating the database (builder maintainer only)
 
+For a one-shot build + verify + publish, use the helper script:
+
+```bash
+Tools/scripts/release_dictionary.sh dict-v2026.05.21
+```
+
+The script builds the database with `main.py`, runs `verify_database.py`,
+computes a SHA-256, and creates a tagged GitHub Release with both the
+`dictionary.sqlite` artifact and the checksum attached. It refuses to
+overwrite an existing release tag.
+
+Manual equivalent, if you want to drive the steps individually:
+
 ```text
 1. Obtain the jitendex-yomitan source dataset (see jitendex upstream).
 2. Place it under dataset/source/jitendex-yomitan.
@@ -140,7 +153,7 @@ Any failure raises `RuntimeError` and aborts the script with a non-zero exit, so
 
 ### Build Command
 
-`Tools/DictionaryBuilder/main.py` supports CLI arguments for source, schema, and output paths. The release pipeline that actually publishes the artifact to GitHub Releases is still manual; a small `Tools/scripts/release_dictionary.sh` is a future improvement.
+`Tools/DictionaryBuilder/main.py` supports CLI arguments for source, schema, and output paths. The release pipeline is driven by `Tools/scripts/release_dictionary.sh`, which composes build + verify + upload into a single command (see "Re-generating the database" above).
 
 ### Search Index
 
@@ -162,5 +175,4 @@ The app enables this PRAGMA in `DatabaseManager`.
 ## Next Steps
 
 1. Keep benchmark records current when schema or search SQL changes.
-2. Script the GitHub Release upload step (currently manual).
-3. Align `verify_database.py` search-plan check with the app's actual `WHERE term LIKE ? OR reading LIKE ?` SQL shape.
+2. Align `verify_database.py` search-plan check with the app's actual `WHERE term LIKE ? OR reading LIKE ?` SQL shape.

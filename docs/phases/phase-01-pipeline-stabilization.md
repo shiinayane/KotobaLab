@@ -84,7 +84,7 @@ GRDB is pinned to `upToNextMajorVersion` from `7.0.0` in `KotobaLab.xcodeproj/pr
 These items surfaced during Phase 1 but belong to a later phase:
 
 - **`verify_database.py:114` checks a single-column `LIKE` plan**, but the app uses `WHERE term LIKE ? OR reading LIKE ?`. The current assertion still passes (an OR plan that includes `idx_words_term` satisfies the substring check), but it does not actually verify the production query shape. Align in Phase 3.
-- **The release pipeline that uploads the artifact to GitHub Releases is manual.** A small `Tools/scripts/release_dictionary.sh` would automate it, but is not yet required.
+- ~~The release pipeline that uploads the artifact to GitHub Releases is manual.~~ Closed by `Tools/scripts/release_dictionary.sh` (Tier-1 automation: build + verify + checksum + `gh release create` in one command).
 - **`WordDetailStore` and `SavedStore` are not `@MainActor`-isolated**, only `SearchStore` is. Strict-concurrency enforcement (Swift 6) will surface this. Phase 3.
 - **Repository APIs are synchronous `throws`** and called from main-actor stores. Async repository or database actor is a Phase 3 decision.
 - **`meanings` is currently 1:1 with `words`** because `transform.to_meaning_records` joins all glosses into a single row. Schema supports one-to-many; expanding it is a product decision for Phase 2 or later.
