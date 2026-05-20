@@ -117,8 +117,6 @@ Current implementation status:
 
 Main remaining MVP gaps:
 
-- document and stabilize dictionary database delivery
 - keep search query performance measured as schema and SQL change
-- pin GRDB dependency
 - move repository APIs toward async boundaries if needed
 - improve core page UX and empty states

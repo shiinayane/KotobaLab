@@ -56,13 +56,12 @@ App / Scene → Feature View → Store → UseCase → Repository Protocol → R
 
 来源：[docs/roadmap/product_roadmap.md](docs/roadmap/product_roadmap.md)
 
-应该推动的：
-1. 决定 `dictionary.sqlite` 的生成与交付路径（目前 `*.sqlite` 被 gitignore）。
-2. Pin GRDB 到稳定版本（当前仍指向 `master`）。
-3. 扩展 Fixture-based Repository 测试 & DictionaryBuilder pipeline 测试。
-4. Schema / SQL 改动时同步更新 [docs/dictionary/](docs/dictionary) 的基准记录。
-5. 打磨 Search / WordDetail 的空 / 加载 / 错误状态与信息层次。
-6. 用显式 enum 建模搜索状态（当前只有 `query + results`）。
+Phase 1 已收尾（见 [docs/phases/phase-01-pipeline-stabilization.md](docs/phases/phase-01-pipeline-stabilization.md)）。当前优先级为 Phase 2 / Phase 3：
+1. 打磨 Search / WordDetail 的空 / 加载 / 错误状态与信息层次。
+2. 用显式 enum 建模搜索状态（当前只有 `query + results`）。
+3. Schema / SQL 改动时同步更新 [docs/dictionary/](docs/dictionary) 的基准记录。
+4. 把 `WordDetailStore` 与 `SavedStore` 标 `@MainActor`（目前只有 `SearchStore`）。
+5. 决定 Repository API 是否要异步化 / 引入 database actor。
 
 **当前明确不做**：后端服务、AI 功能、复杂云同步、完整 study 系统、广泛 UI 重设计。
 看到 PR / 改动越过这条线时，要在评审中提示。

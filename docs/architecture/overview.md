@@ -136,12 +136,12 @@ Future direction:
 
 ### Search Query Plan
 
-The `meanings.word_id` lookup now uses an index. Prefix search depends on `PRAGMA case_sensitive_like = ON`; without it SQLite scans `words`, and with it SQLite can use `idx_words_term`.
+The schema has four indexes: `idx_words_term`, `idx_words_reading`, `idx_words_sequence`, and `idx_meanings_word_id`. Prefix search depends on `PRAGMA case_sensitive_like = ON`; without it SQLite scans `words`, and with it SQLite uses a `MULTI-INDEX OR` plan over `idx_words_term` and `idx_words_reading` because the repository's `WHERE w.term LIKE ? OR w.reading LIKE ?` covers both columns.
 
 Current benchmark record:
 
 - before PRAGMA: `見る` ~16.8 ms, `zzzznotfound` ~16.2 ms, plan `SCAN words`
-- after PRAGMA: `見る` ~0.034 ms, `zzzznotfound` ~0.012 ms, plan `SEARCH words USING INDEX idx_words_term`
+- after PRAGMA: `見る` ~0.034 ms, `zzzznotfound` ~0.012 ms, plan `MULTI-INDEX OR` using `idx_words_term` + `idx_words_reading`
 
 Future direction:
 
@@ -151,11 +151,7 @@ Future direction:
 
 ### Dependency Pinning
 
-GRDB is still referenced through the `master` branch.
-
-Future direction:
-
-- Pin GRDB to a released version or a version range.
+GRDB is pinned to `upToNextMajorVersion` from `7.0.0` in `KotobaLab.xcodeproj/project.pbxproj`.
 
 ### Target Hygiene
 
@@ -163,12 +159,9 @@ The project now has target exceptions for `Features/TestView`, which is an impro
 
 ## Near-term Architecture Tasks
 
-1. Pin GRDB to a versioned dependency.
-2. Add repository tests using a small SQLite fixture database.
-3. Add DictionaryBuilder pipeline tests.
-4. Add explicit search state instead of only `query` and `results`.
-5. Design async repository or database actor boundaries.
-6. Decide the final delivery path for `dictionary.sqlite`.
+1. Add explicit search state instead of only `query` and `results`.
+2. Design async repository or database actor boundaries.
+3. Mark `WordDetailStore` and `SavedStore` as `@MainActor` to match `SearchStore`.
 
 ## Placement Rules
 

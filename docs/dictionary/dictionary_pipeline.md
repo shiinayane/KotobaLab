@@ -144,9 +144,9 @@ Any failure raises `RuntimeError` and aborts the script with a non-zero exit, so
 
 ### Search Index
 
-`meanings.word_id` is now indexed.
+The schema declares four indexes: `idx_words_term`, `idx_words_reading`, `idx_words_sequence`, and `idx_meanings_word_id`.
 
-Prefix search has a measured dependency on SQLite `LIKE` behavior. Without `PRAGMA case_sensitive_like = ON`, SQLite scans `words`. With the PRAGMA enabled, the same prefix search can use `idx_words_term`.
+Prefix search has a measured dependency on SQLite `LIKE` behavior. Without `PRAGMA case_sensitive_like = ON`, SQLite falls back to `SCAN words`. With the PRAGMA enabled, the repository's `WHERE w.term LIKE ? OR w.reading LIKE ?` resolves to a `MULTI-INDEX OR` plan using `idx_words_term` + `idx_words_reading`.
 
 Benchmark record:
 
@@ -154,8 +154,8 @@ Benchmark record:
 | --- | --- | ---: | --- |
 | Before `PRAGMA case_sensitive_like = ON` | `見る` | ~16.8 ms | `SCAN words` |
 | Before `PRAGMA case_sensitive_like = ON` | `zzzznotfound` | ~16.2 ms | `SCAN words` |
-| After `PRAGMA case_sensitive_like = ON` | `見る` | ~0.034 ms | `SEARCH words USING INDEX idx_words_term` |
-| After `PRAGMA case_sensitive_like = ON` | `zzzznotfound` | ~0.012 ms | `SEARCH words USING INDEX idx_words_term` |
+| After `PRAGMA case_sensitive_like = ON` | `見る` | ~0.034 ms | `MULTI-INDEX OR` (`idx_words_term` + `idx_words_reading`) |
+| After `PRAGMA case_sensitive_like = ON` | `zzzznotfound` | ~0.012 ms | `MULTI-INDEX OR` (`idx_words_term` + `idx_words_reading`) |
 
 The app enables this PRAGMA in `DatabaseManager`.
 
