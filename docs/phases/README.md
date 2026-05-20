@@ -13,7 +13,7 @@ Use stable, numbered filenames:
 
 ```text
 phase-00-current-mvp.md
-phase-01-database-pipeline.md
+phase-01-pipeline-stabilization.md
 phase-02-core-experience.md
 phase-03-architecture-tests.md
 ```
@@ -34,5 +34,6 @@ Each phase record should include:
 ## Current Records
 
 - [Phase 0: Current MVP Baseline](phase-00-current-mvp.md)
+- [Phase 1: Dictionary Pipeline Stabilization](phase-01-pipeline-stabilization.md)
 
 Temporary notes belong in `docs/_local/`.

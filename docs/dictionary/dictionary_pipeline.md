@@ -1,7 +1,7 @@
 # Dictionary Pipeline
 
 Status: Active
-Last updated: 2026-05-14
+Last updated: 2026-05-20
 
 KotobaLab uses a local dictionary database generated from source dictionary data.
 
@@ -69,7 +69,7 @@ Verify the app resource exists:
 ls -lh KotobaLab/Resources/dictionary.sqlite
 ```
 
-This is the current local development path. The production delivery strategy is still undecided.
+This is the current local development path and is consistent with the release artifact delivery strategy below.
 
 ## Current Schema Summary
 
@@ -82,29 +82,71 @@ Raw source JSON is intentionally not stored in the app database.
 
 This keeps the app database much smaller and closer to a product database.
 
+## Delivery Strategy
+
+The app resource database `dictionary.sqlite` is intentionally ignored by git (`*.sqlite` rule).
+
+The production delivery path is **GitHub Release artifact**:
+
+- The full prebuilt `dictionary.sqlite` is published as an asset of a tagged GitHub Release at
+  `https://github.com/shiinayane/KotobaLab/releases/latest`.
+- Ordinary developers and CI obtain the database by downloading this artifact. They do **not** need to install the Python pipeline or the source dataset.
+- Only the builder maintainer needs the source dataset (`dataset/source/jitendex-yomitan`) and runs `Tools/DictionaryBuilder/main.py` to regenerate and publish a new release.
+
+### Onboarding flow
+
+```text
+1. git clone git@github.com:shiinayane/KotobaLab.git
+2. Download dictionary.sqlite from the latest GitHub Release
+3. Place it at KotobaLab/Resources/dictionary.sqlite
+4. Open KotobaLab.xcodeproj and build
+```
+
+### Re-generating the database (builder maintainer only)
+
+```text
+1. Obtain the jitendex-yomitan source dataset (see jitendex upstream).
+2. Place it under dataset/source/jitendex-yomitan.
+3. Run the build command above to produce a fresh dictionary.sqlite.
+4. Verify it (see "Database verification").
+5. Tag a new GitHub Release and upload the artifact.
+```
+
+### License attribution
+
+The shipped `dictionary.sqlite` is a derivative work of [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html) via [jitendex-yomitan](https://github.com/stephenmk/jitendex), distributed under **CC BY-SA 4.0**. The KotobaLab app must surface this attribution in its in-app acknowledgements before any App Store release.
+
+## Database verification
+
+`Tools/DictionaryBuilder/debug/verify_database.py` provides a single command that fails hard on any structural regression in the generated database:
+
+```bash
+python3 Tools/DictionaryBuilder/debug/verify_database.py \
+  --db KotobaLab/Resources/dictionary.sqlite
+```
+
+It checks:
+
+- file existence and that the path is a regular file
+- file size against `--max-size-mb` (default **100 MB** hard limit)
+- presence of required tables (`words`, `meanings`)
+- presence of required indexes (`idx_words_term`, `idx_words_reading`, `idx_meanings_word_id`)
+- that the search query plan uses `idx_words_term` (not `SCAN words`)
+- that the meaning detail query plan uses `idx_meanings_word_id` (not `SCAN meanings`)
+
+Any failure raises `RuntimeError` and aborts the script with a non-zero exit, so this can be wired into release-time verification.
+
 ## Current Risks
 
 ### Build Command
 
-`Tools/DictionaryBuilder/main.py` supports CLI arguments for source, schema, and output paths. This is good enough for local generation, but the project still needs a CI/release story for how the generated database is provided to new environments.
-
-### Delivery Strategy
-
-The app resource database is ignored by git because `*.sqlite` is ignored.
-
-The project needs a clear answer for how contributors and CI obtain `dictionary.sqlite`.
-
-Possible options:
-
-- Generate it locally.
-- Download it from a release artifact.
-- Track a very small fixture database for tests and keep the full database external.
+`Tools/DictionaryBuilder/main.py` supports CLI arguments for source, schema, and output paths. The release pipeline that actually publishes the artifact to GitHub Releases is still manual; a small `Tools/scripts/release_dictionary.sh` is a future improvement.
 
 ### Search Index
 
-`meanings.word_id` is now indexed.
+The schema declares four indexes: `idx_words_term`, `idx_words_reading`, `idx_words_sequence`, and `idx_meanings_word_id`.
 
-Prefix search has a measured dependency on SQLite `LIKE` behavior. Without `PRAGMA case_sensitive_like = ON`, SQLite scans `words`. With the PRAGMA enabled, the same prefix search can use `idx_words_term`.
+Prefix search has a measured dependency on SQLite `LIKE` behavior. Without `PRAGMA case_sensitive_like = ON`, SQLite falls back to `SCAN words`. With the PRAGMA enabled, the repository's `WHERE w.term LIKE ? OR w.reading LIKE ?` resolves to a `MULTI-INDEX OR` plan using `idx_words_term` + `idx_words_reading`.
 
 Benchmark record:
 
@@ -112,14 +154,13 @@ Benchmark record:
 | --- | --- | ---: | --- |
 | Before `PRAGMA case_sensitive_like = ON` | `見る` | ~16.8 ms | `SCAN words` |
 | Before `PRAGMA case_sensitive_like = ON` | `zzzznotfound` | ~16.2 ms | `SCAN words` |
-| After `PRAGMA case_sensitive_like = ON` | `見る` | ~0.034 ms | `SEARCH words USING INDEX idx_words_term` |
-| After `PRAGMA case_sensitive_like = ON` | `zzzznotfound` | ~0.012 ms | `SEARCH words USING INDEX idx_words_term` |
+| After `PRAGMA case_sensitive_like = ON` | `見る` | ~0.034 ms | `MULTI-INDEX OR` (`idx_words_term` + `idx_words_reading`) |
+| After `PRAGMA case_sensitive_like = ON` | `zzzznotfound` | ~0.012 ms | `MULTI-INDEX OR` (`idx_words_term` + `idx_words_reading`) |
 
 The app enables this PRAGMA in `DatabaseManager`.
 
 ## Next Steps
 
-1. Decide the production delivery path for `dictionary.sqlite`.
-2. Add a small fixture database for repository tests.
-3. Add pipeline tests for parsing and export.
-4. Keep benchmark records current when schema or search SQL changes.
+1. Keep benchmark records current when schema or search SQL changes.
+2. Script the GitHub Release upload step (currently manual).
+3. Align `verify_database.py` search-plan check with the app's actual `WHERE term LIKE ? OR reading LIKE ?` SQL shape.

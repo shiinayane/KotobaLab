@@ -1,7 +1,7 @@
 # Phase 0: Current MVP Baseline
 
 Status: Historical
-Last updated: 2026-05-10
+Last updated: 2026-05-20
 
 ## Goal
 
@@ -124,7 +124,7 @@ Repository APIs are still synchronous. If search or detail queries become more e
 
 ### Dependency Pinning
 
-GRDB is still configured from the `master` branch. This should be changed to a stable version.
+GRDB has since been pinned to `upToNextMajorVersion` from `7.0.0`; see [Phase 1](phase-01-pipeline-stabilization.md).
 
 ### Tooling Hygiene
 
@@ -143,18 +143,4 @@ The following are not part of Phase 0:
 
 ## Next Phase
 
-Recommended next phase:
-
-```text
-Phase 1: Dictionary Pipeline Stabilization
-```
-
-Suggested tasks:
-
-1. Add CLI arguments to `Tools/DictionaryBuilder`.
-2. Document the exact dictionary build command.
-3. Add a small SQLite fixture for tests.
-4. Add pipeline tests for parsing and export.
-5. Decide how `dictionary.sqlite` is delivered.
-6. Benchmark current search queries.
-7. Pin GRDB to a stable version.
+Phase 1 (Dictionary Pipeline Stabilization) has since been completed. See [`phase-01-pipeline-stabilization.md`](phase-01-pipeline-stabilization.md) for the execution record.

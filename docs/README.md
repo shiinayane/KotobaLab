@@ -28,7 +28,8 @@ Chinese notes, drafts, and historical versions should be kept under `docs/_local
 - [Dictionary pipeline](dictionary/dictionary_pipeline.md)
 - [Architecture overview](architecture/overview.md)
 - [Product roadmap](roadmap/product_roadmap.md)
-- [Current MVP phase](phases/phase-00-current-mvp.md)
+- [Phase 0: Current MVP Baseline](phases/phase-00-current-mvp.md)
+- [Phase 1: Dictionary Pipeline Stabilization](phases/phase-01-pipeline-stabilization.md)
 
 ## Document Roles
 

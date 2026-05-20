@@ -1,7 +1,7 @@
 # Dictionary Database Overview
 
 Status: Active
-Last updated: 2026-05-14
+Last updated: 2026-05-20
 
 This document describes the current app-facing dictionary database. Design rationale and future storage rules belong in [Dictionary Database Strategy](database_strategy.md).
 
@@ -37,7 +37,14 @@ Current fields:
 - `part_of_speech`
 - `definition_text`
 
-`meanings.word_id` is indexed so detail queries can load meanings efficiently.
+The schema declares four indexes (see `Tools/DictionaryBuilder/schema/dictionary_schema.sql`):
+
+- `idx_words_term` on `words(term)`
+- `idx_words_reading` on `words(reading)`
+- `idx_words_sequence` on `words(sequence)`
+- `idx_meanings_word_id` on `meanings(word_id)`
+
+`idx_words_term` and `idx_words_reading` together back the search query plan; `idx_meanings_word_id` backs the detail-side meaning lookup.
 
 ## Current App Models
 
@@ -91,12 +98,11 @@ Known limits:
 - prefix search scans `words` unless `PRAGMA case_sensitive_like = ON` is enabled
 - there is no dedicated search ranking yet
 - there is no FTS table yet
-- there is no fixture database for repository tests yet
 
-Current measured result:
+Current measured result (`WHERE w.term LIKE ? OR w.reading LIKE ?`):
 
 - before `PRAGMA case_sensitive_like = ON`: `見る` ~16.8 ms, `zzzznotfound` ~16.2 ms, plan `SCAN words`
-- after `PRAGMA case_sensitive_like = ON`: `見る` ~0.034 ms, `zzzznotfound` ~0.012 ms, plan `SEARCH words USING INDEX idx_words_term`
+- after `PRAGMA case_sensitive_like = ON`: `見る` ~0.034 ms, `zzzznotfound` ~0.012 ms, plan `MULTI-INDEX OR` using `idx_words_term` + `idx_words_reading`
 
 ## Next Step
 

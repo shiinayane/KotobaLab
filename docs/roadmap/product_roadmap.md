@@ -1,7 +1,7 @@
 # Product Roadmap
 
 Status: Active
-Last updated: 2026-05-14
+Last updated: 2026-05-20
 
 ## Positioning
 
@@ -85,12 +85,18 @@ Make the current lightweight architecture durable.
 
 Tasks:
 
-- Add repository tests with a fixture SQLite database.
-- Add DictionaryBuilder pipeline tests.
-- Pin GRDB to a stable version.
 - Decide whether repository APIs should become async.
+- Mark all stores `@MainActor` (only `SearchStore` is today).
+- Add iOS xcodebuild CI to GitHub Actions.
+- Align `verify_database.py` search-plan check with the app's actual two-column SQL.
 - Keep Domain free of SwiftUI, SwiftData, GRDB, and SQLite row types.
 - Keep local experiments out of the app target.
+
+Phase 3 inherits these from Phase 1 as completed prerequisites:
+
+- ✅ Repository tests with a fixture SQLite database.
+- ✅ DictionaryBuilder pipeline tests (16 pytest cases + GitHub Actions CI).
+- ✅ GRDB pinned to `7.0.0+`.
 
 Completion criteria:
 
@@ -201,13 +207,12 @@ word_id + prompt_version + user_level + language
 
 ## Current Priorities
 
-Immediate next priorities:
+With Phase 1 (Dictionary Pipeline Stabilization) closed, the immediate next priorities sit in Phase 2 (Core App Experience):
 
-1. Decide database generation and delivery.
-2. Pin GRDB.
-3. Add fixture database tests.
-4. Keep search benchmark records current.
-5. Improve core Search and Word Detail UX.
+1. Improve Search and Word Detail UX (empty / loading / error states, info hierarchy).
+2. Model search state explicitly with an `enum`, replacing the current flat `query` + `results`.
+3. Improve Saved list refresh behavior.
+4. Keep search benchmark records current as schema or SQL evolves.
 
 ## What Not To Do Next
 
