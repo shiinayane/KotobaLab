@@ -33,12 +33,17 @@ GitHub Release artifact at github.com/shiinayane/KotobaLab.
 Arguments:
   <tag>    Release tag, e.g. dict-v2026.05.21
 
-The tag is also used as the release title. The tag must not already
+The release title is "Dictionary <tag>". The tag must not already
 exist on the remote; this script will not overwrite an existing release.
 EOF
 }
 
-if [[ $# -ne 1 ]] || [[ "${1:-}" == "-h" ]] || [[ "${1:-}" == "--help" ]]; then
+if [[ "${1:-}" == "-h" ]] || [[ "${1:-}" == "--help" ]]; then
+    usage
+    exit 0
+fi
+
+if [[ $# -ne 1 ]]; then
     usage
     exit 1
 fi
@@ -46,9 +51,12 @@ fi
 TAG="$1"
 
 # Resolve repo root from the script's own location so the script can be
-# invoked from any working directory.
+# invoked from any working directory. cd into it so `gh` resolves the
+# correct repository from the local git remote (instead of inferring
+# from the caller's cwd).
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+cd "$REPO_ROOT"
 
 BUILDER_DIR="${REPO_ROOT}/Tools/DictionaryBuilder"
 SOURCE_DIR="${REPO_ROOT}/dataset/source/jitendex-yomitan"
@@ -108,8 +116,10 @@ python3 "${BUILDER_DIR}/debug/verify_database.py" --db "$OUTPUT_DB"
 # ---------------------------------------------------------------------------
 echo "==> Computing SHA-256 checksum..."
 CHECKSUM_FILE="${OUTPUT_DB}.sha256"
-shasum -a 256 "$OUTPUT_DB" | awk '{print $1}' > "$CHECKSUM_FILE"
-CHECKSUM="$(cat "$CHECKSUM_FILE")"
+# Write the standard "<hash>  <filename>" format so consumers can verify
+# with `shasum -a 256 -c dictionary.sqlite.sha256` directly.
+(cd "$(dirname "$OUTPUT_DB")" && shasum -a 256 "$(basename "$OUTPUT_DB")") > "$CHECKSUM_FILE"
+CHECKSUM="$(awk '{print $1}' "$CHECKSUM_FILE")"
 
 # ---------------------------------------------------------------------------
 # 4. Stats for release notes
