@@ -5,6 +5,7 @@
 #  Created by 椎名アヤネ on 2026/05/20.
 #
 
+import pytest
 from pipeline.parse import parse_entry
 
 
@@ -24,40 +25,45 @@ def test_parse_entry_happy_path():
     assert result.forms == []
 
 
-def test_parse_entry_multiple_pos_keeps_last():
-    entry = _make_entry(
-        _make_content(pos_values=["1-dan", "transitive"], glossaries=[["to eat"]])
-    )
+@pytest.mark.parametrize(
+    "pos_values, expected_pos",
+    [(["1-dan", "transitive"], "transitive"), ([], None), ([""], "")],
+    ids=[
+        "multiple_pos_last_wins",
+        "no_pos_returns_none",
+        "empty_string_pos",
+    ],
+)
+def test_parse_entry_pos_extraction(pos_values, expected_pos):
+    entry = _make_entry(_make_content(pos_values=pos_values, glossaries=[["to eat"]]))
 
     result = parse_entry(entry)
 
-    assert result.term == "食べる"
-    assert result.reading == "たべる"
-    assert result.sequence == 1358280
-    assert result.part_of_speech == "transitive"
-    assert result.glosses == ["to eat"]
-    assert result.forms == []
+    assert result.part_of_speech == expected_pos
 
 
-def test_parse_entry_multiple_glossaries_are_concatenated():
-    entry = _make_entry(
-        _make_content(
-            pos_values=["1-dan", "transitive"], glossaries=[["to eat"], ["to live on"]]
-        )
-    )
+@pytest.mark.parametrize(
+    "glossaries, expected_glosses",
+    [
+        ([["to eat"], ["to live on"]], ["to eat", "to live on"]),
+        ([], []),
+    ],
+    ids=[
+        "multiple_uls_concatenated",
+        "no_uls_returns_empty_list",
+    ],
+)
+def test_parse_entry_glossary_extraction(glossaries, expected_glosses):
+    entry = _make_entry(_make_content(pos_values=["1-dan"], glossaries=glossaries))
 
     result = parse_entry(entry)
 
-    assert result.term == "食べる"
-    assert result.reading == "たべる"
-    assert result.sequence == 1358280
-    assert result.part_of_speech == "transitive"
-    assert result.glosses == ["to eat", "to live on"]
-    assert result.forms == []
+    assert result.glosses == expected_glosses
 
 
 def _make_entry(content: list) -> list:
     """Build a Yomitan-style entry with given content tree."""
+
     return [
         "食べる",  # term
         "たべる",  # reading
@@ -71,8 +77,7 @@ def _make_entry(content: list) -> list:
 
 
 def _make_content(pos_values: list[str], glossaries: list[list[str]]) -> list[dict]:
-    """
-    Build a structured-content tree with given POS spans and glossary uls.
+    """Build a structured-content tree with given POS spans and glossary uls.
 
     Note:
         Each glossary ul currently contains exactly 1 li (use ul[0]).
