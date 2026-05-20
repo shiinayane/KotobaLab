@@ -102,3 +102,5 @@ TestView/
 # Local-only notes and scratch docs. Keep formal project docs under docs/.
 docs/_local/
 docs/note/
+
+.claude/

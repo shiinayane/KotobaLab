@@ -15,7 +15,7 @@ struct KotobaLabApp: App {
     init () {
         do {
             let databaseManager = try DatabaseManager()
-            let dictionaryRepository = SQLiteDictionaryRepository(dbQueue: databaseManager.dbQueue)
+            let dictionaryRepository = SQLiteDictionaryRepository(databaseManager: databaseManager)
             
             let dependencies = AppDependencies(
                 dictionaryRepository: dictionaryRepository,
