@@ -76,6 +76,5 @@ def insert_entry(
     if not meanings:
         return
 
-    with conn:
-        word_id = insert_word(conn, word)
-        insert_meanings(conn, word_id, meanings)
+    word_id = insert_word(conn, word)
+    insert_meanings(conn, word_id, meanings)

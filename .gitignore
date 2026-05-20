@@ -76,6 +76,7 @@ logs/
 *.sqlite3
 *.db
 !KotobaLabTests/Fixtures/test_dictionary.sqlite
+*.sha256
 
 
 # ================================
