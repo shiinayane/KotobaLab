@@ -9,56 +9,59 @@ import pytest
 from pipeline.parse import parse_entry
 
 
-def test_parse_entry_happy_path():
-    # Arrange: 最小限の entry を組み立てる
-    entry = _make_entry(_make_content(pos_values=["1-dan"], glossaries=[["to eat"]]))
+class TestParse:
+    def test_parse_entry_happy_path(self):
+        # Arrange: 最小限の entry を組み立てる
+        entry = _make_entry(
+            _make_content(pos_values=["1-dan"], glossaries=[["to eat"]])
+        )
 
-    # Act: parse_entry を呼ぶ
-    result = parse_entry(entry)
+        # Act: parse_entry を呼ぶ
+        result = parse_entry(entry)
 
-    # Assert: 各フィールドが期待通りか確認
-    assert result.term == "食べる"
-    assert result.reading == "たべる"
-    assert result.sequence == 1358280
-    assert result.part_of_speech == "1-dan"
-    assert result.glosses == ["to eat"]
-    assert result.forms == []
+        # Assert: 各フィールドが期待通りか確認
+        assert result.term == "食べる"
+        assert result.reading == "たべる"
+        assert result.sequence == 1358280
+        assert result.part_of_speech == "1-dan"
+        assert result.glosses == ["to eat"]
+        assert result.forms == []
 
+    @pytest.mark.parametrize(
+        "pos_values, expected_pos",
+        [(["1-dan", "transitive"], "transitive"), ([], None), ([""], "")],
+        ids=[
+            "multiple_pos_last_wins",
+            "no_pos_returns_none",
+            "empty_string_pos",
+        ],
+    )
+    def test_parse_entry_pos_extraction(self, pos_values, expected_pos):
+        entry = _make_entry(
+            _make_content(pos_values=pos_values, glossaries=[["to eat"]])
+        )
 
-@pytest.mark.parametrize(
-    "pos_values, expected_pos",
-    [(["1-dan", "transitive"], "transitive"), ([], None), ([""], "")],
-    ids=[
-        "multiple_pos_last_wins",
-        "no_pos_returns_none",
-        "empty_string_pos",
-    ],
-)
-def test_parse_entry_pos_extraction(pos_values, expected_pos):
-    entry = _make_entry(_make_content(pos_values=pos_values, glossaries=[["to eat"]]))
+        result = parse_entry(entry)
 
-    result = parse_entry(entry)
+        assert result.part_of_speech == expected_pos
 
-    assert result.part_of_speech == expected_pos
+    @pytest.mark.parametrize(
+        "glossaries, expected_glosses",
+        [
+            ([["to eat"], ["to live on"]], ["to eat", "to live on"]),
+            ([], []),
+        ],
+        ids=[
+            "multiple_uls_concatenated",
+            "no_uls_returns_empty_list",
+        ],
+    )
+    def test_parse_entry_glossary_extraction(self, glossaries, expected_glosses):
+        entry = _make_entry(_make_content(pos_values=["1-dan"], glossaries=glossaries))
 
+        result = parse_entry(entry)
 
-@pytest.mark.parametrize(
-    "glossaries, expected_glosses",
-    [
-        ([["to eat"], ["to live on"]], ["to eat", "to live on"]),
-        ([], []),
-    ],
-    ids=[
-        "multiple_uls_concatenated",
-        "no_uls_returns_empty_list",
-    ],
-)
-def test_parse_entry_glossary_extraction(glossaries, expected_glosses):
-    entry = _make_entry(_make_content(pos_values=["1-dan"], glossaries=glossaries))
-
-    result = parse_entry(entry)
-
-    assert result.glosses == expected_glosses
+        assert result.glosses == expected_glosses
 
 
 def _make_entry(content: list) -> list:

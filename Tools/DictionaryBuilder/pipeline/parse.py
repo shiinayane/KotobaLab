@@ -97,5 +97,5 @@ def parse_entry(entry: list[Any]) -> ParsedDictionaryEntry:
         sequence=entry[6],
         part_of_speech=semantic["pos"],
         glosses=semantic["glosses"],
-        forms=semantic["forms"]
+        forms=semantic["forms"],
     )

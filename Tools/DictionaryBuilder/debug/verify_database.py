@@ -33,17 +33,14 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--db",
-        type=Path,
-        default=DB_PATH,
-        help="Path to dictionary.sqlite"
+        "--db", type=Path, default=DB_PATH, help="Path to dictionary.sqlite"
     )
 
     parser.add_argument(
         "--max-size-mb",
         type=float,
         default=MAX_DB_SIZE_MB,
-        help="Maximum allowed database size in MB."
+        help="Maximum allowed database size in MB.",
     )
 
     return parser.parse_args()
@@ -67,8 +64,7 @@ def check_file_size(db_path: Path, max_size_mb: float):
     print(f"DB size: {size_mb:.2f} MB")
 
     if size_mb > max_size_mb:
-        fail(
-            f"Database size too large: {size_mb:.2f} MB > {max_size_mb:.2f} MB")
+        fail(f"Database size too large: {size_mb:.2f} MB > {max_size_mb:.2f} MB")
 
 
 def fetch_names(conn: sqlite3.Connection, type_name: str) -> set[str]:
@@ -77,7 +73,8 @@ def fetch_names(conn: sqlite3.Connection, type_name: str) -> set[str]:
         SELECT name
         FROM sqlite_master
         WHERE type = ?
-        """, (type_name,)
+        """,
+        (type_name,),
     ).fetchall()
 
     return {row[0] for row in rows}
@@ -104,10 +101,7 @@ def check_required_indexes(conn: sqlite3.Connection):
 
 
 def explain(conn: sqlite3.Connection, sql: str, params=()):
-    return conn.execute(
-        "EXPLAIN QUERY PLAN " + sql,
-        params
-    ).fetchall()
+    return conn.execute("EXPLAIN QUERY PLAN " + sql, params).fetchall()
 
 
 def plan_text(plan_rows) -> str:

@@ -39,8 +39,7 @@ def parse_args():
 def explain_query_plan(conn, query, limit):
     pattern = f"{query}%"
     rows = conn.execute(
-        "EXPLAIN QUERY PLAN " + SEARCH_SQL,
-        (pattern, pattern, limit)
+        "EXPLAIN QUERY PLAN " + SEARCH_SQL, (pattern, pattern, limit)
     ).fetchall()
 
     print(f"\nQuery plan for {query!r}:")
@@ -79,7 +78,7 @@ def main():
         raise FileNotFoundError(f"Database not found: {args.db}")
 
     conn = sqlite3.connect(args.db)
-    
+
     # This matters because the default QUERY PLAN is SCAN words
     conn.execute("PRAGMA case_sensitive_like = ON")
 

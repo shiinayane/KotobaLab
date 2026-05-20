@@ -30,21 +30,21 @@ def parse_args():
         "--source",
         type=Path,
         default=SOURCE_DIR,
-        help="Path to the Yomitan dictionary source directory."
+        help="Path to the Yomitan dictionary source directory.",
     )
 
     parser.add_argument(
         "--output",
         type=Path,
         default=OUTPUT_DB,
-        help="Path to the output SQLite database."
+        help="Path to the output SQLite database.",
     )
-    
+
     parser.add_argument(
         "--schema",
         type=Path,
         default=SCHEMA_PATH,
-        help="Path to the schema of the SQLite database."
+        help="Path to the schema of the SQLite database.",
     )
 
     return parser.parse_args()
@@ -63,11 +63,10 @@ def main():
         raise FileNotFoundError(f"Source directory not found: {source_dir}")
 
     if not source_dir.is_dir():
-        raise NotADirectoryError(
-            f"Source Path is not a directory: {source_dir}")
+        raise NotADirectoryError(f"Source Path is not a directory: {source_dir}")
 
     output_db.parent.mkdir(parents=True, exist_ok=True)
-    
+
     if not schema_path.exists():
         raise FileNotFoundError(f"Schema of the database not found: {schema_path}")
 

@@ -32,11 +32,7 @@ def insert_word(conn: sqlite3.Connection, word: WordRecord) -> int:
         INSERT INTO words (term, reading, sequence)
         VALUES (?, ?, ?)
         """,
-        (
-            word.term,
-            word.reading,
-            word.sequence
-        ),
+        (word.term, word.reading, word.sequence),
     )
 
     word_id = cursor.lastrowid
@@ -67,7 +63,7 @@ def insert_meanings(
                 word_id,
                 meaning.sequence,
                 meaning.part_of_speech,
-                meaning.definition_text
+                meaning.definition_text,
             ),
         )
 
@@ -80,5 +76,6 @@ def insert_entry(
     if not meanings:
         return
 
-    word_id = insert_word(conn, word)
-    insert_meanings(conn, word_id, meanings)
+    with conn:
+        word_id = insert_word(conn, word)
+        insert_meanings(conn, word_id, meanings)

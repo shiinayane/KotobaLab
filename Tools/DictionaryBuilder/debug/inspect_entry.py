@@ -4,6 +4,7 @@
 #
 #  Created by 椎名アヤネ on 2026/05/01.
 #
+
 import sys
 from pathlib import Path
 
@@ -90,8 +91,10 @@ def inspect_entry(entry: list[Any]) -> None:
     print("🧪 QUICK INSIGHT")
     print("=" * 80)
 
-    print("raw_entry_json / extracted_text ratio:",
-          f"{raw_entry_size / max(text_size,1):.2f}x")
+    print(
+        "raw_entry_json / extracted_text ratio:",
+        f"{raw_entry_size / max(text_size, 1):.2f}x",
+    )
 
 
 def main():
