@@ -11,6 +11,9 @@ on:
       - 'Tools/DictionaryBuilder/**'
       - '.github/workflows/builder-tests.yml'
 
+permissions:
+  contents: read
+
 jobs:
   pytest:
     runs-on: ubuntu-latest
