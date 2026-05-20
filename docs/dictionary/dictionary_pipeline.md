@@ -1,7 +1,7 @@
 # Dictionary Pipeline
 
 Status: Active
-Last updated: 2026-05-14
+Last updated: 2026-05-20
 
 KotobaLab uses a local dictionary database generated from source dictionary data.
 
@@ -69,7 +69,7 @@ Verify the app resource exists:
 ls -lh KotobaLab/Resources/dictionary.sqlite
 ```
 
-This is the current local development path. The production delivery strategy is still undecided.
+This is the current local development path and is consistent with the release artifact delivery strategy below.
 
 ## Current Schema Summary
 

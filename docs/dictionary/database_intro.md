@@ -1,7 +1,7 @@
 # Dictionary Database Overview
 
 Status: Active
-Last updated: 2026-05-14
+Last updated: 2026-05-20
 
 This document describes the current app-facing dictionary database. Design rationale and future storage rules belong in [Dictionary Database Strategy](database_strategy.md).
 

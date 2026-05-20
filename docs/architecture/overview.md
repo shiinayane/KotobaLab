@@ -1,7 +1,7 @@
 # Architecture Overview
 
 Status: Active
-Last updated: 2026-05-14
+Last updated: 2026-05-20
 
 ## Summary
 
