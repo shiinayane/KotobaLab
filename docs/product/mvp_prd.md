@@ -1,7 +1,7 @@
 # MVP Product Requirements
 
 Status: Active
-Last updated: 2026-05-14
+Last updated: 2026-05-21
 
 ## Product
 
