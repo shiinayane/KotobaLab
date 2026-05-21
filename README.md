@@ -23,13 +23,22 @@ The dictionary ships as a bundled, indexed SQLite asset — **293,471 entries in
 
 > Minimal MVP UI. Polish lives in Phase 2.
 
-| Search | Word Detail |
-|---|---|
-| ![Search](imgs/search.png) | ![Word Detail](imgs/word_detail.png) |
-
-| Saved | Saved Search |
-|---|---|
-| ![Saved](imgs/saved.png) | ![Saved Search](imgs/saved_search.png) |
+<p align="center">
+  <table>
+    <tr>
+      <td><img src="imgs/search.png" alt="Search" width="200"></td>
+      <td><img src="imgs/word_detail.png" alt="Word Detail" width="200"></td>
+      <td><img src="imgs/saved.png" alt="Saved" width="200"></td>
+      <td><img src="imgs/saved_search.png" alt="Saved Search" width="200"></td>
+    </tr>
+    <tr align="center">
+      <td>Search</td>
+      <td>Word Detail</td>
+      <td>Saved</td>
+      <td>Saved Search</td>
+    </tr>
+  </table>
+</p>
 
 ## Highlights
 
