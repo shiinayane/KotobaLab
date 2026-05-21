@@ -103,7 +103,7 @@ Walk through these in order when reviewing code or proposals:
 
 ## Key Documentation Entry Points
 
-Formal documentation lives under [`docs/`](docs/README.md) and is written in English. Chinese notes and drafts go in [`docs/_local/`](docs) (gitignored).
+Formal documentation lives under [`docs/`](docs/README.md) and is written in English. Chinese notes and drafts go in `docs/_local/` (gitignored).
 
 - Product scope: [`docs/product/mvp_prd.md`](docs/product/mvp_prd.md)
 - Architecture + placement rules: [`docs/architecture/overview.md`](docs/architecture/overview.md)

@@ -67,12 +67,11 @@ python3 Tools/DictionaryBuilder/main.py \
   --source dataset/source/jitendex-yomitan
 ```
 
-Verify the result:
+Verify whichever database you just built — point `--db` at the same path you used for `--output` (`KotobaLab/Resources/dictionary.sqlite` for the first form above, `Tools/DictionaryBuilder/output/dictionary.sqlite` for the default form):
 
 ```bash
-ls -lh KotobaLab/Resources/dictionary.sqlite
 python3 Tools/DictionaryBuilder/debug/verify_database.py \
-  --db KotobaLab/Resources/dictionary.sqlite
+  --db <path-to-your-built-dictionary.sqlite>
 ```
 
 ## Current Schema Summary
