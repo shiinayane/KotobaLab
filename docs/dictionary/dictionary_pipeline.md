@@ -38,23 +38,20 @@ Important files:
 - `debug/inspect_entry.py`: entry inspection helper.
 - `debug/benchmark_search.py`: search query plan and latency benchmark helper.
 
-## Current Output
+## Two output paths
 
-The current generated database is:
+`dictionary.sqlite` shows up in two places in this repository. Each has a distinct role:
 
-```text
-Tools/DictionaryBuilder/output/dictionary.sqlite
-```
+| Path | Role | Who writes it |
+| --- | --- | --- |
+| `Tools/DictionaryBuilder/output/dictionary.sqlite` | Canonical build artifact. The default `--output` of `main.py` and the file `release_dictionary.sh` uploads to GitHub Releases. | Builder maintainer (Python pipeline) |
+| `KotobaLab/Resources/dictionary.sqlite` | App-bundle staging copy. What `DatabaseManager` reads from `Bundle.main` and copies into `Application Support` on first launch. | Ordinary developer (downloads from GitHub Release); maintainer (after a fresh build) |
 
-The app currently expects:
+The two never need to be in sync byte-for-byte. The builder writes the canonical artifact and ships it via Release; whoever wants to build the app drops that artifact into `KotobaLab/Resources/`.
 
-```text
-KotobaLab/Resources/dictionary.sqlite
-```
+## Building locally
 
-## Current Local Setup
-
-From the repository root, generate the app resource database with:
+For a one-shot rebuild that also overwrites the app-bundle copy:
 
 ```bash
 python3 Tools/DictionaryBuilder/main.py \
@@ -63,13 +60,20 @@ python3 Tools/DictionaryBuilder/main.py \
   --output KotobaLab/Resources/dictionary.sqlite
 ```
 
-Verify the app resource exists:
+For the default build path (artifact-only, no app-bundle write):
+
+```bash
+python3 Tools/DictionaryBuilder/main.py \
+  --source dataset/source/jitendex-yomitan
+```
+
+Verify the result:
 
 ```bash
 ls -lh KotobaLab/Resources/dictionary.sqlite
+python3 Tools/DictionaryBuilder/debug/verify_database.py \
+  --db KotobaLab/Resources/dictionary.sqlite
 ```
-
-This is the current local development path and is consistent with the release artifact delivery strategy below.
 
 ## Current Schema Summary
 
