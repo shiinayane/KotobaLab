@@ -1,7 +1,7 @@
 # Product Roadmap
 
 Status: Active
-Last updated: 2026-05-20
+Last updated: 2026-05-21
 
 ## Positioning
 
@@ -35,25 +35,27 @@ Create a new phase document only when a phase is started or completed. Do not tr
 
 ## Phase 1: Dictionary Pipeline Stabilization
 
+Status: **Completed**. Execution record: [`docs/phases/phase-01-pipeline-stabilization.md`](../phases/phase-01-pipeline-stabilization.md).
+
 Goal:
 
 Make the dictionary database reproducible, lean, and measurable.
 
-Tasks:
+Tasks (all closed):
 
-- Keep the DictionaryBuilder CLI command documented.
-- Keep raw source data out of the app database.
-- Add database size checks.
-- Keep query plan checks for important queries.
-- Add a small fixture database for tests.
-- Decide how the production database is delivered.
+- ✅ Keep the DictionaryBuilder CLI command documented.
+- ✅ Keep raw source data out of the app database.
+- ✅ Add database size checks (`verify_database.py` enforces a 100 MB hard limit).
+- ✅ Keep query plan checks for important queries (`verify_database.py` + benchmark records).
+- ✅ Add a small fixture database for tests (`KotobaLabTests/Fixtures/test_dictionary.sqlite`).
+- ✅ Decide how the production database is delivered (GitHub Release artifact; `Tools/scripts/release_dictionary.sh` for builder maintainer).
 
-Completion criteria:
+Completion criteria (all met):
 
-- A clean checkout can produce or obtain `dictionary.sqlite`.
-- Search, detail, and saved flows still work.
-- The database size is understood and intentional.
-- Query plans for critical paths are documented.
+- ✅ A clean checkout can obtain `dictionary.sqlite` from the latest GitHub Release.
+- ✅ Search, detail, and saved flows still pass tests.
+- ✅ The database size is understood and intentional (52 MB / 293,471 words / 4 indexes).
+- ✅ Query plans for critical paths are documented (benchmark tables in `docs/dictionary/`).
 
 ## Phase 2: Core App Experience
 

@@ -1,7 +1,7 @@
 # Phase 1: Dictionary Pipeline Stabilization
 
 Status: Completed
-Last updated: 2026-05-20
+Last updated: 2026-05-21
 
 ## Goal
 
@@ -61,6 +61,18 @@ The following were deliberately out of scope and deferred to later phases:
 ### Dependency pinning
 
 GRDB is pinned to `upToNextMajorVersion` from `7.0.0` in `KotobaLab.xcodeproj/project.pbxproj`, replacing the previous `master`-branch reference.
+
+### Release automation
+
+`Tools/scripts/release_dictionary.sh` packages the maintainer flow into a single command:
+
+```bash
+Tools/scripts/release_dictionary.sh dict-vYYYY.MM.DD
+```
+
+The script runs `main.py` → `verify_database.py` (hard fail on structural regression) → SHA-256 → `gh release create`, attaching both `dictionary.sqlite` and a standard-format `.sha256` file. It refuses to overwrite an existing release tag.
+
+The first release, `dict-v2026.05.21`, was published and validated the end-to-end onboarding flow: a fresh clone can now reach a buildable state by downloading `dictionary.sqlite` from `https://github.com/shiinayane/KotobaLab/releases/latest` and dropping it into `KotobaLab/Resources/`, exactly as the README onboarding section describes.
 
 ### Documentation
 
