@@ -44,7 +44,7 @@ The dictionary ships as a bundled, indexed SQLite asset — **293,471 entries in
 | UI | SwiftUI · `@Observable` stores · iOS 26+ |
 | Dictionary storage | SQLite via [GRDB 7](https://github.com/groue/GRDB.swift) (`upToNextMajorVersion` from `7.0.0`) |
 | User-data storage | SwiftData |
-| Language | Swift 6.0 |
+| Language | Swift 6.0 (app target; `KotobaLabTests` still on Swift 5.0 — tracked for Phase 3) |
 | Concurrency | Swift Concurrency (`Task`, `Task.sleep`) |
 | Tests | Swift Testing (`@Test` / `#expect`) + pytest (Python pipeline) |
 | Build pipeline | Python 3.14 |
@@ -56,8 +56,8 @@ The dictionary ships as a bundled, indexed SQLite asset — **293,471 entries in
 The dictionary database (`dictionary.sqlite`, ~52 MB) is **not** committed to git. It is published as a GitHub Release artifact.
 
 ```bash
-# 1. Clone
-git clone git@github.com:shiinayane/KotobaLab.git
+# 1. Clone (HTTPS — works without SSH keys; substitute git@github.com:... if you have SSH set up)
+git clone https://github.com/shiinayane/KotobaLab.git
 cd KotobaLab
 
 # 2. Download the dictionary from the latest release
