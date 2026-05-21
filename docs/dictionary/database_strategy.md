@@ -1,7 +1,7 @@
 # Dictionary Database Strategy
 
 Status: Active
-Last updated: 2026-05-14
+Last updated: 2026-05-21
 
 ## Summary
 
@@ -97,7 +97,7 @@ They should stay in:
 3. Consider a dedicated search table if prefix search becomes slow.
 4. Consider FTS only if real requirements need it.
 5. Keep raw source data out of the app bundle.
-6. Decide how the production database is generated and distributed.
+6. ✅ Decide how the production database is generated and distributed — closed in Phase 1 (GitHub Release artifact; see [`dictionary_pipeline.md`](dictionary_pipeline.md)).
 
 ## Do Not Do Yet
 

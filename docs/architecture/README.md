@@ -1,7 +1,7 @@
 # Architecture
 
 Status: Active
-Last updated: 2026-05-10
+Last updated: 2026-05-21
 
 Long-lived architecture documents live here.
 

@@ -1,7 +1,7 @@
 # KotobaLab Documentation
 
 Status: Active
-Last updated: 2026-05-10
+Last updated: 2026-05-21
 
 This directory contains project documents that should remain useful across development sessions.
 
