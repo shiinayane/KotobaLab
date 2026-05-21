@@ -10,6 +10,7 @@
   </a>
   <img alt="iOS 26+" src="https://img.shields.io/badge/iOS-26%2B-007AFF?logo=apple&logoColor=white">
   <img alt="Swift 6" src="https://img.shields.io/badge/Swift-6.0-F05138?logo=swift&logoColor=white">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-green.svg"></a>
   <img alt="Status: WIP" src="https://img.shields.io/badge/status-WIP-yellow">
 </p>
 
@@ -206,6 +207,6 @@ The shipped `dictionary.sqlite` is licensed under **CC BY-SA 4.0**, inheriting f
 
 ## License
 
-The application source-code license is **to be decided** before public release. Until then, the repository is published as a personal portfolio project — no usage rights are granted beyond reading the source.
+The application source code is licensed under the [MIT License](LICENSE) — you are free to use, modify, and distribute it, subject to the terms in `LICENSE`.
 
-The shipped dictionary asset is independently licensed under CC BY-SA 4.0; see [Attribution](#attribution).
+The shipped dictionary asset (`dictionary.sqlite`, published via GitHub Releases) is **independently licensed under CC BY-SA 4.0** and inherits the attribution and share-alike requirements of its upstream sources. The MIT license on the source code does not waive those requirements. See [Attribution](#attribution) for details.
