@@ -44,7 +44,7 @@ The dictionary ships as a bundled, indexed SQLite asset — **293,471 entries in
 | UI | SwiftUI · `@Observable` stores · iOS 26+ |
 | Dictionary storage | SQLite via [GRDB 7](https://github.com/groue/GRDB.swift) (`upToNextMajorVersion` from `7.0.0`) |
 | User-data storage | SwiftData |
-| Language | Swift 6.0 (app target; `KotobaLabTests` still on Swift 5.0 — tracked for Phase 3) |
+| Language | Swift 6.0 |
 | Concurrency | Swift Concurrency (`Task`, `Task.sleep`) |
 | Tests | Swift Testing (`@Test` / `#expect`) + pytest (Python pipeline) |
 | Build pipeline | Python 3.14 |

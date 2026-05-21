@@ -91,7 +91,6 @@ Tasks:
 - Mark all stores `@MainActor` (only `SearchStore` is today).
 - Add iOS xcodebuild CI to GitHub Actions.
 - Align `verify_database.py` search-plan check with the app's actual two-column SQL.
-- Bump the `KotobaLabTests` target to Swift 6.0 (the app target is already on 6.0).
 - Keep Domain free of SwiftUI, SwiftData, GRDB, and SQLite row types.
 - Keep local experiments out of the app target.
 
