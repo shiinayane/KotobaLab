@@ -5,9 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/shiinayane/KotobaLab/actions/workflows/builder-tests.yml">
-    <img alt="Builder tests" src="https://github.com/shiinayane/KotobaLab/actions/workflows/builder-tests.yml/badge.svg">
-  </a>
+  <a href="https://github.com/shiinayane/KotobaLab/actions/workflows/builder-tests.yml"><img alt="Builder tests" src="https://github.com/shiinayane/KotobaLab/actions/workflows/builder-tests.yml/badge.svg"></a>
   <img alt="iOS 26+" src="https://img.shields.io/badge/iOS-26%2B-007AFF?logo=apple&logoColor=white">
   <img alt="Swift 6" src="https://img.shields.io/badge/Swift-6.0-F05138?logo=swift&logoColor=white">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-green.svg"></a>
