@@ -16,20 +16,27 @@ final class SearchStore {
     
     private let searchWordsUseCase: SearchWordsUseCase
     private var searchTask: Task<Void, Never>?
-    
+    private var searchGeneration = 0
+
     init(searchWordsUseCase: SearchWordsUseCase) {
         self.searchWordsUseCase = searchWordsUseCase
     }
     
-    func search() {
+    func search(generation myGen: Int) {
         do {
-            results = try searchWordsUseCase.execute(query: query)
+            let r = try searchWordsUseCase.execute(query: query)
+            guard myGen == searchGeneration else { return }
+            results = r
         } catch {
+            guard myGen == searchGeneration else { return }
             results = []
         }
     }
     
     func debouncedSearch() {
+        searchGeneration += 1
+        let myGen = searchGeneration
+
         searchTask?.cancel()
         
         searchTask = Task {
@@ -37,7 +44,7 @@ final class SearchStore {
             
             guard !Task.isCancelled else { return }
             
-            self.search()
+            self.search(generation: myGen)
         }
     }
 }
