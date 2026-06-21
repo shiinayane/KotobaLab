@@ -11,7 +11,7 @@ extension SearchStore {
         
         let store = SearchStore(searchWordsUseCase: useCase)
         store.query = "食"
-        store.search(generation: 0)
+        store.debouncedSearch()
         return store
     }
 }
