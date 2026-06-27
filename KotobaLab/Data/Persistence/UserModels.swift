@@ -8,8 +8,7 @@
 import Foundation
 import SwiftData
 
-@Model
-final class SavedWordRecord {
+@Model final class SavedWordRecord {
     @Attribute(.unique) var wordID: Int64
     var savedAt: Date
 

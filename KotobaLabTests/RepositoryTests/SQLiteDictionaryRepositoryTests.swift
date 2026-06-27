@@ -11,9 +11,7 @@ import Testing
 @testable import KotobaLab
 
 struct SQLiteDictionaryRepositoryTests {
-    @Test
-    @MainActor
-    func searchByTermPrefix_ReturnsMatchingWords() throws {
+    @MainActor @Test func searchByTermPrefix_ReturnsMatchingWords() throws {
         let repository = try makeRepository()
 
         let result = try repository.searchWords(query: "食", limit: 10)
@@ -21,9 +19,7 @@ struct SQLiteDictionaryRepositoryTests {
         #expect(result.map(\.term) == ["食べる"])
     }
 
-    @Test
-    @MainActor
-    func searchByReadingPrefix_ReturnsMatchingWords() throws {
+    @MainActor @Test func searchByReadingPrefix_ReturnsMatchingWords() throws {
         let repository = try makeRepository()
 
         let result = try repository.searchWords(query: "た", limit: 10)
@@ -31,9 +27,7 @@ struct SQLiteDictionaryRepositoryTests {
         #expect(result.map(\.term) == ["食べる"])
     }
 
-    @Test
-    @MainActor
-    func loadWordDetail_ReturnsMeaningsInSequenceOrder() throws {
+    @MainActor @Test func loadWordDetail_ReturnsMeaningsInSequenceOrder() throws {
         let repository = try makeRepository()
 
         let detail = try #require(
@@ -47,8 +41,7 @@ struct SQLiteDictionaryRepositoryTests {
 
 private final class TestBundleMarker {}
 
-@MainActor
-private func makeRepository() throws -> SQLiteDictionaryRepository {
+@MainActor private func makeRepository() throws -> SQLiteDictionaryRepository {
     let bundle = Bundle(for: TestBundleMarker.self)
 
     let fixtureURL = try #require(

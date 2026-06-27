@@ -10,7 +10,7 @@ import SwiftUI
 struct RootView: View {
     let dependencies: AppDependencies
     @State private var router = AppRouter()
-    
+
     var body: some View {
         TabView {
             Tab("Home", systemImage: "house") {

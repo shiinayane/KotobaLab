@@ -11,7 +11,7 @@ import SwiftUI
 struct SavedScene: View {
     let dependencies: AppDependencies
     @Environment(\.modelContext) private var context
-    
+
     var body: some View {
         SavedContainerView(
             dependencies: dependencies,
@@ -23,7 +23,7 @@ struct SavedScene: View {
 struct SavedContainerView: View {
     let dependencies: AppDependencies
     @State private var store: SavedStore
-    
+
     init(
         dependencies: AppDependencies,
         context: ModelContext

@@ -7,8 +7,7 @@
 
 import Foundation
 
-@Observable
-final class WordDetailStore {
+@Observable final class WordDetailStore {
     private let loadWordDetailUseCase: LoadWordDetailUseCase
     private let toggleSavedWordUseCase: ToggleSavedWordUseCase
 

@@ -7,8 +7,7 @@
 
 import Observation
 
-@Observable
-final class AppRouter {
+@Observable final class AppRouter {
     var path: [AppRoute] = []
     var presentedSheet: AppSheet?
 

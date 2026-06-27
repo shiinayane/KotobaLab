@@ -21,8 +21,7 @@ struct SavedView: View {
             )
     }
 
-    @ViewBuilder
-    private var content: some View {
+    @ViewBuilder private var content: some View {
         switch store.state {
         case .idle, .loading:
             ProgressView()
@@ -33,8 +32,7 @@ struct SavedView: View {
         }
     }
 
-    @ViewBuilder
-    private func loadedContent(savedWords: [WordSummary]) -> some View {
+    @ViewBuilder private func loadedContent(savedWords: [WordSummary]) -> some View {
         let filteredSavedWords = store.filteredSavedWords
 
         if savedWords.isEmpty {

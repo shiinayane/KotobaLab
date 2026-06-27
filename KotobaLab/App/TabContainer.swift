@@ -10,9 +10,9 @@ import SwiftUI
 struct TabContainer<Content: View>: View {
     let title: String
     let content: () -> Content
-    
+
     @Environment(AppRouter.self) private var router
-    
+
     //  In order to support closure.
     init(title: String, @ViewBuilder content: @escaping () -> Content) {
         self.title = title

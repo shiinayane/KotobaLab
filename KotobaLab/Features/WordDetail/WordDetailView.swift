@@ -26,8 +26,7 @@ struct WordDetailView: View {
             }
     }
 
-    @ViewBuilder
-    private var content: some View {
+    @ViewBuilder private var content: some View {
         switch store.state {
         case .idle, .loading:
             ProgressView()

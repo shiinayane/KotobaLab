@@ -8,9 +8,7 @@
 import Foundation
 import Observation
 
-@Observable
-@MainActor
-final class SearchStore {
+@MainActor @Observable final class SearchStore {
     var query: String = ""
     private(set) var state: SearchViewState = .idle
     private var searchTask: Task<Void, Never>?

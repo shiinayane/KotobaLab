@@ -10,7 +10,7 @@ import SwiftUI
 struct SearchScene: View {
     let dependencies: AppDependencies
     @State private var store: SearchStore
-    
+
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
 

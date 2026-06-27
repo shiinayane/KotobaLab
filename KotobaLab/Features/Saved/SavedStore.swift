@@ -8,8 +8,7 @@
 import Foundation
 import Observation
 
-@Observable
-final class SavedStore {
+@Observable final class SavedStore {
     private let loadSavedWordsUseCase: LoadSavedWordsUseCase
 
     init(loadSavedWordsUseCase: LoadSavedWordsUseCase) {
