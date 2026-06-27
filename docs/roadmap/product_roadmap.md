@@ -59,27 +59,32 @@ Completion criteria (all met):
 
 ## Phase 2: Core App Experience
 
+Status: **Completed**. Execution record: [`docs/phases/phase-02-core-experience.md`](../phases/phase-02-core-experience.md).
+
 Goal:
 
 Make the app feel like a real dictionary MVP instead of a demo.
 
 Tasks:
 
-- Improve Search empty, loading, and error states.
-- Improve Word Detail information hierarchy.
-- Improve Saved list refresh behavior.
-- Add explicit Search state.
-- Keep previews working.
-- Remove or hide unfinished product surfaces.
+- ✅ Improve Search empty, loading, and error states (explicit `SearchViewState`).
+- ✅ Word Detail information hierarchy — resolved by design (term + reading shown intentionally).
+- ✅ Saved list refresh behavior — already consistent via `onAppear` re-fire on pop.
+- ✅ Add explicit Search state.
+- ✅ Keep previews working (preview mocks now tracked).
+- ✅ Remove or hide unfinished product surfaces (Analysis / Study hidden).
 
 Completion criteria:
 
-- The core flow is understandable without explanation.
-- Search feels responsive.
-- Saved state stays consistent.
-- Main pages no longer feel like placeholders.
+- ✅ The core flow is understandable without explanation.
+- ✅ Search feels responsive.
+- ✅ Saved state stays consistent.
+- ⚠️ Main pages no longer feel like placeholders — partially met; the Home landing
+  tab still shows empty stubs (carryover, see execution record).
 
 ## Phase 3: Architecture and Tests
+
+Status: **Planned**. Execution record: [`docs/phases/phase-03-architecture-tests.md`](../phases/phase-03-architecture-tests.md).
 
 Goal:
 
@@ -87,12 +92,12 @@ Make the current lightweight architecture durable.
 
 Tasks:
 
-- Decide whether repository APIs should become async.
-- Mark all stores `@MainActor` (only `SearchStore` is today).
+- Decide whether repository APIs should become async (or move behind a database actor).
+- Mark `WordDetailStore` and `SavedStore` `@MainActor` (only `SearchStore` is today).
 - Add iOS xcodebuild CI to GitHub Actions.
 - Align `verify_database.py` search-plan check with the app's actual two-column SQL.
-- Keep Domain free of SwiftUI, SwiftData, GRDB, and SQLite row types.
-- Keep local experiments out of the app target.
+- Keep Domain free of SwiftUI, SwiftData, GRDB, and SQLite row types — currently clean; preserve.
+- Keep local experiments out of the app target — already satisfied (`TestView` gitignored + target-excluded).
 
 Phase 3 inherits these from Phase 1 as completed prerequisites:
 
@@ -209,12 +214,16 @@ word_id + prompt_version + user_level + language
 
 ## Current Priorities
 
-With Phase 1 (Dictionary Pipeline Stabilization) closed, the immediate next priorities sit in Phase 2 (Core App Experience):
+With Phase 2 (Core App Experience) closed, the immediate next priorities sit in Phase 3 (Architecture and Tests):
 
-1. Improve Search and Word Detail UX (empty / loading / error states, info hierarchy).
-2. Model search state explicitly with an `enum`, replacing the current flat `query` + `results`.
-3. Improve Saved list refresh behavior.
-4. Keep search benchmark records current as schema or SQL evolves.
+1. Decide whether repository APIs should become `async`, or move behind a database actor.
+2. Mark `WordDetailStore` and `SavedStore` as `@MainActor` (only `SearchStore` is today).
+3. Add iOS `xcodebuild` CI to GitHub Actions.
+4. Align `verify_database.py`'s search-plan check with the app's actual two-column `LIKE` SQL.
+
+Phase 2 carryover to fold in opportunistically: hide or fill the Home landing tab,
+resolve the Settings → Profile dead-end, and confirm `TestView` is out of the app
+build target.
 
 ## What Not To Do Next
 

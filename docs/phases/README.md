@@ -1,7 +1,7 @@
 # Phase Records
 
 Status: Active
-Last updated: 2026-05-21
+Last updated: 2026-06-28
 
 This directory contains milestone records and phase summaries.
 
@@ -35,5 +35,7 @@ Each phase record should include:
 
 - [Phase 0: Current MVP Baseline](phase-00-current-mvp.md)
 - [Phase 1: Dictionary Pipeline Stabilization](phase-01-pipeline-stabilization.md)
+- [Phase 2: Core App Experience](phase-02-core-experience.md)
+- [Phase 3: Architecture and Tests](phase-03-architecture-tests.md) (planned)
 
 Temporary notes belong in `docs/_local/`.
