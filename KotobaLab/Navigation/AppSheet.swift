@@ -9,7 +9,7 @@ import Foundation
 
 enum AppSheet: Identifiable {
     case settings
-    
+
     var id: String {
         switch self {
         case .settings:

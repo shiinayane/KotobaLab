@@ -5,8 +5,8 @@
 //  Created by 椎名アヤネ on 2026/03/28.
 //
 
-import Observation
 import Foundation
+import Observation
 
 @Observable
 @MainActor
@@ -61,8 +61,8 @@ final class SearchStore {
 }
 
 enum SearchViewState {
-    case idle                  // query is empty — show a hint, not an empty list
-    case loading               // a search is in flight
+    case idle  // query is empty — show a hint, not an empty list
+    case loading  // a search is in flight
     case empty(query: String)  // searched, zero results
     case loaded([WordSummary])
     case error(String)

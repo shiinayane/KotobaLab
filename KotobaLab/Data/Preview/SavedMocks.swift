@@ -12,12 +12,12 @@ extension SavedWordRecordData {
         wordID: 1,
         savedAt: Date.now.addingTimeInterval(100)
     )
-    
+
     static let list: [SavedWordRecordData] = [
         .sample,
         SavedWordRecordData(
             wordID: 2,
             savedAt: Date.now
-        )
+        ),
     ]
 }

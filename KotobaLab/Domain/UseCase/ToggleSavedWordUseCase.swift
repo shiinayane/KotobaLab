@@ -8,7 +8,7 @@
 struct ToggleSavedWordUseCase {
     let wordID: Int64
     private let userDataRepository: any UserDataRepositoryProtocol
-    
+
     init(
         wordID: Int64,
         userDataRepository: any UserDataRepositoryProtocol
@@ -16,14 +16,13 @@ struct ToggleSavedWordUseCase {
         self.wordID = wordID
         self.userDataRepository = userDataRepository
     }
-    
+
     func execute() throws -> Bool {
-        if try userDataRepository.isWordSaved(wordID: wordID) {
-            try userDataRepository.unsaveWord(wordID: wordID)
-            return false
-        } else {
+        guard try userDataRepository.isWordSaved(wordID: wordID) else {
             try userDataRepository.saveWord(wordID: wordID)
             return true
         }
+        try userDataRepository.unsaveWord(wordID: wordID)
+        return false
     }
 }

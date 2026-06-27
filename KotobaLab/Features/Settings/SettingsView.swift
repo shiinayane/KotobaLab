@@ -13,24 +13,24 @@ struct SettingsView: View {
     
     //  This also works.
     //  @Environment(AppRouter.self) private var router
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 12) {
                 Text("Setting page")
             }
-                .navigationTitle("Settings")
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            dismiss()
-                            //  router.dismissSheet()
-                        } label: {
-                            Image(systemName: "xmark")
-                        }
+            .navigationTitle("Settings")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        dismiss()
+                        //  router.dismissSheet()
+                    } label: {
+                        Image(systemName: "xmark")
                     }
                 }
-                .toolbarTitleDisplayMode(.inline)
+            }
+            .toolbarTitleDisplayMode(.inline)
         }
     }
 }

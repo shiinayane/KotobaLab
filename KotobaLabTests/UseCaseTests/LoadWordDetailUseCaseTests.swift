@@ -7,6 +7,7 @@
 
 import Foundation
 import Testing
+
 @testable import KotobaLab
 
 struct LoadWordDetailUseCaseTests {
@@ -16,18 +17,18 @@ struct LoadWordDetailUseCaseTests {
         let wordID: Int64 = 0
         let dictionaryRepository = MockDictionaryRepository()
         let userDataRepository = MockUserDataRepository()
-        
+
         let useCase = LoadWordDetailUseCase(
             wordID: wordID,
             dictionaryRepository: dictionaryRepository,
             userDataRepository: userDataRepository
         )
-        
+
         let result = try useCase.execute()
-        
+
         #expect(result == nil)
     }
-    
+
     @Test
     @MainActor
     func loadWordDetail_whenWordExistsAndIsSaved_shouldReturnSavedDetail() throws {
@@ -41,35 +42,35 @@ struct LoadWordDetailUseCaseTests {
                 )
             ]
         )
-        
+
         let useCase = LoadWordDetailUseCase(
             wordID: wordID,
             dictionaryRepository: dictionaryRepository,
             userDataRepository: userDataRepository
         )
-        
+
         let result = try useCase.execute()
-        
+
         #expect(result != nil)
         #expect(result?.detail.id == wordID)
         #expect(result?.isSaved == true)
     }
-    
+
     @Test
     @MainActor
     func loadWordDetail_whenWordExistsAndIsNotSaved_shouldReturnUnsavedDetail() throws {
         let wordID: Int64 = 1
         let dictionaryRepository = MockDictionaryRepository()
         let userDataRepository = MockUserDataRepository(savedWordsRecord: [])
-        
+
         let useCase = LoadWordDetailUseCase(
             wordID: wordID,
             dictionaryRepository: dictionaryRepository,
             userDataRepository: userDataRepository
         )
-        
+
         let result = try useCase.execute()
-        
+
         #expect(result != nil)
         #expect(result?.detail.id == wordID)
         #expect(result?.isSaved == false)

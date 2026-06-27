@@ -13,7 +13,7 @@ extension WordSummary {
         previewPartOfSpeech: "verb",
         previewMeaning: "to eat"
     )
-    
+
     static let list: [WordSummary] = [
         .sample,
         WordSummary(
@@ -29,7 +29,7 @@ extension WordSummary {
             reading: "しょくよく",
             previewPartOfSpeech: "noun",
             previewMeaning: "appetite"
-        )
+        ),
     ]
 }
 
@@ -40,10 +40,10 @@ extension WordDetail {
         reading: "たべる",
         meanings: [
             Meaning(id: 1, partOfSpeech: "verb", definition: "to eat"),
-            Meaning(id: 2, partOfSpeech: "verb", definition: "to live on")
+            Meaning(id: 2, partOfSpeech: "verb", definition: "to live on"),
         ]
     )
-    
+
     static let list: [WordDetail] = [
         .sample,
         WordDetail(
@@ -53,6 +53,6 @@ extension WordDetail {
             meanings: [
                 Meaning(id: 3, partOfSpeech: "noun", definition: "tableware")
             ]
-        )
+        ),
     ]
 }

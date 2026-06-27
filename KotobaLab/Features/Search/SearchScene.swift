@@ -13,14 +13,16 @@ struct SearchScene: View {
     
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
-        
-        let useCase = SearchWordsUseCase(dictionaryRepository: dependencies.dictionaryRepository)
-        
+
+        let useCase = SearchWordsUseCase(
+            dictionaryRepository: dependencies.dictionaryRepository
+        )
+
         _store = State(initialValue: SearchStore(searchWordsUseCase: useCase))
     }
-    
+
     var body: some View {
-        return SearchView(
+        SearchView(
             store: store,
             makeDestination: { wordID in
                 AnyView(

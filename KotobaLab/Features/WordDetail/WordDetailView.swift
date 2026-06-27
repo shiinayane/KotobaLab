@@ -9,23 +9,23 @@ import SwiftUI
 
 struct WordDetailView: View {
     @Bindable var store: WordDetailStore
-    
+
     var body: some View {
         content
-        .navigationTitle("Word Detail")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                if case .loaded = store.state {
-                    bookmarkButton
+            .navigationTitle("Word Detail")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    if case .loaded = store.state {
+                        bookmarkButton
+                    }
                 }
             }
-        }
-        .task {
-            store.load()
-        }
+            .task {
+                store.load()
+            }
     }
-    
+
     @ViewBuilder
     private var content: some View {
         switch store.state {
@@ -39,7 +39,7 @@ struct WordDetailView: View {
             errorView(message: message)
         }
     }
-    
+
     private func detailContent(detail: WordDetail) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -49,24 +49,24 @@ struct WordDetailView: View {
             .padding(16)
         }
     }
-    
+
     private func headerSection(detail: WordDetail) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(detail.term)
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
+
             Text(detail.displayName)
                 .font(.title3)
                 .foregroundStyle(.secondary)
         }
     }
-    
+
     private func meaningSection(detail: WordDetail) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Meaning")
                 .font(.headline)
-            
+
             ForEach(detail.meanings) { meaning in
                 VStack(alignment: .leading, spacing: 4) {
                     if let pos = meaning.partOfSpeech {
@@ -74,23 +74,21 @@ struct WordDetailView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
-                    
+
                     Text(meaning.definition)
                 }
             }
         }
     }
-    
+
     private var bookmarkButton: some View {
         Button {
             store.toggleSaved()
         } label: {
-            store.isSaved ?
-            Image(systemName: "bookmark.fill") :
-            Image(systemName: "bookmark")
+            store.isSaved ? Image(systemName: "bookmark.fill") : Image(systemName: "bookmark")
         }
     }
-    
+
     private func notFoundView() -> some View {
         ContentUnavailableView(
             "Not Found",
@@ -98,7 +96,7 @@ struct WordDetailView: View {
             description: Text("The word you are looking for is not found.")
         )
     }
-    
+
     private func errorView(message: String) -> some View {
         ContentUnavailableView(
             "Fail to load",
@@ -118,12 +116,12 @@ struct WordDetailView: View {
         wordID: 1,
         userDataRepository: MockUserDataRepository()
     )
-    
+
     let store = WordDetailStore(
         loadWordDetailUseCase: loadWordDetailUseCase,
         toggleSavedWordUseCase: toggleSavedWordUseCase
     )
-    
+
     return NavigationStack {
         WordDetailView(store: store)
     }

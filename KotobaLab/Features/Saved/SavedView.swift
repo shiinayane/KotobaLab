@@ -10,17 +10,17 @@ import SwiftUI
 struct SavedView: View {
     @Bindable var store: SavedStore
     let makeDestination: (Int64) -> AnyView
-    
+
     var body: some View {
         content
-        .onAppear {
-            store.load()
-        }
-        .searchable(
-            text: $store.query
-        )
+            .onAppear {
+                store.load()
+            }
+            .searchable(
+                text: $store.query
+            )
     }
-    
+
     @ViewBuilder
     private var content: some View {
         switch store.state {
@@ -32,11 +32,11 @@ struct SavedView: View {
             errorView(message: message)
         }
     }
-    
+
     @ViewBuilder
     private func loadedContent(savedWords: [WordSummary]) -> some View {
         let filteredSavedWords = store.filteredSavedWords
-        
+
         if savedWords.isEmpty {
             emptySavedView()
         } else if store.query.isEmpty {
@@ -47,7 +47,7 @@ struct SavedView: View {
             savedContent(words: filteredSavedWords)
         }
     }
-    
+
     private func savedContent(words: [WordSummary]) -> some View {
         List(words) { word in
             NavigationLink {
@@ -57,7 +57,7 @@ struct SavedView: View {
             }
         }
     }
-    
+
     private func emptySavedView() -> some View {
         ContentUnavailableView(
             "No saved words",
@@ -65,7 +65,7 @@ struct SavedView: View {
             description: Text("Words you save will appear here.")
         )
     }
-    
+
     private func noResultsView() -> some View {
         ContentUnavailableView(
             "No results",
@@ -73,7 +73,7 @@ struct SavedView: View {
             description: Text("No matches for \"\(store.query)\"")
         )
     }
-    
+
     private func errorView(message: String) -> some View {
         ContentUnavailableView(
             "Fail to load",
@@ -90,12 +90,12 @@ struct SavedView: View {
             MockUserDataRepository()
         }
     )
-    
+
     let useCase = LoadSavedWordsUseCase(
         dictionaryRepository: MockDictionaryRepository(),
         userDataRepository: MockUserDataRepository()
     )
-    
+
     return TabContainer(title: "Saved") {
         SavedView(
             store: SavedStore(loadSavedWordsUseCase: useCase),

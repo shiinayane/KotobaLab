@@ -9,7 +9,7 @@ import SwiftData
 
 struct AppDependencies {
     let dictionaryRepository: any DictionaryRepositoryProtocol
-    
+
     let userDataRepositoryFactory: UserDataRepositoryFactory
 }
 

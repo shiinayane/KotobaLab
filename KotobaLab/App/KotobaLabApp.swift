@@ -5,25 +5,25 @@
 //  Created by 椎名アヤネ on 2026/03/26.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct KotobaLabApp: App {
     private let rootView: RootView
-    
-    init () {
+
+    init() {
         do {
             let databaseManager = try DatabaseManager()
             let dictionaryRepository = SQLiteDictionaryRepository(databaseManager: databaseManager)
-            
+
             let dependencies = AppDependencies(
                 dictionaryRepository: dictionaryRepository,
                 userDataRepositoryFactory: UserDataRepositoryFactory { context in
                     SwiftDataUserDataRepository(context: context)
                 }
             )
-            
+
             self.rootView = RootView(
                 dependencies: dependencies
             )
@@ -31,7 +31,7 @@ struct KotobaLabApp: App {
             fatalError("Failed to initialize app dependencies: \(error)")
         }
     }
-    
+
     var body: some Scene {
         WindowGroup {
             rootView

@@ -39,16 +39,18 @@ struct RootView: View {
                 }
             }
         }
-        .sheet(item: Binding(
-                    get: { router.presentedSheet },
-                    set: { router.presentedSheet = $0 }
-                )) { sheet in
-                    switch sheet {
-                    case .settings:
-                        SettingsView()
-                    }
-                }
-                .environment(router)
+        .sheet(
+            item: Binding(
+                get: { router.presentedSheet },
+                set: { router.presentedSheet = $0 }
+            )
+        ) { sheet in
+            switch sheet {
+            case .settings:
+                SettingsView()
+            }
+        }
+        .environment(router)
     }
 }
 
@@ -59,6 +61,6 @@ struct RootView: View {
             MockUserDataRepository()
         }
     )
-    
+
     RootView(dependencies: dependencies)
 }

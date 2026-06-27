@@ -7,10 +7,10 @@
 
 import Foundation
 
-final class MockDictionaryRepository: DictionaryRepositoryProtocol {    
+final class MockDictionaryRepository: DictionaryRepositoryProtocol {
     private var mockWordSummaries: [WordSummary]
     private var mockWordDetails: [WordDetail]
-    
+
     init(
         mockWordSummary: [WordSummary] = PreviewData.wordSummaries,
         mockWordDetail: [WordDetail] = PreviewData.wordDetails
@@ -18,7 +18,7 @@ final class MockDictionaryRepository: DictionaryRepositoryProtocol {
         self.mockWordSummaries = mockWordSummary
         self.mockWordDetails = mockWordDetail
     }
-    
+
     func searchWords(query: String, limit: Int) throws -> [WordSummary] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -26,7 +26,8 @@ final class MockDictionaryRepository: DictionaryRepositoryProtocol {
             return []
         }
 
-        return mockWordSummaries
+        return
+            mockWordSummaries
             .filter {
                 $0.term.contains(trimmed) || $0.displayName.contains(trimmed)
             }
@@ -35,20 +36,22 @@ final class MockDictionaryRepository: DictionaryRepositoryProtocol {
     }
 
     func fetchWordDetail(wordID: Int64) throws -> WordDetail? {
-        return mockWordDetails.first(where: { $0.id == wordID })
+        mockWordDetails.first(where: { $0.id == wordID })
     }
-    
+
     func fetchWordSummaries(wordIDs: [Int64]) throws -> [WordSummary] {
         guard !wordIDs.isEmpty else { return [] }
-        
-        let summaryByID: [Int64: WordSummary] = Dictionary(uniqueKeysWithValues: mockWordSummaries.map {
-            ($0.id, $0)
-        })
-        
+
+        let summaryByID: [Int64: WordSummary] = Dictionary(
+            uniqueKeysWithValues: mockWordSummaries.map {
+                ($0.id, $0)
+            }
+        )
+
         let orderedSummaries: [WordSummary] = wordIDs.compactMap {
             summaryByID[$0]
         }
-        
+
         return orderedSummaries
     }
 }

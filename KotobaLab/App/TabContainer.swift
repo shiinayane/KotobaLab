@@ -18,7 +18,7 @@ struct TabContainer<Content: View>: View {
         self.title = title
         self.content = content
     }
-    
+
     var body: some View {
         NavigationStack {
             content()
@@ -31,7 +31,6 @@ struct TabContainer<Content: View>: View {
                             Image(systemName: "person.crop.circle.fill")
                                 .font(.title2)
                         }
-                        
                     }
                 }
                 .toolbarTitleDisplayMode(.inlineLarge)

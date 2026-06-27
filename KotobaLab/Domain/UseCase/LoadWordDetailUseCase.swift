@@ -9,7 +9,7 @@ struct LoadWordDetailUseCase {
     let wordID: Int64
     private let dictionaryRepository: any DictionaryRepositoryProtocol
     private let userDataRepository: any UserDataRepositoryProtocol
-    
+
     init(
         wordID: Int64,
         dictionaryRepository: any DictionaryRepositoryProtocol,
@@ -19,18 +19,17 @@ struct LoadWordDetailUseCase {
         self.dictionaryRepository = dictionaryRepository
         self.userDataRepository = userDataRepository
     }
-    
+
     func execute() throws -> WordDetailDisplayData? {
         let fetchedDetail = try dictionaryRepository.fetchWordDetail(wordID: wordID)
-        
-        if let fetchedDetail {
-            let isSaved = (try? userDataRepository.isWordSaved(wordID: wordID)) ?? false
-            return WordDetailDisplayData(
-                detail: fetchedDetail,
-                isSaved: isSaved
-            )
-        } else {
+
+        guard let fetchedDetail else {
             return nil
         }
+        let isSaved = (try? userDataRepository.isWordSaved(wordID: wordID)) ?? false
+        return WordDetailDisplayData(
+            detail: fetchedDetail,
+            isSaved: isSaved
+        )
     }
 }

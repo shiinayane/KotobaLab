@@ -5,8 +5,8 @@
 //  Created by 椎名アヤネ on 2026/04/14.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct SavedScene: View {
     let dependencies: AppDependencies
@@ -29,17 +29,19 @@ struct SavedContainerView: View {
         context: ModelContext
     ) {
         self.dependencies = dependencies
-        
+
         let useCase = LoadSavedWordsUseCase(
             dictionaryRepository: dependencies.dictionaryRepository,
-            userDataRepository: dependencies.userDataRepositoryFactory.make(context)
+            userDataRepository: dependencies.userDataRepositoryFactory.make(
+                context
+            )
         )
-        
+
         _store = State(
             initialValue: SavedStore(loadSavedWordsUseCase: useCase)
         )
     }
-    
+
     var body: some View {
         SavedView(
             store: store,

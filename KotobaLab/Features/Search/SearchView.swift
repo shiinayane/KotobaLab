@@ -10,13 +10,13 @@ import SwiftUI
 struct SearchView: View {
     @Bindable var store: SearchStore
     let makeDestination: (Int64) -> AnyView
-    
+
     var body: some View {
         content
-        .searchable(text: $store.query)
-        .onChange(of: store.query) { _, _ in
-            store.debouncedSearch()
-        }
+            .searchable(text: $store.query)
+            .onChange(of: store.query) { _, _ in
+                store.debouncedSearch()
+            }
     }
 
     @ViewBuilder
@@ -65,7 +65,7 @@ struct SearchView: View {
             MockUserDataRepository()
         }
     )
-    
+
     TabContainer(title: "Search") {
         SearchView(
             store: .previewWithResults(),

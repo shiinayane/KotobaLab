@@ -10,18 +10,18 @@ import GRDB
 
 final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
     private let dbQueue: DatabaseQueue
-    
+
     init(dbQueue: DatabaseQueue) {
         self.dbQueue = dbQueue
     }
-    
+
     convenience init(databaseManager: DatabaseManager) {
         self.init(dbQueue: databaseManager.dbQueue)
     }
-    
+
     func searchWords(query: String, limit: Int) throws -> [WordSummary] {
         let pattern = "\(query)%"
-        
+
         return try dbQueue.read { db in
             let rows = try Row.fetchAll(
                 db,
@@ -51,7 +51,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                     """,
                 arguments: [pattern, pattern, limit]
             )
-            
+
             return rows.map { row in
                 WordSummary(
                     id: row["id"],
@@ -63,22 +63,24 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
             }
         }
     }
-    
+
     func fetchWordDetail(wordID: Int64) throws -> WordDetail? {
         try dbQueue.read { db -> WordDetail? in
-            guard let word = try Row.fetchOne(
-                db,
-                sql: """
-                    SELECT id, term, reading
-                    FROM words
-                    WHERE id = ?
-                    LIMIT 1
-                    """,
-                arguments: [wordID]
-            ) else {
+            guard
+                let word = try Row.fetchOne(
+                    db,
+                    sql: """
+                        SELECT id, term, reading
+                        FROM words
+                        WHERE id = ?
+                        LIMIT 1
+                        """,
+                    arguments: [wordID]
+                )
+            else {
                 return nil
             }
-            
+
             let meaningRows = try Row.fetchAll(
                 db,
                 sql: """
@@ -89,7 +91,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                     """,
                 arguments: [wordID]
             )
-            
+
             return WordDetail(
                 id: word["id"],
                 term: word["term"],
@@ -104,14 +106,15 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
             )
         }
     }
-    
+
     func fetchWordSummaries(wordIDs: [Int64]) throws -> [WordSummary] {
         guard !wordIDs.isEmpty else { return [] }
-        
+
         return try dbQueue.read { db in
-            
-            let placeholders: String = Array(repeating: "?", count: wordIDs.count).joined(separator: ", ")
-            
+            let placeholders: String = Array(repeating: "?", count: wordIDs.count).joined(
+                separator: ", "
+            )
+
             let rows = try Row.fetchAll(
                 db,
                 sql: """
@@ -138,7 +141,7 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                     """,
                 arguments: StatementArguments(wordIDs)
             )
-            
+
             let summaries = rows.map { row in
                 WordSummary(
                     id: row["id"],
@@ -148,15 +151,17 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
                     previewMeaning: row["preview_meaning"]
                 )
             }
-            
-            let summaryByID: [Int64: WordSummary] = Dictionary(uniqueKeysWithValues: summaries.map {
-                ($0.id, $0)
-            })
-            
+
+            let summaryByID: [Int64: WordSummary] = Dictionary(
+                uniqueKeysWithValues: summaries.map {
+                    ($0.id, $0)
+                }
+            )
+
             let orderedSummaries: [WordSummary] = wordIDs.compactMap { id in
                 summaryByID[id]
             }
-            
+
             return orderedSummaries
         }
     }

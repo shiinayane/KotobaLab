@@ -11,26 +11,26 @@ import Foundation
 final class WordDetailStore {
     private let loadWordDetailUseCase: LoadWordDetailUseCase
     private let toggleSavedWordUseCase: ToggleSavedWordUseCase
-    
+
     var state: WordDetailViewState = .idle
     var isSaved = false
-    
+
     init(
         loadWordDetailUseCase: LoadWordDetailUseCase,
-         toggleSavedWordUseCase: ToggleSavedWordUseCase
+        toggleSavedWordUseCase: ToggleSavedWordUseCase
     ) {
         self.loadWordDetailUseCase = loadWordDetailUseCase
         self.toggleSavedWordUseCase = toggleSavedWordUseCase
     }
-    
+
     func load() {
         if case .loading = state { return }
-        
+
         state = .loading
-        
+
         do {
             let displayData = try loadWordDetailUseCase.execute()
-            
+
             if let displayData {
                 state = .loaded(displayData.detail)
                 isSaved = displayData.isSaved
@@ -41,7 +41,7 @@ final class WordDetailStore {
             state = .error(error.localizedDescription)
         }
     }
-    
+
     func toggleSaved() {
         do {
             isSaved = try toggleSavedWordUseCase.execute()
