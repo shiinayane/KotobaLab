@@ -18,16 +18,16 @@ struct RootView: View {
                     HomeView()
                 }
             }
-            Tab("Analysis", systemImage: "translate") {
-                TabContainer(title: "Analysis") {
-                    AnalysisView()
-                }
-            }
-            Tab("Study", systemImage: "character.book.closed.ja") {
-                TabContainer(title: "Study") {
-                    StudyView()
-                }
-            }
+            //            Tab("Analysis", systemImage: "translate") {
+            //                TabContainer(title: "Analysis") {
+            //                    AnalysisView()
+            //                }
+            //            }
+            //            Tab("Study", systemImage: "character.book.closed.ja") {
+            //                TabContainer(title: "Study") {
+            //                    StudyView()
+            //                }
+            //            }
             Tab("Saved", systemImage: "bookmark") {
                 TabContainer(title: "Saved") {
                     SavedScene(dependencies: dependencies)
