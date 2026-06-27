@@ -15,8 +15,8 @@ import Observation
         self.loadSavedWordsUseCase = loadSavedWordsUseCase
     }
 
-    var state: SavedViewState = .idle
-    var query: String = ""
+    var query = ""
+    private(set) var state: SavedViewState = .idle
     var filteredSavedWords: [WordSummary] {
         switch state {
         case .loaded(let words):
@@ -28,7 +28,7 @@ import Observation
             if normalizedQuery.isEmpty { return words }
             return words.filter {
                 $0.term.lowercased().contains(normalizedQuery)
-                    || $0.displayName.lowercased().contains(normalizedQuery)
+                    || $0.displayReading.lowercased().contains(normalizedQuery)
                     || $0.previewMeaning.lowercased().contains(normalizedQuery)
             }
         case .idle, .loading, .error:

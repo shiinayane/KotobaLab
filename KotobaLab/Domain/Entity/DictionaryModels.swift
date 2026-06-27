@@ -14,7 +14,7 @@ struct WordSummary: Identifiable, Hashable {
     let previewPartOfSpeech: String?
     let previewMeaning: String
 
-    var displayName: String {
+    var displayReading: String {
         reading ?? term
     }
 }
@@ -25,7 +25,7 @@ struct WordDetail: Identifiable, Hashable {
     let reading: String?
     let meanings: [Meaning]
 
-    var displayName: String {
+    var displayReading: String {
         reading ?? term
     }
 }

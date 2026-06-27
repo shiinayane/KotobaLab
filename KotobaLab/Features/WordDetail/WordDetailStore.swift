@@ -11,8 +11,8 @@ import Foundation
     private let loadWordDetailUseCase: LoadWordDetailUseCase
     private let toggleSavedWordUseCase: ToggleSavedWordUseCase
 
-    var state: WordDetailViewState = .idle
     var isSaved = false
+    private(set) var state: WordDetailViewState = .idle
 
     init(
         loadWordDetailUseCase: LoadWordDetailUseCase,

@@ -16,8 +16,8 @@ struct WordSummaryRow: View {
                 Text(word.term)
                     .font(.headline)
 
-                if !word.displayName.isEmpty {
-                    Text("「\(word.displayName)」")
+                if !word.displayReading.isEmpty {
+                    Text("「\(word.displayReading)」")
                         .font(.subheadline)
                 }
             }

@@ -55,7 +55,7 @@ struct WordDetailView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
-            Text(detail.displayName)
+            Text(detail.displayReading)
                 .font(.title3)
                 .foregroundStyle(.secondary)
         }

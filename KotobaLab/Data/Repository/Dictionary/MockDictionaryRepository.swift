@@ -29,7 +29,7 @@ final class MockDictionaryRepository: DictionaryRepositoryProtocol {
         return
             mockWordSummaries
             .filter {
-                $0.term.contains(trimmed) || $0.displayName.contains(trimmed)
+                $0.term.contains(trimmed) || $0.displayReading.contains(trimmed)
             }
             .prefix(limit)
             .map { $0 }
