@@ -8,22 +8,19 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Environment(\.dismiss) private var dismiss
-
-    //  This also works.
-    //  @Environment(AppRouter.self) private var router
+    @Environment(AppRouter.self) private var router
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 12) {
-                Text("Setting page")
+            Form {
+                profileSection
+                settingsSection
             }
             .navigationTitle("Settings")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        dismiss()
-                        //  router.dismissSheet()
+                        router.dismissSheet()
                     } label: {
                         Image(systemName: "xmark")
                     }
@@ -32,8 +29,29 @@ struct SettingsView: View {
             .toolbarTitleDisplayMode(.inline)
         }
     }
+
+    private var profileSection: some View {
+        Section("Profile") {
+            NavigationLink {
+                EmptyView()
+            } label: {
+                Label("Profile", systemImage: "person.crop.circle.fill")
+            }
+        }
+    }
+
+    private var settingsSection: some View {
+        Section("Settings") {
+            NavigationLink {
+                LicenseView()
+            } label: {
+                Text("License")
+            }
+        }
+    }
 }
 
 #Preview {
     SettingsView()
+        .environment(AppRouter())
 }
