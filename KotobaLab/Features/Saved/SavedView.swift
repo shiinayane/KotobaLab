@@ -36,11 +36,11 @@ struct SavedView: View {
         let filteredSavedWords = store.filteredSavedWords
 
         if savedWords.isEmpty {
-            emptySavedView()
+            emptySavedView
         } else if store.query.isEmpty {
             savedContent(words: savedWords)
         } else if filteredSavedWords.isEmpty {
-            noResultsView()
+            noResultsView
         } else {
             savedContent(words: filteredSavedWords)
         }
@@ -56,7 +56,7 @@ struct SavedView: View {
         }
     }
 
-    private func emptySavedView() -> some View {
+    private var emptySavedView: some View {
         ContentUnavailableView(
             "No saved words",
             systemImage: "bookmark",
@@ -64,7 +64,7 @@ struct SavedView: View {
         )
     }
 
-    private func noResultsView() -> some View {
+    private var noResultsView: some View {
         ContentUnavailableView(
             "No results",
             systemImage: "magnifyingglass",

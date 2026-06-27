@@ -39,12 +39,7 @@ struct RootView: View {
                 }
             }
         }
-        .sheet(
-            item: Binding(
-                get: { router.presentedSheet },
-                set: { router.presentedSheet = $0 }
-            )
-        ) { sheet in
+        .sheet(item: $router.presentedSheet) { sheet in
             switch sheet {
             case .settings:
                 SettingsView()

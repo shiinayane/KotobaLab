@@ -33,7 +33,7 @@ struct WordDetailView: View {
         case .loaded(let detail):
             detailContent(detail: detail)
         case .notFound:
-            notFoundView()
+            notFoundView
         case .error(let message):
             errorView(message: message)
         }
@@ -88,7 +88,7 @@ struct WordDetailView: View {
         }
     }
 
-    private func notFoundView() -> some View {
+    private var notFoundView: some View {
         ContentUnavailableView(
             "Not Found",
             systemImage: "magnifyingglass",
