@@ -11,27 +11,27 @@ import Testing
 @testable import KotobaLab
 
 struct SQLiteDictionaryRepositoryTests {
-    @MainActor @Test func searchByTermPrefix_ReturnsMatchingWords() throws {
+    @MainActor @Test func searchByTermPrefix_ReturnsMatchingWords() async throws {
         let repository = try makeRepository()
 
-        let result = try repository.searchWords(query: "食", limit: 10)
+        let result = try await repository.searchWords(query: "食", limit: 10)
 
         #expect(result.map(\.term) == ["食べる"])
     }
 
-    @MainActor @Test func searchByReadingPrefix_ReturnsMatchingWords() throws {
+    @MainActor @Test func searchByReadingPrefix_ReturnsMatchingWords() async throws {
         let repository = try makeRepository()
 
-        let result = try repository.searchWords(query: "た", limit: 10)
+        let result = try await repository.searchWords(query: "た", limit: 10)
 
         #expect(result.map(\.term) == ["食べる"])
     }
 
-    @MainActor @Test func loadWordDetail_ReturnsMeaningsInSequenceOrder() throws {
+    @MainActor @Test func loadWordDetail_ReturnsMeaningsInSequenceOrder() async throws {
         let repository = try makeRepository()
 
         let detail = try #require(
-            try repository.fetchWordDetail(wordID: 1)
+            try await repository.fetchWordDetail(wordID: 1)
         )
 
         #expect(detail.term == "日本")

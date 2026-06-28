@@ -20,8 +20,8 @@ struct LoadWordDetailUseCase {
         self.userDataRepository = userDataRepository
     }
 
-    func execute() throws -> WordDetailDisplayData? {
-        let fetchedDetail = try dictionaryRepository.fetchWordDetail(wordID: wordID)
+    func execute() async throws -> WordDetailDisplayData? {
+        let fetchedDetail = try await dictionaryRepository.fetchWordDetail(wordID: wordID)
 
         guard let fetchedDetail else {
             return nil

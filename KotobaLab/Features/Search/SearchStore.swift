@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observation
 
 @MainActor @Observable final class SearchStore {
     var query = ""
@@ -23,36 +22,35 @@ import Observation
     func debouncedSearch() {
         searchTask?.cancel()
 
-        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        searchGeneration += 1
+        let myGen = searchGeneration
 
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
             state = .idle
             return
         }
-
         state = .loading
-
-        searchGeneration += 1
-        let myGen = searchGeneration
 
         searchTask = Task { [weak self] in
             try? await Task.sleep(for: .milliseconds(300))
 
             guard !Task.isCancelled else { return }
 
-            self?.search(generation: myGen, query: trimmed)
+            await self?.search(generation: myGen, query: trimmed)
         }
     }
 
-    private func search(generation myGen: Int, query: String) {
+    private func search(generation myGen: Int, query: String) async {
         do {
-            let results = try searchWordsUseCase.execute(query: query)
+            let results = try await searchWordsUseCase.execute(query: query)
 
             guard myGen == searchGeneration else { return }
 
             state = results.isEmpty ? .empty(query: query) : .loaded(results)
         } catch {
             guard myGen == searchGeneration else { return }
+
             state = .error(error.localizedDescription)
         }
     }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-@Observable final class WordDetailStore {
+@MainActor @Observable final class WordDetailStore {
     private let loadWordDetailUseCase: LoadWordDetailUseCase
     private let toggleSavedWordUseCase: ToggleSavedWordUseCase
 
@@ -22,13 +22,13 @@ import Foundation
         self.toggleSavedWordUseCase = toggleSavedWordUseCase
     }
 
-    func load() {
+    func load() async {
         if case .loading = state { return }
 
         state = .loading
 
         do {
-            let displayData = try loadWordDetailUseCase.execute()
+            let displayData = try await loadWordDetailUseCase.execute()
 
             if let displayData {
                 state = .loaded(displayData.detail)

@@ -19,7 +19,7 @@ final class MockDictionaryRepository: DictionaryRepositoryProtocol {
         self.mockWordDetails = mockWordDetail
     }
 
-    func searchWords(query: String, limit: Int) throws -> [WordSummary] {
+    func searchWords(query: String, limit: Int) async throws -> [WordSummary] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !trimmed.isEmpty else {
@@ -35,11 +35,11 @@ final class MockDictionaryRepository: DictionaryRepositoryProtocol {
             .map { $0 }
     }
 
-    func fetchWordDetail(wordID: Int64) throws -> WordDetail? {
+    func fetchWordDetail(wordID: Int64) async throws -> WordDetail? {
         mockWordDetails.first(where: { $0.id == wordID })
     }
 
-    func fetchWordSummaries(wordIDs: [Int64]) throws -> [WordSummary] {
+    func fetchWordSummaries(wordIDs: [Int64]) async throws -> [WordSummary] {
         guard !wordIDs.isEmpty else { return [] }
 
         let summaryByID: [Int64: WordSummary] = Dictionary(

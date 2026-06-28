@@ -17,8 +17,8 @@ struct LoadSavedWordsUseCase {
         self.userDataRepository = userDataRepository
     }
 
-    func execute() throws -> [WordSummary] {
+    func execute() async throws -> [WordSummary] {
         let savedWordIDs = try userDataRepository.fetchSavedWordIDs()
-        return try dictionaryRepository.fetchWordSummaries(wordIDs: savedWordIDs)
+        return try await dictionaryRepository.fetchWordSummaries(wordIDs: savedWordIDs)
     }
 }

@@ -6,9 +6,8 @@
 //
 
 import Foundation
-import Observation
 
-@Observable final class SavedStore {
+@MainActor @Observable final class SavedStore {
     private let loadSavedWordsUseCase: LoadSavedWordsUseCase
 
     init(loadSavedWordsUseCase: LoadSavedWordsUseCase) {
@@ -36,13 +35,13 @@ import Observation
         }
     }
 
-    func load() {
+    func load() async {
         if case .loading = state { return }
 
         state = .loading
 
         do {
-            let savedWords = try loadSavedWordsUseCase.execute()
+            let savedWords = try await loadSavedWordsUseCase.execute()
             state = .loaded(savedWords)
         } catch {
             state = .error(error.localizedDescription)

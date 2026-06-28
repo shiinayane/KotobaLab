@@ -13,8 +13,8 @@ struct SavedView: View {
 
     var body: some View {
         content
-            .onAppear {
-                store.load()
+            .task {
+                await store.load()
             }
             .searchable(
                 text: $store.query

@@ -14,13 +14,13 @@ struct SearchWordsUseCase {
         self.dictionaryRepository = dictionaryRepository
     }
 
-    func execute(query: String) throws -> [WordSummary] {
+    func execute(query: String) async throws -> [WordSummary] {
         let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !q.isEmpty else {
             return []
         }
 
-        return try dictionaryRepository.searchWords(query: q, limit: 20)
+        return try await dictionaryRepository.searchWords(query: q, limit: 20)
     }
 }

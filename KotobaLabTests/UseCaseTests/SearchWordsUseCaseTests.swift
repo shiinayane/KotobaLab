@@ -10,34 +10,34 @@ import Testing
 @testable import KotobaLab
 
 struct SearchWordsUseCaseTests {
-    @MainActor @Test func searchWords_whenQueryIsEmpty_shouldReturnEmptyArray() throws {
+    @MainActor @Test func searchWords_whenQueryIsEmpty_shouldReturnEmptyArray() async throws {
         let repository = MockDictionaryRepository()
 
         let useCase = SearchWordsUseCase(dictionaryRepository: repository)
 
-        let result = try useCase.execute(query: "")
+        let result = try await useCase.execute(query: "")
 
         #expect(result.isEmpty)
     }
 
-    @MainActor @Test func searchWords_whenQueryMatchesWords_shouldReturnMatchingResults() throws {
+    @MainActor @Test func searchWords_whenQueryMatchesWords_shouldReturnMatchingResults() async throws {
         // Mock data has "食べる", "食器", "食欲"
         let repository = MockDictionaryRepository()
 
         let useCase = SearchWordsUseCase(dictionaryRepository: repository)
 
-        let result = try useCase.execute(query: "食")
+        let result = try await useCase.execute(query: "食")
 
         #expect(result.count == 3)
         #expect(result.map(\.term) == ["食べる", "食器", "食欲"])
     }
 
-    @MainActor @Test func searchWords_whenNoWordsMatch_shouldReturnEmptyArray() throws {
+    @MainActor @Test func searchWords_whenNoWordsMatch_shouldReturnEmptyArray() async throws {
         let repository = MockDictionaryRepository()
 
         let useCase = SearchWordsUseCase(dictionaryRepository: repository)
 
-        let result = try useCase.execute(query: "xyz")
+        let result = try await useCase.execute(query: "xyz")
 
         #expect(result.isEmpty)
     }

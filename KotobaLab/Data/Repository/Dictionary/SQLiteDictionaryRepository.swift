@@ -19,10 +19,10 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
         self.init(dbQueue: databaseManager.dbQueue)
     }
 
-    func searchWords(query: String, limit: Int) throws -> [WordSummary] {
+    func searchWords(query: String, limit: Int) async throws -> [WordSummary] {
         let pattern = "\(query)%"
 
-        return try dbQueue.read { db in
+        return try await dbQueue.read { db in
             let rows = try Row.fetchAll(
                 db,
                 //  Simple Prefix Search
@@ -64,8 +64,8 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
         }
     }
 
-    func fetchWordDetail(wordID: Int64) throws -> WordDetail? {
-        try dbQueue.read { db -> WordDetail? in
+    func fetchWordDetail(wordID: Int64) async throws -> WordDetail? {
+        try await dbQueue.read { db -> WordDetail? in
             guard
                 let word = try Row.fetchOne(
                     db,
@@ -107,10 +107,10 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
         }
     }
 
-    func fetchWordSummaries(wordIDs: [Int64]) throws -> [WordSummary] {
+    func fetchWordSummaries(wordIDs: [Int64]) async throws -> [WordSummary] {
         guard !wordIDs.isEmpty else { return [] }
 
-        return try dbQueue.read { db in
+        return try await dbQueue.read { db in
             let placeholders: String = Array(repeating: "?", count: wordIDs.count).joined(
                 separator: ", "
             )

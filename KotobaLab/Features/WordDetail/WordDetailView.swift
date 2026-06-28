@@ -22,7 +22,7 @@ struct WordDetailView: View {
                 }
             }
             .task {
-                store.load()
+                await store.load()
             }
     }
 
