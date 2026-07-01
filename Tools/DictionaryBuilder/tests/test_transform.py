@@ -2,7 +2,7 @@
 #  test_transform.py
 #  KotobaLab
 #
-#  Created by 椎名アヤネ on 2026/05/20.
+#  Created by shiinayane on 2026/05/20.
 #
 
 import pytest

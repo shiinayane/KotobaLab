@@ -2,7 +2,7 @@
 //  LoadSavedWordsUseCase.swift
 //  KotobaLab
 //
-//  Created by 椎名アヤネ on 2026/04/18.
+//  Created by shiinayane on 2026/04/18.
 //
 
 struct LoadSavedWordsUseCase {

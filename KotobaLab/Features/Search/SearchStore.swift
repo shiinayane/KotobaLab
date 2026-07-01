@@ -2,7 +2,7 @@
 //  SearchStore.swift
 //  KotobaLab
 //
-//  Created by 椎名アヤネ on 2026/03/28.
+//  Created by shiinayane on 2026/03/28.
 //
 
 import Foundation

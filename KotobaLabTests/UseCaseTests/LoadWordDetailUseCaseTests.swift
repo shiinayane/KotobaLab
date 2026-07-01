@@ -2,7 +2,7 @@
 //  LoadWordDetailUseCaseTests.swift
 //  KotobaLab
 //
-//  Created by 椎名アヤネ on 2026/05/10.
+//  Created by shiinayane on 2026/05/10.
 //
 
 import Foundation

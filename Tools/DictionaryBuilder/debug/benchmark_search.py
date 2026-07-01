@@ -2,7 +2,7 @@
 #  benchmark_search.py
 #  KotobaLab
 #
-#  Created by 椎名アヤネ on 2026/05/14.
+#  Created by shiinayane on 2026/05/14.
 #
 
 import argparse

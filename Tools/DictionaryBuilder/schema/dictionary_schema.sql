@@ -2,7 +2,7 @@
 --  dictionary_schema.sql
 --  KotobaLab
 --
---  Created by 椎名アヤネ on 2026/05/04.
+--  Created by shiinayane on 2026/05/04.
 --
 
 DROP TABLE IF EXISTS meanings;

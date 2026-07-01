@@ -2,7 +2,7 @@
 //  SearchWordsUseCase.swift
 //  KotobaLab
 //
-//  Created by 椎名アヤネ on 2026/04/17.
+//  Created by shiinayane on 2026/04/17.
 //
 
 import Foundation

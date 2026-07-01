@@ -2,7 +2,7 @@
 //  SQLiteDictionaryRepositoryTests.swift
 //  KotobaLab
 //
-//  Created by 椎名アヤネ on 2026/05/15.
+//  Created by shiinayane on 2026/05/15.
 //
 
 import Foundation
@@ -30,19 +30,19 @@ struct SQLiteDictionaryRepositoryTests {
         repository = SQLiteDictionaryRepository(databaseManager: databaseManager)
     }
 
-    @Test func searchByTermPrefix_ReturnsMatchingWords() async throws {
+    @Test func searchByTermPrefix_shouldReturnMatchingWords() async throws {
         let result = try await repository.searchWords(query: "食", limit: 10)
 
         #expect(result.map(\.term) == ["食べる"])
     }
 
-    @Test func searchByReadingPrefix_ReturnsMatchingWords() async throws {
+    @Test func searchByReadingPrefix_shouldReturnMatchingWords() async throws {
         let result = try await repository.searchWords(query: "た", limit: 10)
 
         #expect(result.map(\.term) == ["食べる"])
     }
 
-    @Test func loadWordDetail_ReturnsMeaningsInSequenceOrder() async throws {
+    @Test func loadWordDetail_shouldReturnMeaningsInSequenceOrder() async throws {
         let detail = try #require(
             try await repository.fetchWordDetail(wordID: 1)
         )

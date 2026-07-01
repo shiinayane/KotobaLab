@@ -2,7 +2,7 @@
 //  PreviewData.swift
 //  KotobaLab
 //
-//  Created by 椎名アヤネ on 2026/04/02.
+//  Created by shiinayane on 2026/04/02.
 //
 
 enum PreviewData {

@@ -2,7 +2,7 @@
 //  MockUserDataRepository.swift
 //  KotobaLab
 //
-//  Created by 椎名アヤネ on 2026/04/13.
+//  Created by shiinayane on 2026/04/13.
 //
 
 import Foundation
