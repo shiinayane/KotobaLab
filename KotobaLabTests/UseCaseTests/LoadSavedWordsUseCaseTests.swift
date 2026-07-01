@@ -11,7 +11,7 @@ import Testing
 @testable import KotobaLab
 
 struct LoadSavedWordsUseCaseTests {
-    @MainActor @Test func loadSavedWords_whenNoSavedWords_shouldReturnEmptyArray() async throws {
+    @Test func loadSavedWords_whenNoSavedWords_shouldReturnEmptyArray() async throws {
         let dictionaryRepository = MockDictionaryRepository()
         let userDataRepository = MockUserDataRepository(savedWordsRecord: [])
 
@@ -25,7 +25,7 @@ struct LoadSavedWordsUseCaseTests {
         #expect(result.isEmpty)
     }
 
-    @MainActor @Test func loadSavedWords_whenSavedWordIDsExist_shouldReturnMatchingWords() async throws {
+    @Test func loadSavedWords_whenSavedWordIDsExist_shouldReturnMatchingWords() async throws {
         let dictionaryRepository = MockDictionaryRepository()
         let userDataRepository = MockUserDataRepository(
             savedWordsRecord: [

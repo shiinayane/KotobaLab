@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct WordSummary: Identifiable, Hashable {
+struct WordSummary: Identifiable, Hashable, Sendable {
     let id: Int64
     let term: String
     let reading: String?
@@ -19,7 +19,7 @@ struct WordSummary: Identifiable, Hashable {
     }
 }
 
-struct WordDetail: Identifiable, Hashable {
+struct WordDetail: Identifiable, Hashable, Sendable {
     let id: Int64
     let term: String
     let reading: String?
@@ -30,7 +30,7 @@ struct WordDetail: Identifiable, Hashable {
     }
 }
 
-struct Meaning: Identifiable, Hashable {
+struct Meaning: Identifiable, Hashable, Sendable {
     let id: Int64
     let partOfSpeech: String?
     let definition: String

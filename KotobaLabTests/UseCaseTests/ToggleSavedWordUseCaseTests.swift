@@ -11,7 +11,7 @@ import Testing
 @testable import KotobaLab
 
 struct ToggleSavedWordUseCaseTests {
-    @MainActor @Test func toggleSavedWord_whenWordIsNotSaved_shouldSavedWord() throws {
+    @Test func toggleSavedWord_whenWordIsNotSaved_shouldSavedWord() throws {
         // Arrange / Given
         let repository = MockUserDataRepository(savedWordsRecord: [])
 
@@ -28,7 +28,7 @@ struct ToggleSavedWordUseCaseTests {
         #expect(try repository.isWordSaved(wordID: 1) == true)
     }
 
-    @MainActor @Test func toggleSavedWord_whenWordIsSaved_shouldUnsavedWord() throws {
+    @Test func toggleSavedWord_whenWordIsSaved_shouldUnsavedWord() throws {
         let repository = MockUserDataRepository(
             savedWordsRecord: [
                 SavedWordRecordData(

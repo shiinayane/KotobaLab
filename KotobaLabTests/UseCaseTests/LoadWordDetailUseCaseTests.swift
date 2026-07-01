@@ -11,7 +11,7 @@ import Testing
 @testable import KotobaLab
 
 struct LoadWordDetailUseCaseTests {
-    @MainActor @Test func loadWordDetail_whenWordDoesNotExist_shouldReturnNil() async throws {
+    @Test func loadWordDetail_whenWordDoesNotExist_shouldReturnNil() async throws {
         let wordID: Int64 = 0
         let dictionaryRepository = MockDictionaryRepository()
         let userDataRepository = MockUserDataRepository()
@@ -27,7 +27,7 @@ struct LoadWordDetailUseCaseTests {
         #expect(result == nil)
     }
 
-    @MainActor @Test func loadWordDetail_whenWordExistsAndIsSaved_shouldReturnSavedDetail()
+    @Test func loadWordDetail_whenWordExistsAndIsSaved_shouldReturnSavedDetail()
         async throws
     {
         let wordID: Int64 = 1
@@ -54,7 +54,7 @@ struct LoadWordDetailUseCaseTests {
         #expect(result?.isSaved == true)
     }
 
-    @MainActor @Test func loadWordDetail_whenWordExistsAndIsNotSaved_shouldReturnUnsavedDetail()
+    @Test func loadWordDetail_whenWordExistsAndIsNotSaved_shouldReturnUnsavedDetail()
         async throws
     {
         let wordID: Int64 = 1

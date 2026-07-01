@@ -11,25 +11,38 @@ import Testing
 @testable import KotobaLab
 
 struct SQLiteDictionaryRepositoryTests {
-    @MainActor @Test func searchByTermPrefix_ReturnsMatchingWords() async throws {
-        let repository = try makeRepository()
+    let repository: SQLiteDictionaryRepository
 
+    init() throws {
+        let bundle = Bundle(for: TestBundleMarker.self)
+
+        let fixtureURL = try #require(
+            bundle.url(forResource: "test_dictionary", withExtension: "sqlite")
+        )
+
+        // Copy the sqlite to the temp dir.
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(
+            UUID().uuidString + ".sqlite"
+        )
+        try FileManager.default.copyItem(at: fixtureURL, to: tempURL)
+
+        let databaseManager = try DatabaseManager(databaseURL: tempURL)
+        repository = SQLiteDictionaryRepository(databaseManager: databaseManager)
+    }
+
+    @Test func searchByTermPrefix_ReturnsMatchingWords() async throws {
         let result = try await repository.searchWords(query: "食", limit: 10)
 
         #expect(result.map(\.term) == ["食べる"])
     }
 
-    @MainActor @Test func searchByReadingPrefix_ReturnsMatchingWords() async throws {
-        let repository = try makeRepository()
-
+    @Test func searchByReadingPrefix_ReturnsMatchingWords() async throws {
         let result = try await repository.searchWords(query: "た", limit: 10)
 
         #expect(result.map(\.term) == ["食べる"])
     }
 
-    @MainActor @Test func loadWordDetail_ReturnsMeaningsInSequenceOrder() async throws {
-        let repository = try makeRepository()
-
+    @Test func loadWordDetail_ReturnsMeaningsInSequenceOrder() async throws {
         let detail = try #require(
             try await repository.fetchWordDetail(wordID: 1)
         )
@@ -40,17 +53,3 @@ struct SQLiteDictionaryRepositoryTests {
 }
 
 private final class TestBundleMarker {}
-
-@MainActor private func makeRepository() throws -> SQLiteDictionaryRepository {
-    let bundle = Bundle(for: TestBundleMarker.self)
-
-    let fixtureURL = try #require(
-        bundle.url(
-            forResource: "test_dictionary",
-            withExtension: "sqlite"
-        )
-    )
-
-    let databaseManager = try DatabaseManager(databaseURL: fixtureURL)
-    return SQLiteDictionaryRepository(databaseManager: databaseManager)
-}

@@ -7,9 +7,9 @@
 
 import Foundation
 
-final class MockDictionaryRepository: DictionaryRepositoryProtocol {
-    private var mockWordSummaries: [WordSummary]
-    private var mockWordDetails: [WordDetail]
+final class MockDictionaryRepository: DictionaryRepositoryProtocol, Sendable {
+    private let mockWordSummaries: [WordSummary]
+    private let mockWordDetails: [WordDetail]
 
     init(
         mockWordSummary: [WordSummary] = PreviewData.wordSummaries,

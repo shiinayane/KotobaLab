@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-final class SwiftDataUserDataRepository: UserDataRepositoryProtocol {
+@MainActor final class SwiftDataUserDataRepository: UserDataRepositoryProtocol {
     private let context: ModelContext
 
     init(context: ModelContext) {

@@ -10,7 +10,7 @@ import Testing
 @testable import KotobaLab
 
 struct SearchWordsUseCaseTests {
-    @MainActor @Test func searchWords_whenQueryIsEmpty_shouldReturnEmptyArray() async throws {
+    @Test func searchWords_whenQueryIsEmpty_shouldReturnEmptyArray() async throws {
         let repository = MockDictionaryRepository()
 
         let useCase = SearchWordsUseCase(dictionaryRepository: repository)
@@ -20,7 +20,7 @@ struct SearchWordsUseCaseTests {
         #expect(result.isEmpty)
     }
 
-    @MainActor @Test func searchWords_whenQueryMatchesWords_shouldReturnMatchingResults() async throws {
+    @Test func searchWords_whenQueryMatchesWords_shouldReturnMatchingResults() async throws {
         // Mock data has "食べる", "食器", "食欲"
         let repository = MockDictionaryRepository()
 
@@ -32,7 +32,7 @@ struct SearchWordsUseCaseTests {
         #expect(result.map(\.term) == ["食べる", "食器", "食欲"])
     }
 
-    @MainActor @Test func searchWords_whenNoWordsMatch_shouldReturnEmptyArray() async throws {
+    @Test func searchWords_whenNoWordsMatch_shouldReturnEmptyArray() async throws {
         let repository = MockDictionaryRepository()
 
         let useCase = SearchWordsUseCase(dictionaryRepository: repository)

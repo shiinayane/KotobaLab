@@ -8,7 +8,7 @@
 import Foundation
 import GRDB
 
-final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol {
+final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol, Sendable {
     private let dbQueue: DatabaseQueue
 
     init(dbQueue: DatabaseQueue) {
