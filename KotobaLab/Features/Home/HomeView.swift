@@ -11,21 +11,21 @@ struct HomeView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                RecentSearchSection
-                RecentSavedSection
+                recentSearchSection
+                recentSavedSection
             }
             .padding(16)
         }
     }
 }
 
-private var RecentSearchSection: some View {
+private var recentSearchSection: some View {
     VStack(alignment: .leading, spacing: 12) {
         Text("Recent Search")
     }
 }
 
-private var RecentSavedSection: some View {
+private var recentSavedSection: some View {
     VStack(alignment: .leading, spacing: 12) {
         Text("Recent Saved")
     }

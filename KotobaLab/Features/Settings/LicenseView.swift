@@ -64,6 +64,7 @@ struct LicenseView: View {
     }
 }
 
+// swift-format-ignore: NeverForceUnwrap
 private enum Links {
     static let jitendex = URL(string: "https://jitendex.org/")!
     static let ccBYSA4 = URL(string: "https://creativecommons.org/licenses/by-sa/4.0/")!

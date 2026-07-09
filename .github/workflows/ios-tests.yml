@@ -26,7 +26,7 @@ jobs:
           xcode-version: '26.4'
 
       - name: Run swift-format lint
-        run: swift format lint -r -s KotobaLab/ KotobaLabTests/
+        run: swift format lint -r -s -p KotobaLab/ KotobaLabTests/
 
   test:
     runs-on: macos-26
@@ -61,7 +61,7 @@ jobs:
             -scheme KotobaLab \
             -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
             -derivedDataPath /tmp/KotobaLabReviewDerived \
-            -resultsBundlePath TestResults.xcresult \
+            -resultBundlePath TestResults.xcresult \
             | xcbeautify
 
       - name: Upload test results
