@@ -3,13 +3,11 @@ name: DictionaryBuilder tests
 on:
   push:
     branches: [main]
-    paths:
+    paths: &paths
       - 'Tools/DictionaryBuilder/**'
       - '.github/workflows/builder-tests.yml'
   pull_request:
-    paths:
-      - 'Tools/DictionaryBuilder/**'
-      - '.github/workflows/builder-tests.yml'
+    paths: *paths
 
 permissions:
   contents: read

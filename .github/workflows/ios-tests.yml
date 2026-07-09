@@ -1,0 +1,72 @@
+name: iOS tests
+
+on:
+  push:
+    branches: [main]
+    paths: &paths
+      - 'KotobaLab/**'
+      - 'KotobaLab.xcodeproj/**'
+      - 'KotobaLabTests/**'
+      - '.github/workflows/ios-tests.yml'
+  pull_request:
+    paths: *paths
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.4'
+
+      - name: Run swift-format lint
+        run: swift format lint -r -s KotobaLab/ KotobaLabTests/
+
+  test:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.4'
+
+      - name: Cache SPM
+        uses: actions/cache@v4
+        with:
+          path: /tmp/KotobaLabReviewDerived/SourcePackages
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: ${{ runner.os }}-spm-
+
+      - name: Download dictionary database
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download --repo "${{ github.repository }}" \
+            --pattern 'dictionary.sqlite' \
+            --dir KotobaLab/Resources
+
+      - name: Build and test
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project KotobaLab.xcodeproj \
+            -scheme KotobaLab \
+            -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
+            -derivedDataPath /tmp/KotobaLabReviewDerived \
+            -resultsBundlePath TestResults.xcresult \
+            | xcbeautify
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: KotobaLab-test-results
+          path: TestResults.xcresult
