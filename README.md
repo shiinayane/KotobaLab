@@ -5,6 +5,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/shiinayane/KotobaLab/actions/workflows/ios-tests.yml"><img alt="iOS tests" src="https://github.com/shiinayane/KotobaLab/actions/workflows/ios-tests.yml/badge.svg"></a>
   <a href="https://github.com/shiinayane/KotobaLab/actions/workflows/builder-tests.yml"><img alt="Builder tests" src="https://github.com/shiinayane/KotobaLab/actions/workflows/builder-tests.yml/badge.svg"></a>
   <img alt="iOS 26+" src="https://img.shields.io/badge/iOS-26%2B-007AFF?logo=apple&logoColor=white">
   <img alt="Swift 6" src="https://img.shields.io/badge/Swift-6.0-F05138?logo=swift&logoColor=white">
@@ -13,13 +14,13 @@
 </p>
 
 > [!NOTE]
-> KotobaLab is a personal project in active development. The current focus is **Phase 2 — Core App Experience**. See the [Roadmap](#roadmap) below.
+> KotobaLab is a personal project in active development. Phase 2 (Core App Experience) is complete; the current focus is **Phase 3 — Architecture and Tests**. See the [Roadmap](#roadmap) below.
 
 The dictionary ships as a bundled, indexed SQLite asset — **293,471 entries in 52 MB** — for sub-millisecond offline prefix search. User data (saved words, future review state) lives in a separate SwiftData store. Backend and AI features are deliberately deferred to later phases.
 
 ## Screenshots
 
-> Minimal MVP UI. Polish lives in Phase 2.
+> Minimal MVP UI. Core-loop states and polish landed in Phase 2.
 
 <p align="center">
   <table>
@@ -47,17 +48,17 @@ The dictionary ships as a bundled, indexed SQLite asset — **293,471 entries in
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| UI | SwiftUI · `@Observable` stores · iOS 26+ |
+| Layer              | Technology                                                                                     |
+| ------------------ | ---------------------------------------------------------------------------------------------- |
+| UI                 | SwiftUI · `@Observable` stores · iOS 26+                                                       |
 | Dictionary storage | SQLite via [GRDB 7](https://github.com/groue/GRDB.swift) (`upToNextMajorVersion` from `7.0.0`) |
-| User-data storage | SwiftData |
-| Language | Swift 6.0 |
-| Concurrency | Swift Concurrency (`Task`, `Task.sleep`) |
-| Tests | Swift Testing (`@Test` / `#expect`) + pytest (Python pipeline) |
-| Build pipeline | Python 3.14 |
-| CI | GitHub Actions ([`builder-tests.yml`](.github/workflows/builder-tests.yml)) |
-| Release | Tagged GitHub Release artifact (build + verify + SHA-256 + `gh release create`) |
+| User-data storage  | SwiftData                                                                                      |
+| Language           | Swift 6.0                                                                                      |
+| Concurrency        | Swift Concurrency (`Task`, `Task.sleep`)                                                       |
+| Tests              | Swift Testing (`@Test` / `#expect`) + pytest (Python pipeline)                                 |
+| Build pipeline     | Python 3.14                                                                                    |
+| CI                 | GitHub Actions — [`ios-tests.yml`](.github/workflows/ios-tests.yml) (xcodebuild) + [`builder-tests.yml`](.github/workflows/builder-tests.yml) (pytest) |
+| Release            | Tagged GitHub Release artifact (build + verify + SHA-256 + `gh release create`)                |
 
 ## Getting Started
 
@@ -122,7 +123,7 @@ KotobaLabTests/          Swift Testing — UseCase + Repository tests + fixture 
 Tools/DictionaryBuilder/ Python pipeline (parse / transform / export_sqlite + pytest)
 Tools/scripts/           release_dictionary.sh
 docs/                    English project docs (product / architecture / dictionary / roadmap / phases)
-.github/workflows/       builder-tests.yml — pytest on every relevant push / PR
+.github/workflows/       ios-tests.yml (xcodebuild) · builder-tests.yml (pytest) — on relevant push / PR
 ```
 
 ## For Maintainers
@@ -179,29 +180,31 @@ Wraps build + verify + SHA-256 + `gh release create` into one command. The artif
 
 ## Roadmap
 
-| Phase | Status | Focus |
-|---|---|---|
-| 0 — MVP Baseline | Complete | Search / Detail / Save / Saved loop, layered architecture, initial tests |
-| 1 — Dictionary Pipeline Stabilization | Complete | Reproducible build, fixture testing, GitHub Release delivery, CI |
-| **2 — Core App Experience** | **Current** | Empty / loading / error states, `enum`-modelled state, info hierarchy |
-| 3 — Architecture and Tests | Planned | Async repository or database actor; full `@MainActor` isolation; iOS CI |
-| 4 — Minimal Backend | Planned | Dictionary asset manifest, AI API proxy |
-| 5 — AI Experiments | Planned | Word explanations, example sentences, nuance comparison |
-| 6 — AI Productization | Planned | Caching, prompt versioning, rate limiting, cost controls |
+| Phase                                 | Status      | Focus                                                                    |
+| ------------------------------------- | ----------- | ------------------------------------------------------------------------ |
+| 0 — MVP Baseline                      | Complete    | Search / Detail / Save / Saved loop, layered architecture, initial tests |
+| 1 — Dictionary Pipeline Stabilization | Complete    | Reproducible build, fixture testing, GitHub Release delivery, CI         |
+| 2 — Core App Experience               | Complete    | Empty / loading / error states, `enum`-modelled state, info hierarchy    |
+| **3 — Architecture and Tests**        | **Current** | Async repository or database actor; full `@MainActor` isolation; iOS CI  |
+| 4 — Minimal Backend                   | Planned     | Dictionary asset manifest, AI API proxy                                  |
+| 5 — AI Experiments                    | Planned     | Word explanations, example sentences, nuance comparison                  |
+| 6 — AI Productization                 | Planned     | Caching, prompt versioning, rate limiting, cost controls                 |
 
 Full roadmap: [`docs/roadmap/product_roadmap.md`](docs/roadmap/product_roadmap.md). Phase execution records: [`docs/phases/`](docs/phases).
 
 ## Documentation
 
-| Topic | Document |
-|---|---|
-| Product scope and MVP boundary | [`docs/product/mvp_prd.md`](docs/product/mvp_prd.md) |
-| Architecture and placement rules | [`docs/architecture/overview.md`](docs/architecture/overview.md) |
-| Dictionary database design | [`docs/dictionary/database_intro.md`](docs/dictionary/database_intro.md) · [`database_strategy.md`](docs/dictionary/database_strategy.md) |
-| Build pipeline and delivery | [`docs/dictionary/dictionary_pipeline.md`](docs/dictionary/dictionary_pipeline.md) |
-| Roadmap | [`docs/roadmap/product_roadmap.md`](docs/roadmap/product_roadmap.md) |
-| Phase 0 — MVP baseline | [`docs/phases/phase-00-current-mvp.md`](docs/phases/phase-00-current-mvp.md) |
-| Phase 1 — Pipeline stabilization | [`docs/phases/phase-01-pipeline-stabilization.md`](docs/phases/phase-01-pipeline-stabilization.md) |
+| Topic                            | Document                                                                                                                                  |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Product scope and MVP boundary   | [`docs/product/mvp_prd.md`](docs/product/mvp_prd.md)                                                                                      |
+| Architecture and placement rules | [`docs/architecture/overview.md`](docs/architecture/overview.md)                                                                          |
+| Dictionary database design       | [`docs/dictionary/database_intro.md`](docs/dictionary/database_intro.md) · [`database_strategy.md`](docs/dictionary/database_strategy.md) |
+| Build pipeline and delivery      | [`docs/dictionary/dictionary_pipeline.md`](docs/dictionary/dictionary_pipeline.md)                                                        |
+| Roadmap                          | [`docs/roadmap/product_roadmap.md`](docs/roadmap/product_roadmap.md)                                                                      |
+| Phase 0 — MVP baseline           | [`docs/phases/phase-00-current-mvp.md`](docs/phases/phase-00-current-mvp.md)                                                              |
+| Phase 1 — Pipeline stabilization | [`docs/phases/phase-01-pipeline-stabilization.md`](docs/phases/phase-01-pipeline-stabilization.md)                                        |
+| Phase 2 — Core app experience    | [`docs/phases/phase-02-core-experience.md`](docs/phases/phase-02-core-experience.md)                                                      |
+| Phase 3 — Architecture and tests | [`docs/phases/phase-03-architecture-tests.md`](docs/phases/phase-03-architecture-tests.md)                                                |
 
 ## Attribution
 
@@ -210,7 +213,7 @@ KotobaLab ships derivative dictionary data from:
 - [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html) — the Japanese–Multilingual Dictionary maintained by the [Electronic Dictionary Research and Development Group](https://www.edrdg.org/).
 - [jitendex-yomitan](https://github.com/stephenmk/jitendex) — Stephen Kraus' JMdict-derived Yomitan dictionary.
 
-The shipped `dictionary.sqlite` is licensed under **CC BY-SA 4.0**, inheriting from upstream. Before any App Store release, this attribution must surface in an in-app Acknowledgements view.
+The shipped `dictionary.sqlite` is licensed under **CC BY-SA 4.0**, inheriting from upstream. This attribution also surfaces in-app under **Settings → License**.
 
 ## License
 
