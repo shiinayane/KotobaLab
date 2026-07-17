@@ -14,16 +14,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR / "output" / "dictionary.sqlite"
 
 SEARCH_SQL = """
-SELECT w.id, w.term, w.reading,
-  (
-    SELECT m.definition_text
-    FROM meanings m
-    WHERE m.word_id = w.id
-    ORDER BY m.id
-    LIMIT 1
-  ) AS preview_meaning
-FROM words w
-WHERE w.term LIKE ? OR w.reading LIKE ?
+SELECT
+    w.id,
+    w.term,
+    w.reading,
+    preview.part_of_speech AS previewPartOfSpeech,
+    preview.definition_text AS previewMeaning
+FROM words AS w
+LEFT JOIN meanings AS preview
+    ON preview.id = (
+        SELECT m.id
+        FROM meanings AS m
+        WHERE m.word_id = w.id
+        ORDER BY m.sequence, m.id
+        LIMIT 1
+    )
+WHERE
+    w.term LIKE ?
+    OR w.reading LIKE ?
 LIMIT ?;
 """
 
@@ -104,29 +112,4 @@ def main():
 
 
 if __name__ == "__main__":
-    """
-    Benchmark results (WHERE w.term LIKE ? OR w.reading LIKE ?):
-        query, rows, avg_ms, min_ms, max_ms
-        日, 50, 0.864, 0.787, 1.214
-        食, 50, 1.923, 1.842, 2.477
-        見る, 21, 16.883, 16.421, 17.737
-        あ, 50, 0.044, 0.043, 0.057
-        zzzznotfound, 0, 16.202, 15.857, 16.764
-
-    Benchmark results (WHERE w.term LIKE ?):
-        query, rows, avg_ms, min_ms, max_ms
-        日, 50, 0.533, 0.488, 0.707
-        食, 50, 1.190, 1.105, 1.315
-        見る, 21, 11.207, 10.550, 12.109
-        あ, 50, 0.297, 0.269, 0.355
-        zzzznotfound, 0, 11.041, 10.671, 11.509
-        
-    Benchmark results ("PRAGMA case_sensitive_like = ON"):
-        query, rows, avg_ms, min_ms, max_ms
-        日, 50, 0.197, 0.051, 1.455
-        食, 50, 0.099, 0.056, 0.398
-        見る, 21, 0.034, 0.028, 0.080
-        あ, 50, 0.062, 0.051, 0.205
-        zzzznotfound, 0, 0.012, 0.011, 0.016
-    """
     main()

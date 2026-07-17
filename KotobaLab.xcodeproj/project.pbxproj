@@ -21,10 +21,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7872345FE79ADEB33CA1156B /* .swift-format */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ".swift-format"; sourceTree = "<group>"; };
 		8D2ED1DC2FAF095B00154E19 /* KotobaLabTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KotobaLabTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D3B28302F768193007932B7 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		8D85E6652F745BFA002A040A /* KotobaLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KotobaLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DAABF502F7D868900CE4802 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = .gitignore; sourceTree = "<group>"; };
+		A4631BB79EB0E84480B65C3D /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		AA8088F1B86E9836C3527E29 /* AGENTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AGENTS.md; sourceTree = "<group>"; };
+		CDCB654FD6880B9BFDD46E12 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -39,6 +43,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		12FE0414942ADFBC32F441B2 /* .github */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = .github;
+			sourceTree = "<group>";
+		};
 		8D0924732FA4C39F001BA48D /* Tools */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Tools;
@@ -97,12 +106,17 @@
 		8D85E65C2F745BFA002A040A = {
 			isa = PBXGroup;
 			children = (
+				12FE0414942ADFBC32F441B2 /* .github */,
+				8DAABF502F7D868900CE4802 /* .gitignore */,
+				7872345FE79ADEB33CA1156B /* .swift-format */,
+				AA8088F1B86E9836C3527E29 /* AGENTS.md */,
+				CDCB654FD6880B9BFDD46E12 /* CLAUDE.md */,
+				A4631BB79EB0E84480B65C3D /* LICENSE */,
+				8D3B28302F768193007932B7 /* README.md */,
 				8D0924732FA4C39F001BA48D /* Tools */,
 				8DCF01A62F8E8CD5007B492A /* imgs */,
 				8D5D61282F7E44E50070F608 /* logs */,
-				8DAABF502F7D868900CE4802 /* .gitignore */,
 				8D3B28692F7D002F007932B7 /* dataset */,
-				8D3B28302F768193007932B7 /* README.md */,
 				8D3B28062F765F81007932B7 /* docs */,
 				8D85E6672F745BFA002A040A /* KotobaLab */,
 				8D2ED1DD2FAF095B00154E19 /* KotobaLabTests */,

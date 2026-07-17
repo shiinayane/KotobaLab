@@ -112,23 +112,48 @@ def check_search_query_uses_index(conn: sqlite3.Connection):
     conn.execute("PRAGMA case_sensitive_like = ON")
 
     sql = """
-    SELECT id, term, reading
-    FROM words
-    WHERE term LIKE ?
-    LIMIT 50
+        SELECT
+            w.id,
+            w.term,
+            w.reading,
+            preview.part_of_speech AS previewPartOfSpeech,
+            preview.definition_text AS previewMeaning
+        FROM words AS w
+        LEFT JOIN meanings AS preview
+            ON preview.id = (
+                SELECT m.id
+                FROM meanings AS m
+                WHERE m.word_id = w.id
+                ORDER BY m.sequence, m.id
+                LIMIT 1
+            )
+        WHERE
+            w.term LIKE ?
+            OR w.reading LIKE ?
+        LIMIT 50
     """
 
-    plan = explain(conn, sql, ("見る%",))
+    plan = explain(
+        conn,
+        sql,
+        (
+            "見る%",
+            "見る%",
+        ),
+    )
     text = plan_text(plan)
 
     print("\nSearch query plan:")
     print(text)
 
-    if "SCAN words" in text:
+    if any(row[3].startswith("SCAN w") for row in plan):
         fail("Search query is scanning words table.")
 
-    if "idx_words_term" not in text:
-        fail("Search query is not using idx_words_term.")
+    if "idx_words_term" not in text or "idx_words_reading" not in text:
+        fail(
+            "Search query is not using both idx_words_term and "
+            "idx_words_reading (expected MULTI-INDEX OR)."
+        )
 
 
 def check_meaning_detail_uses_index(conn: sqlite3.Connection):
