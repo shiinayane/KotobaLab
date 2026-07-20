@@ -1,110 +1,127 @@
 # Dictionary Database Strategy
 
 Status: Active
-Last updated: 2026-05-21
+Last updated: 2026-07-21
 
-## Summary
+## Core Decision
 
-KotobaLab should keep dictionary content and user data in separate storage layers:
+Keep reference dictionary content and user-owned state separate:
 
 ```text
-Dictionary content -> SQLite
-User data          -> SwiftData
+Versioned read-only SQLite dictionary data
+                 +
+SwiftData saved/history/preferences
 ```
 
-This split is still the right direction.
+This remains correct for both the single-dictionary v1 and future multiple
+dictionary packs.
 
-SQLite is better for structured, read-heavy dictionary content and search indexes. SwiftData is better for user-generated app state such as saved words, notes, and future review progress.
+## Product Data Principles
 
-## Why Not One Big Table
+### Preserve Meaning Before Optimizing Size
 
-A dictionary app naturally has one-to-many data:
+The app database should normalize the source into app-useful records, but it
+must not irreversibly concatenate distinct senses or discard searchable forms.
+Compactness is a measured constraint, not permission to lose core dictionary
+meaning.
 
-- one word can have multiple meanings
-- one meaning can later have multiple examples
-- one word can have tags, frequency, and user state
+### Separate Durable Identity from Row Identity
 
-Putting everything into one large table works for a demo, but it becomes hard to query, hard to update, and hard to extend.
+SQLite integer primary keys may remain useful for joins and indexes. They are
+not stable across rebuilds and must not be stored as the only reference in user
+data.
 
-The product database should stay structured and should expose app-facing records, not raw source payloads.
+A durable entry reference needs:
 
-## Storage Boundaries
+- a stable dictionary identifier
+- a stable source entry key
 
-### SQLite Owns
+For the single-source Phase 4 migration, the dictionary identifier may be
+constant, but the data model should not erase it from the conceptual contract.
 
-- Dictionary words.
-- Readings.
-- Meanings.
-- Part-of-speech metadata.
-- Future search index data.
-- Future example sentence content, if bundled.
+### Version Every Asset Contract
 
-### SwiftData Owns
+Each production database or pack needs machine-readable:
 
-- Saved words.
-- Future user notes.
-- Future review progress.
-- Future app-local learning state.
+- schema version
+- content/source revision
+- dictionary identifier
+- language metadata
+- build identity
+- source/license attribution metadata
 
-## App Database Layers
+The app must validate compatibility before activating an asset.
 
-The dictionary database should eventually be treated as three logical layers.
+### Keep Search and Detail Projections Separate
 
-### Search Layer
+Search should read a lean, indexed projection. Detail should load structured
+forms/senses/glosses/tags. Avoid making every search row decode the complete
+entry graph.
 
-Optimized for the result list.
+### Preserve Provider Boundaries
 
-It should provide:
+When multiple dictionaries arrive, equivalent-looking headwords from different
+providers remain distinct sourced entries. The first implementation should
+group/display sources, not synthesize an authoritative merged definition.
 
-- word id
-- term
-- reading
-- preview part of speech
-- preview meaning
-- ranking or priority
+## Target Logical Model
 
-Search should not need full detail data.
+Exact table names belong to Phase 4 design, but the logical relationships are:
 
-### Detail Layer
+```text
+Dictionary metadata
+  └─ Entry (stable source key)
+      ├─ Forms / readings
+      └─ Ordered senses
+          ├─ Glosses
+          └─ supported tags / restrictions
+```
 
-Optimized for the word detail page.
+The model should support the current Jitendex source faithfully enough for v1
+without pretending to be a universal dictionary ontology.
 
-It should provide:
+## Asset Lifecycle
 
-- word id
-- term
-- reading
-- meanings
-- part-of-speech data
-- future tags
-- future examples
+The current “copy only if missing” behavior is insufficient. The target
+activation flow is:
 
-### Source and Debug Layer
+```text
+discover candidate asset
+-> verify checksum/file integrity
+-> read metadata and compatibility
+-> open and verify schema/content invariants
+-> migrate stable user references if required
+-> atomically activate
+-> retain or restore prior valid asset on failure
+```
 
-Raw source entries and import diagnostics should not be shipped inside the app database.
+Dictionary replacement must not delete SwiftData user state.
 
-They should stay in:
+## Performance Policy
 
-- source datasets
-- local debug outputs
-- builder logs
-- local-only files
+- Maintain indexes for every production lookup path.
+- Verify complete production query plans, including projections and ordering.
+- Record database size, row counts, search/detail/batch latency, and temporary
+  B-tree use after relevant changes.
+- Add FTS only for a defined requirement that prefix/form indexes cannot meet.
+- Reject ranking changes that are correct in theory but unusable in measured
+  broad-prefix queries.
 
-## Recommended Next Steps
+## Multi-Dictionary Direction
 
-1. Keep the current lean schema.
-2. Keep search and detail query benchmarks documented when query SQL or schema changes.
-3. Consider a dedicated search table if prefix search becomes slow.
-4. Consider FTS only if real requirements need it.
-5. Keep raw source data out of the app bundle.
-6. ✅ Decide how the production database is generated and distributed — closed in Phase 1 (GitHub Release artifact; see [`dictionary_pipeline.md`](dictionary_pipeline.md)).
+After v1, prefer one independently versioned SQLite pack per provider over one
+ever-growing monolithic database. This improves install/remove/update isolation
+and licensing clarity. The app layer aggregates enabled packs through a common
+repository contract.
 
-## Do Not Do Yet
+The trade-offs and migration path are detailed in
+[Multi-Dictionary Strategy](multi_dictionary_strategy.md).
 
-Avoid these until the current pipeline is stable:
+## Explicit Non-decisions
 
-- Backend dictionary sync.
-- AI search.
-- Complex semantic search.
-- Full text search without query benchmarks.
-- Mixing user data into the dictionary database.
+- No final table layout is mandated before representative source fixtures are
+  audited in Phase 4.
+- No FTS engine is selected.
+- No second dictionary provider is selected.
+- No remote manifest/backend is required for v1.
+- No cross-provider semantic merge algorithm is planned.

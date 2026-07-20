@@ -14,9 +14,12 @@
 </p>
 
 > [!NOTE]
-> KotobaLab is a personal project in active development. Phase 2 (Core App Experience) is complete; the current focus is **Phase 3 — Architecture and Tests**. See the [Roadmap](#roadmap) below.
+> KotobaLab is a personal project in active development. The MVP architecture and CI foundation are complete; the current focus is **Phase 4 — Dictionary Fidelity and Stable Identity**, the first step toward a formal single-dictionary v1. See the [Roadmap](#roadmap) below.
 
-The dictionary ships as a bundled, indexed SQLite asset — **293,471 entries in 52 MB** — for sub-millisecond offline prefix search. User data (saved words, future review state) lives in a separate SwiftData store. Backend and AI features are deliberately deferred to later phases.
+The dictionary ships as a bundled, indexed SQLite asset — **293,471 entries in 52 MB** — for sub-millisecond offline prefix search. User data lives in a separate SwiftData store. Current work is upgrading source fidelity, stable identity, search quality, update safety, and release readiness before backend, AI, or broad study features are considered.
+
+> [!WARNING]
+> The current asset is an MVP projection, not a source-complete dictionary model: distinct glosses are flattened into one meaning, extracted alternative forms are not stored, and saved data still references rebuild-dependent SQLite IDs. See the [v1 Gap Analysis](docs/product/v1_gap_analysis.md).
 
 ## Screenshots
 
@@ -90,7 +93,7 @@ open KotobaLab.xcodeproj
 ```text
 App / Scene
   └─ Feature View         (SwiftUI, pure render)
-      └─ Store            (@Observable, ideally @MainActor)
+      └─ Store            (@MainActor @Observable)
           └─ UseCase      (business operation)
               └─ Repository protocol   ──┐  Domain (framework-free)
                   └─ Repository impl   ──┤
@@ -180,31 +183,33 @@ Wraps build + verify + SHA-256 + `gh release create` into one command. The artif
 
 ## Roadmap
 
-| Phase                                 | Status      | Focus                                                                    |
-| ------------------------------------- | ----------- | ------------------------------------------------------------------------ |
-| 0 — MVP Baseline                      | Complete    | Search / Detail / Save / Saved loop, layered architecture, initial tests |
-| 1 — Dictionary Pipeline Stabilization | Complete    | Reproducible build, fixture testing, GitHub Release delivery, CI         |
-| 2 — Core App Experience               | Complete    | Empty / loading / error states, `enum`-modelled state, info hierarchy    |
-| **3 — Architecture and Tests**        | **Current** | Async repository or database actor; full `@MainActor` isolation; iOS CI  |
-| 4 — Minimal Backend                   | Planned     | Dictionary asset manifest, AI API proxy                                  |
-| 5 — AI Experiments                    | Planned     | Word explanations, example sentences, nuance comparison                  |
-| 6 — AI Productization                 | Planned     | Caching, prompt versioning, rate limiting, cost controls                 |
+| Phase | Status | Focus |
+| --- | --- | --- |
+| 0 — MVP Baseline | Complete | Search / Detail / Save / Saved loop |
+| 1 — Pipeline Stabilization | Complete | Reproducible, verified dictionary delivery |
+| 2 — Core Experience | Complete | Explicit UI state and coherent core flow |
+| 3 — Architecture and CI | Complete | Async GRDB access, actor isolation, iOS CI |
+| **4 — Dictionary Fidelity and Stable Identity** | **Current** | Structured senses/forms, durable references, versioned asset |
+| 5 — Search and Lookup Quality | Planned | Ranking, normalization, structured detail |
+| 6 — Daily-Use Product Completion | Planned | Complete navigation, Saved, Settings, accessibility |
+| 7 — v1 Release Readiness | Planned | Upgrade safety, test matrix, App Store gate |
+| 8 — Multi-Dictionary Foundation | Planned | Source-aware offline dictionary packs |
+| 9 — Dictionary Catalog Expansion | Planned | Ship an additional licensed source/language |
 
 Full roadmap: [`docs/roadmap/product_roadmap.md`](docs/roadmap/product_roadmap.md). Phase execution records: [`docs/phases/`](docs/phases).
 
 ## Documentation
 
-| Topic                            | Document                                                                                                                                  |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Product scope and MVP boundary   | [`docs/product/mvp_prd.md`](docs/product/mvp_prd.md)                                                                                      |
-| Architecture and placement rules | [`docs/architecture/overview.md`](docs/architecture/overview.md)                                                                          |
-| Dictionary database design       | [`docs/dictionary/database_intro.md`](docs/dictionary/database_intro.md) · [`database_strategy.md`](docs/dictionary/database_strategy.md) |
-| Build pipeline and delivery      | [`docs/dictionary/dictionary_pipeline.md`](docs/dictionary/dictionary_pipeline.md)                                                        |
-| Roadmap                          | [`docs/roadmap/product_roadmap.md`](docs/roadmap/product_roadmap.md)                                                                      |
-| Phase 0 — MVP baseline           | [`docs/phases/phase-00-current-mvp.md`](docs/phases/phase-00-current-mvp.md)                                                              |
-| Phase 1 — Pipeline stabilization | [`docs/phases/phase-01-pipeline-stabilization.md`](docs/phases/phase-01-pipeline-stabilization.md)                                        |
-| Phase 2 — Core app experience    | [`docs/phases/phase-02-core-experience.md`](docs/phases/phase-02-core-experience.md)                                                      |
-| Phase 3 — Architecture and tests | [`docs/phases/phase-03-architecture-tests.md`](docs/phases/phase-03-architecture-tests.md)                                                |
+| Topic | Document |
+| --- | --- |
+| Product requirements and v1 gate | [`docs/product/mvp_prd.md`](docs/product/mvp_prd.md) |
+| Repository-grounded gap analysis | [`docs/product/v1_gap_analysis.md`](docs/product/v1_gap_analysis.md) |
+| Architecture and testing | [`overview.md`](docs/architecture/overview.md) · [`testing_strategy.md`](docs/architecture/testing_strategy.md) |
+| Dictionary current state and strategy | [`database_intro.md`](docs/dictionary/database_intro.md) · [`database_strategy.md`](docs/dictionary/database_strategy.md) |
+| Build pipeline and delivery | [`dictionary_pipeline.md`](docs/dictionary/dictionary_pipeline.md) |
+| Multi-dictionary direction | [`multi_dictionary_strategy.md`](docs/dictionary/multi_dictionary_strategy.md) |
+| Roadmap | [`docs/roadmap/product_roadmap.md`](docs/roadmap/product_roadmap.md) |
+| Phase plans and records | [`docs/phases/`](docs/phases/README.md) |
 
 ## Attribution
 
