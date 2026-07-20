@@ -1,18 +1,17 @@
 # Architecture
 
 Status: Active
-Last updated: 2026-05-21
+Last updated: 2026-07-21
 
-Long-lived architecture documents live here.
+Long-lived architecture contracts live here. Phase implementation logs belong
+in [`docs/phases/`](../phases/README.md).
 
-## Current Documents
+## Documents
 
-- [Overview](overview.md): current MVVM + UseCase + Repository structure.
+- [Architecture Overview](overview.md): dependency direction, layer ownership,
+  concurrency, persistence, query policy, and current risks.
+- [Testing Strategy](testing_strategy.md): test boundaries and release gates
+  across builder, repositories, UseCases, Stores, UI, and upgrade behavior.
 
-## Planned Documents
-
-- Planned: `testing_strategy.md`: unit, pipeline, repository, and UI testing strategy.
-- Planned: `dependency_injection.md`: `AppDependencies`, scene assembly, and preview/mock rules.
-- Planned: `concurrency.md`: repository async boundaries and database actor design.
-
-Implementation logs belong in `docs/phases/`, not here.
+Dictionary-pack and storage strategy lives under
+[`docs/dictionary/`](../dictionary/).

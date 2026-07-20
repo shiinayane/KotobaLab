@@ -1,179 +1,172 @@
 # Architecture Overview
 
 Status: Active
-Last updated: 2026-05-20
+Last updated: 2026-07-21
 
 ## Summary
 
-KotobaLab currently uses a lightweight layered architecture:
+KotobaLab uses lightweight MVVM with explicit UseCase and Repository boundaries:
 
 ```text
-SwiftUI View
--> Store
+App / Scene
+-> SwiftUI View
+-> @MainActor Store
 -> UseCase
 -> Repository Protocol
 -> Repository Implementation
--> SQLite / SwiftData
+-> GRDB SQLite / SwiftData
 ```
 
-This is best described as MVVM with UseCase and Repository boundaries. It is not a full Clean Architecture implementation, and it does not need to become one yet. The current priority is to keep dependency direction clear, keep features testable, and keep the data layer replaceable.
+This is intentionally not a full Clean Architecture implementation. New layers
+are justified only when they isolate a real source of change, remove duplication,
+or materially improve testability.
 
-## Directory Map
+## Current Directory Map
 
 ```text
 KotobaLab
-├── App
+├── App                 dependency composition and app shell
 ├── Domain
-│   ├── Entity
-│   ├── Repository
-│   └── UseCase
+│   ├── Entity          technology-neutral product models
+│   ├── Repository      data-access contracts
+│   └── UseCase         business operations
 ├── Data
-│   ├── Database
-│   ├── Persistence
-│   ├── Preview
-│   └── Repository
-├── Features
-├── Navigation
-├── Resources
-└── Shared
+│   ├── Database        GRDB manager and database records
+│   ├── Persistence     SwiftData models
+│   ├── Preview         preview fixtures/helpers
+│   └── Repository      concrete and mock repositories
+├── Features            Scene + Store + View feature units
+├── Navigation          app routing/sheets
+├── Resources           bundled/staged dictionary asset
+└── Shared              reusable UI components
 ```
 
 ## Layer Responsibilities
 
-### App
+### App and Scene
 
-The `App` layer creates root dependencies and assembles the app shell.
+- Construct long-lived dependencies.
+- Bind concrete repositories to Domain protocols.
+- Create feature Stores and inject UseCases.
+- Own launch state and database compatibility/recovery in future Phase 4/7 work.
 
-Current examples:
+Current root composition is `KotobaLabApp -> RootView -> FeatureScene`.
 
-- `KotobaLabApp`
-- `AppDependencies`
-- `TabContainer`
+### View
+
+- Render Store state.
+- Forward user actions.
+- Own view-local presentation state only.
+- Never query GRDB/SwiftData or construct repositories directly.
+
+### Store
+
+- Acts as the feature ViewModel.
+- Is explicitly `@MainActor @Observable` when it owns UI-observed state.
+- Models meaningful state transitions, cancellation, retry, and user action
+  orchestration.
+- Delegates business operations to UseCases.
+
+Current Stores: `SearchStore`, `SavedStore`, and `WordDetailStore`.
 
 ### Domain
 
-The `Domain` layer owns technology-neutral app concepts.
-
-It contains:
-
-- Entities such as `WordSummary`, `WordDetail`, and `Meaning`.
-- Repository protocols such as `DictionaryRepositoryProtocol` and `UserDataRepositoryProtocol`.
-- Use cases such as `SearchWordsUseCase`, `LoadSavedWordsUseCase`, `LoadWordDetailUseCase`, and `ToggleSavedWordUseCase`.
-
-Domain should not depend on SwiftUI, SwiftData, GRDB, SQLite rows, or app framework details.
+- Defines app-facing entities and repository contracts.
+- Contains UseCases for search, detail, saved loading, and saved toggling.
+- Must not import SwiftUI, SwiftData, GRDB, or SQLite row types.
+- Value models crossing async dictionary boundaries should remain `Sendable`.
 
 ### Data
 
-The `Data` layer owns concrete persistence and repository implementations.
+- Owns GRDB records, SQL/query-interface code, SQLite setup, SwiftData models,
+  migrations, and concrete repository implementations.
+- Converts concrete records into Domain entities.
+- Keeps dictionary content and user-owned data in separate storage engines.
 
-Current data sources:
+## Concurrency Model
 
-- SQLite via GRDB for dictionary content.
-- SwiftData for user-generated data such as saved words.
-- Mock repositories for previews and tests.
+The Xcode target uses `SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated`.
 
-### Features
+- UI Stores are explicitly `@MainActor`.
+- `DictionaryRepositoryProtocol` methods are `async throws`.
+- `SQLiteDictionaryRepository` is `Sendable` and performs reads through GRDB
+  `DatabaseQueue.read`, which owns SQLite serialization.
+- UseCases propagate suspension to Stores without importing GRDB.
+- SwiftData repositories remain `@MainActor` because they own a main
+  `ModelContext` and currently expose synchronous operations.
 
-Each feature should keep UI rendering, UI state, and dependency assembly separate.
+Do not add a custom database actor unless a measured requirement is not served
+by GRDB's queue and current repository boundary.
 
-Current pattern:
+## Persistence Boundaries
 
-```text
-FeatureScene
--> FeatureStore
--> FeatureView
-```
+### Dictionary Data
 
-The scene assembles dependencies, the store owns UI state, and the view renders state.
+Read-heavy reference content belongs in versioned, read-only SQLite assets.
+Today there is one Jitendex-derived database. Phase 8 may generalize this to one
+SQLite pack per dictionary provider while preserving a common repository model.
 
-## MVVM Mapping
+### User Data
 
-The project uses `Store` instead of `ViewModel`, but the role is the same.
+Saved entries, recent lookup history, future notes, and user pack preferences
+belong in SwiftData. User data must reference dictionary entries by stable,
+source-aware identity rather than transient SQLite row IDs.
 
-| MVVM concept | Current implementation |
+Dictionary records and SwiftData models must not be joined by importing one
+storage technology into the other. UseCases coordinate their Domain values.
+
+## GRDB Query Policy
+
+Use the simplest representation that keeps the production query understandable
+and testable:
+
+- GRDB Query Interface for table relationships and ordinary typed filtering.
+- Typed `SQLRequest`/`SQL` fragments when a projection or ranking query is
+  clearer and more stable as SQL.
+- Parameter interpolation through GRDB, never string-built user values.
+- Benchmark the complete production query whenever SQL, indexes, projection,
+  ranking, or result limits change.
+
+The current summary projection intentionally uses a correlated first-meaning
+subquery. The current detail query uses the `WordRecord.meanings` association.
+
+## Feature Placement Rules
+
+| Concern | Location |
 | --- | --- |
-| View | `SearchView`, `SavedView`, `WordDetailView` |
-| ViewModel | `SearchStore`, `SavedStore`, `WordDetailStore` |
-| Model | `WordSummary`, `WordDetail`, `Meaning` |
-| Service boundary | Repository protocols |
-| Data source | SQLite, SwiftData |
+| UI rendering | `Features/<Feature>/<Feature>View.swift` |
+| UI state and actions | `Features/<Feature>/<Feature>Store.swift` |
+| Dependency assembly | `Features/<Feature>/<Feature>Scene.swift` |
+| Business operation | `Domain/UseCase/` |
+| Technology-neutral model | `Domain/Entity/` |
+| Data-access contract | `Domain/Repository/` |
+| GRDB/SwiftData record and implementation | `Data/` |
+| App launch/composition | `App/` |
 
-## Dependency Direction
-
-The intended dependency flow is:
-
-```text
-App / Scene
-  -> Feature View
-  -> Store
-  -> UseCase
-  -> Repository Protocol
-  -> Repository Implementation
-  -> SQLite / SwiftData
-```
-
-Views should not directly depend on SQLite, SwiftData, GRDB, or concrete repositories.
+Not every static screen needs a Store. Add a Scene/Store when the feature has
+dependencies, asynchronous state, business actions, or meaningful testable
+behavior.
 
 ## Current Strengths
 
-- The core app is no longer view-driven only.
-- Use cases now cover search, saved-word loading, word-detail loading, and saved-state toggling.
-- Mock repositories make use case tests straightforward.
-- The dictionary database has moved toward a reproducible build pipeline.
-- The documentation structure now separates product, dictionary, architecture, roadmap, and phase records.
+- Dependency direction is clear and Domain remains framework-neutral.
+- Dictionary I/O is async and UI state is main-actor isolated.
+- Mocks and a fixture SQLite database support UseCase/repository tests.
+- Dictionary and user persistence are separated.
+- Builder and iOS CI protect the current foundation.
 
-## Current Weak Points
+## Current Architecture Risks
 
-### Synchronous Repository APIs
+- Saved user state references transient autoincrement word IDs.
+- Launch composition fails with `fatalError` rather than a recoverable launch
+  state.
+- Dictionary asset copying has no schema/content-version upgrade contract.
+- Domain entry models are too flat for source-faithful senses/forms and for
+  future multiple providers.
+- Store and UI state machines lack direct automated coverage.
+- `AnyView` destination factories erase type information; acceptable in the
+  small current shell, but re-evaluate if navigation grows rather than building
+  a speculative router now.
 
-Repository protocols are still synchronous. Because stores run on the main actor, database work can still block UI work if queries become expensive.
-
-Future direction:
-
-- Make dictionary repository APIs async.
-- Or isolate SQLite access behind a dedicated database actor.
-- Keep state mutation on the main actor.
-
-### Search Query Plan
-
-The schema has four indexes: `idx_words_term`, `idx_words_reading`, `idx_words_sequence`, and `idx_meanings_word_id`. Prefix search depends on `PRAGMA case_sensitive_like = ON`; without it SQLite scans `words`, and with it SQLite uses a `MULTI-INDEX OR` plan over `idx_words_term` and `idx_words_reading` because the repository's `WHERE w.term LIKE ? OR w.reading LIKE ?` covers both columns.
-
-Current benchmark record:
-
-- before PRAGMA: `見る` ~16.8 ms, `zzzznotfound` ~16.2 ms, plan `SCAN words`
-- after PRAGMA: `見る` ~0.034 ms, `zzzznotfound` ~0.012 ms, plan `MULTI-INDEX OR` using `idx_words_term` + `idx_words_reading`
-
-Future direction:
-
-- Keep benchmark records current.
-- Consider a dedicated search table.
-- Consider FTS only after measuring actual search needs.
-
-### Dependency Pinning
-
-GRDB is pinned to `upToNextMajorVersion` from `7.0.0` in `KotobaLab.xcodeproj/project.pbxproj`.
-
-### Target Hygiene
-
-The project now has target exceptions for `Features/TestView`, which is an improvement. The long-term goal is still to keep local experiments out of the app target entirely.
-
-## Near-term Architecture Tasks
-
-1. Add explicit search state instead of only `query` and `results`.
-2. Design async repository or database actor boundaries.
-3. Mark `WordDetailStore` and `SavedStore` as `@MainActor` to match `SearchStore`.
-
-## Placement Rules
-
-Use these rules when adding new code:
-
-- UI rendering: `Features/<Feature>/<Feature>View.swift`
-- UI state and user action orchestration: `Features/<Feature>/<Feature>Store.swift`
-- Feature assembly: `Features/<Feature>/<Feature>Scene.swift`
-- Business operation: `Domain/UseCase`
-- Technology-neutral model: `Domain/Entity`
-- Data access contract: `Domain/Repository`
-- SQLite or SwiftData implementation: `Data/Repository`
-- App-level composition: `App`
-
-Do not add a new layer unless it reduces duplication, isolates real change, or improves testability.
+These risks are owned by Phases 4–8 in the
+[Product Roadmap](../roadmap/product_roadmap.md).

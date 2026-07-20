@@ -27,7 +27,7 @@ Your default role in this repository is **code reviewer and architecture advisor
 
 KotobaLab is a local-first Japanese dictionary and light study app for iOS, built in SwiftUI.
 
-Current status: **Phase 1 (Dictionary Pipeline Stabilization) is complete**; focus has moved to **Phase 2 (Core App Experience)**.
+Current status: **Phases 0–3 are complete**; focus is **Phase 4 (Dictionary Fidelity and Stable Identity)** on the path to a formal single-dictionary v1.
 
 Core loop: `Search → Word Detail → Save → Saved List → reopen Word Detail`.
 
@@ -39,7 +39,7 @@ Tech stack:
 - **Concurrency**: Swift Concurrency (`Task`, `Task.sleep` for debounce)
 - **Tests**: Swift Testing (`import Testing`, `@Test`, `#expect`) — **not XCTest**
 - **Build pipeline**: Python 3.14 under `Tools/DictionaryBuilder/`
-- **CI**: GitHub Actions runs the builder pytest suite on every push and PR ([`.github/workflows/builder-tests.yml`](.github/workflows/builder-tests.yml))
+- **CI**: GitHub Actions runs Apple `swift format` + iOS tests and the builder pytest suite ([`ios-tests.yml`](.github/workflows/ios-tests.yml) · [`builder-tests.yml`](.github/workflows/builder-tests.yml))
 
 ## Architecture Constraints
 
@@ -54,7 +54,7 @@ Hard rules:
 - `Domain/` must not import SwiftUI, SwiftData, GRDB, or SQLite row types.
 - Views must not directly hold a Repository or database reference.
 - Each feature uses the `Scene + Store + View` triad.
-- `Store` is the ViewModel role — `@Observable` and ideally `@MainActor`.
+- `Store` is the ViewModel role — observable UI Stores are explicitly `@MainActor @Observable`.
 - Dictionary content lives in SQLite; user data lives in SwiftData. The two storage engines are never mixed.
 
 ## Placement Rules
@@ -76,16 +76,16 @@ Do not introduce a new layer unless it removes duplication, isolates real change
 
 ## Active Priorities
 
-From [`docs/roadmap/product_roadmap.md`](docs/roadmap/product_roadmap.md). Phase 1 is closed (see [`docs/phases/phase-01-pipeline-stabilization.md`](docs/phases/phase-01-pipeline-stabilization.md)). Current focus is Phase 2 / Phase 3:
+From [`docs/roadmap/product_roadmap.md`](docs/roadmap/product_roadmap.md) and the current [`Phase 4 plan`](docs/phases/phase-04-dictionary-fidelity.md):
 
-1. Improve Search and Word Detail UX — empty / loading / error states and information hierarchy.
-2. Model search state explicitly with an `enum`, replacing the current flat `query` + `results`.
-3. Keep the search benchmark records in [`docs/dictionary/`](docs/dictionary) current as schema or SQL evolves.
-4. Mark `WordDetailStore` and `SavedStore` as `@MainActor` (only `SearchStore` is today).
-5. Decide whether repository APIs should become `async`, or move behind a dedicated database actor.
-6. Align `verify_database.py`'s search-plan check with the app's actual two-column `LIKE` SQL.
+1. Audit representative real Jitendex entries and define the supported source contract.
+2. Preserve ordered senses/glosses, alternative forms, readings, POS, and supported tags instead of flattening them.
+3. Replace durable reliance on autoincrement `wordID` with stable source identity and a saved-data migration path.
+4. Add schema/content/source/license metadata and dictionary asset compatibility rules.
+5. Add database replacement, validation, migration, and rollback tests.
+6. Rebuild and re-benchmark before changing Search/Word Detail presentation in Phase 5.
 
-**Out of scope right now**: backend service, AI features, complex cloud sync, full study system, broad UI redesign. Flag in review any PR or change that crosses these lines.
+**Out of scope right now**: backend service, AI features, complex cloud sync, full study system, broad UI redesign, multi-dictionary runtime, and speculative FTS/fuzzy/deinflection work. Flag in review any change that crosses these lines without a phase decision.
 
 ## Review Checklist
 
@@ -97,7 +97,7 @@ Walk through these in order when reviewing code or proposals:
 4. **Testability** — can the change be exercised with a Mock repository? Is business logic bypassing UseCase and sitting in the Store?
 5. **Database impact** — does it touch SQL / schema / index / PRAGMA? If yes, remind the user to re-run the benchmark and update the recorded query plan and latency tables in [`docs/dictionary/`](docs/dictionary).
 6. **Over-engineering** — is the change introducing protocols / generics / abstractions / future-proofing that an MVP-stage app does not yet need?
-7. **Concurrency + main thread** — repository APIs are currently synchronous. Is anything doing potentially blocking I/O on `@MainActor`? Should this be `async`, or move to a database actor?
+7. **Concurrency + main thread** — dictionary repository APIs are async through GRDB `DatabaseQueue.read`; UI Stores are `@MainActor`. Does new work preserve that boundary? SwiftData repositories remain main-actor bound.
 8. **Scope creep** — is a bug fix smuggling in unrelated refactoring? Are documentation edits overreaching?
 9. **Resources + delivery** — does the change touch `KotobaLab/Resources/dictionary.sqlite`, anything under `Tools/DictionaryBuilder/`, or the release pipeline? If yes, does it preserve build reproducibility and the GitHub Release flow (`Tools/scripts/release_dictionary.sh`)?
 
@@ -105,11 +105,11 @@ Walk through these in order when reviewing code or proposals:
 
 Formal documentation lives under [`docs/`](docs/README.md) and is written in English. Chinese notes and drafts go in `docs/_local/` (gitignored).
 
-- Product scope: [`docs/product/mvp_prd.md`](docs/product/mvp_prd.md)
-- Architecture + placement rules: [`docs/architecture/overview.md`](docs/architecture/overview.md)
-- Dictionary database: [`database_intro.md`](docs/dictionary/database_intro.md) · [`database_strategy.md`](docs/dictionary/database_strategy.md) · [`dictionary_pipeline.md`](docs/dictionary/dictionary_pipeline.md)
+- Product scope: [`docs/product/mvp_prd.md`](docs/product/mvp_prd.md) · [`v1_gap_analysis.md`](docs/product/v1_gap_analysis.md)
+- Architecture + testing: [`docs/architecture/overview.md`](docs/architecture/overview.md) · [`testing_strategy.md`](docs/architecture/testing_strategy.md)
+- Dictionary database: [`database_intro.md`](docs/dictionary/database_intro.md) · [`database_strategy.md`](docs/dictionary/database_strategy.md) · [`dictionary_pipeline.md`](docs/dictionary/dictionary_pipeline.md) · [`multi_dictionary_strategy.md`](docs/dictionary/multi_dictionary_strategy.md)
 - Roadmap: [`docs/roadmap/product_roadmap.md`](docs/roadmap/product_roadmap.md)
-- Phase records: [Phase 0](docs/phases/phase-00-current-mvp.md) · [Phase 1](docs/phases/phase-01-pipeline-stabilization.md)
+- Phase records: [`docs/phases/README.md`](docs/phases/README.md) · current [Phase 4](docs/phases/phase-04-dictionary-fidelity.md)
 
 ## Common Commands
 

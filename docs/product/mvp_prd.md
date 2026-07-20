@@ -1,122 +1,151 @@
-# MVP Product Requirements
+# Product Requirements and v1 Baseline
 
 Status: Active
-Last updated: 2026-05-21
+Last updated: 2026-07-21
 
-## Product
+## Product Positioning
 
-KotobaLab is a native Apple app for Japanese vocabulary lookup and lightweight study.
+KotobaLab is a native, offline-first Japanese dictionary for iOS. Its first
+release should be dependable for everyday lookup before it grows into a broader
+study product.
 
-The first product version should focus on one core loop:
+The product order is deliberate:
+
+```text
+Dictionary correctness
+-> Lookup quality
+-> Daily-use product completeness
+-> Release reliability
+-> Multiple dictionaries
+-> Optional study and intelligent features
+```
+
+AI, accounts, and a backend are not part of the dictionary foundation.
+
+## Current Baseline
+
+The repository already proves the core loop:
 
 ```text
 Search -> Word Detail -> Save -> Saved List -> Reopen Detail
 ```
 
-## MVP Goal
+It also has a reproducible SQLite build pipeline, async GRDB access, SwiftData
+user persistence, explicit Store state, unit/repository tests, and iOS/builder
+CI. This is a strong engineering MVP, but it is not yet a release-ready
+dictionary product. The concrete gaps are recorded in
+[v1 Gap Analysis](v1_gap_analysis.md).
 
-The MVP should prove that the app can:
+## v1 Product Goal
 
-- search a local dictionary
-- show useful word details
-- save words locally
-- browse saved words
-- keep the app responsive and understandable
+v1 is a focused Japanese-English dictionary that can be trusted for ordinary
+offline lookup. A single dictionary source is acceptable for v1 only if its
+content is represented faithfully, search behavior is predictable, saved data
+survives dictionary updates, and every visible product surface is complete.
 
-The MVP is not a full language learning platform.
+Multiple dictionary sources are an explicit post-v1 goal. They must be added
+through a source-aware data model rather than by appending unrelated columns or
+merging entries heuristically.
 
 ## Target Users
 
-Primary users:
+Primary users are Japanese learners who need to:
 
-- the developer
-- intermediate Japanese learners
-- users who need quick dictionary lookup
+- look up a Japanese headword or reading quickly
+- distinguish likely matches from less relevant entries
+- inspect structured senses and usage information
+- save an entry and find it again later
+- use the dictionary without a network connection
 
-The product tone should be closer to a focused dictionary and study tool than to a course app or entertainment app.
+The initial interface and definition language may remain English. Additional
+definition languages belong to the multi-dictionary expansion phases.
 
-## In Scope
+## Required v1 Capabilities
+
+### Dictionary Content
+
+- Preserve stable source identity across database rebuilds.
+- Preserve headwords, readings, alternative forms, ordered senses, glosses,
+  part-of-speech data, and the source metadata needed for attribution.
+- Expose a schema/content version and validate required invariants during build.
+- Do not silently flatten distinct senses into one display string.
 
 ### Search
 
-Users can search dictionary entries.
+- Search Japanese headwords and readings offline.
+- Normalize supported Japanese input consistently.
+- Rank exact matches before prefix and alternative-form matches.
+- Produce deterministic ordering for equal-ranked results.
+- Define result limits or pagination without silently hiding relevant matches.
+- Provide empty, loading, no-result, error, and retry behavior.
 
-The search result list should show:
-
-- term
-- reading
-- preview meaning
-- part of speech when available
-
-The search page should handle:
-
-- empty query
-- no results
-- loading state
-- errors
+Romaji, fuzzy search, deinflection, and full-text definition search are optional
+for v1. They should be added only with explicit behavior specifications and
+benchmarks.
 
 ### Word Detail
 
-Users can open a word detail page.
+- Show term and reading with an intentional hierarchy.
+- Show ordered senses rather than a single flattened definition.
+- Show part of speech and supported usage/restriction tags in the scope where
+  they apply.
+- Identify the dictionary source and expose its attribution.
+- Support basic actions expected from a dictionary: save, copy, and share.
 
-The detail page should show:
+### Saved and Recent Activity
 
-- term
-- reading
-- meanings
-- part-of-speech data
-- saved state
+- Save and unsave entries reliably.
+- Keep saved references correct after a dictionary asset update.
+- Show all saved entries, or provide explicit pagination; no undocumented
+  fixed-size truncation.
+- Support search and a clear removal action.
+- Record recent lookups if Home remains a product surface.
 
-### Saved Words
+### App Shell and Settings
 
-Users can save and unsave words.
+- Every visible tab and navigation destination has real content.
+- Search is the primary entry point unless Home provides useful recent content.
+- Settings contains only working destinations.
+- Dictionary version, source, licenses, app version, and local-data behavior are
+  visible to the user.
+- Database initialization and upgrade failures render a recoverable UI instead
+  of terminating with `fatalError`.
 
-Users can browse saved words and reopen detail pages.
+### Quality and Release
 
-### Local Persistence
+- Support Dynamic Type, VoiceOver labels, dark appearance, and common compact
+  and regular layouts.
+- Centralize user-facing strings and decide the initial localization set.
+- Include a real app icon and complete release metadata.
+- Keep dictionary/user-data boundaries intact: SQLite for read-only reference
+  packs, SwiftData for user-owned state.
+- Pass builder, repository, use-case, Store, and critical-flow UI tests in CI.
+- Verify startup, search, detail, save, database upgrade, and attribution on a
+  clean install and an upgrade install.
 
-Dictionary content is local SQLite data.
+## v1 Non-goals
 
-User data is local SwiftData data.
+- Account system or mandatory backend.
+- Cloud sync.
+- AI-generated definitions or examples.
+- Social features.
+- Full spaced-repetition study system.
+- Semantic merging across dictionary providers.
+- A downloadable dictionary marketplace.
 
-## Out of Scope for MVP
+## v1 Release Gate
 
-The following are intentionally out of scope:
+v1 is ready only when all of the following are true:
 
-- account system
-- cloud sync
-- backend service
-- AI explanations
-- AI examples
-- social features
-- full study scheduling
-- advanced semantic search
-- full UI polish
+- Dictionary rebuilds preserve entry identity or migrate user references safely.
+- Search correctness and ranking have fixture-backed specifications.
+- Structured entry detail is presented without known destructive flattening.
+- The core loop works after both clean install and dictionary update.
+- No placeholder tab, dead-end navigation, missing app icon, or fatal startup
+  path remains.
+- Accessibility, privacy, license, and App Store checklist items are complete.
+- CI covers the production app build and the dictionary builder.
+- A beta walkthrough finds no release-blocking failure in the core loop.
 
-## MVP Acceptance Criteria
-
-The MVP is acceptable when:
-
-- Search returns correct local dictionary results.
-- Word detail opens reliably.
-- Save and unsave work consistently.
-- Saved list reflects saved state.
-- The app can be built from a clean checkout plus documented local data setup.
-- Core use cases have unit tests.
-- The dictionary generation path is documented.
-
-## Current Status
-
-Current implementation status:
-
-- Search, detail, and saved flows exist.
-- Use cases exist for the core app loop.
-- Unit tests cover the current use cases.
-- The dictionary database has been reduced significantly.
-- Documentation has been reorganized.
-
-Main remaining MVP gaps:
-
-- keep search query performance measured as schema and SQL change
-- move repository APIs toward async boundaries if needed
-- improve core page UX and empty states
+The execution path from the current baseline to this gate is defined in the
+[Product Roadmap](../roadmap/product_roadmap.md).

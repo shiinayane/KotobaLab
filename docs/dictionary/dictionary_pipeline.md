@@ -1,57 +1,62 @@
 # Dictionary Pipeline
 
 Status: Active
-Last updated: 2026-05-21
-
-KotobaLab uses a local dictionary database generated from source dictionary data.
+Last updated: 2026-07-21
 
 ## Current Flow
 
 ```text
-Yomitan source data
--> Tools/DictionaryBuilder
--> SQLite dictionary.sqlite
--> App bundle resource
--> DatabaseManager
--> SQLiteDictionaryRepository
--> UseCase
--> Store
--> SwiftUI View
+Jitendex Yomitan source
+-> load
+-> parse semantic content
+-> transform into WordRecord / MeaningRecord
+-> export SQLite
+-> verify + benchmark
+-> GitHub Release asset
+-> KotobaLab/Resources staging copy
+-> Application Support runtime copy
 ```
 
-## Current Tooling
+Implementation: `Tools/DictionaryBuilder/`.
 
-The current builder lives under:
+## Current Source
 
-```text
-Tools/DictionaryBuilder
-```
+The local source snapshot reports:
 
-Important files:
+- title: Jitendex.org [2026-03-05]
+- revision: `2026.03.05.0`
+- source language: Japanese
+- target language: English
+- license: CC BY-SA 4.0, with included upstream attribution described by the
+  source metadata
 
-- `main.py`: current build entry point.
-- `schema/dictionary_schema.sql`: SQLite schema.
-- `pipeline/load.py`: source file loading.
-- `pipeline/parse.py`: semantic parsing from source entries.
-- `pipeline/transform.py`: conversion into app database records.
-- `pipeline/export_sqlite.py`: SQLite export logic.
-- `debug/inspect_entry.py`: entry inspection helper.
-- `debug/benchmark_search.py`: search query plan and latency benchmark helper.
+Source JSON is local-only and not committed.
 
-## Two output paths
+## Current Builder Modules
 
-`dictionary.sqlite` shows up in two places in this repository. Each has a distinct role:
+| File | Responsibility |
+| --- | --- |
+| `main.py` | CLI and file iteration |
+| `pipeline/load.py` | term-bank discovery and JSON loading |
+| `pipeline/parse.py` | traversal of Jitendex structured semantic content |
+| `pipeline/transform.py` | conversion into current app database records |
+| `pipeline/export_sqlite.py` | schema creation and inserts |
+| `schema/dictionary_schema.sql` | production schema/indexes |
+| `debug/verify_database.py` | hard structural/query-plan checks |
+| `debug/benchmark_search.py` | production-shaped search plans/latency |
+| `tests/` | self-contained pytest fixtures and behavior tests |
 
-| Path | Role | Who writes it |
-| --- | --- | --- |
-| `Tools/DictionaryBuilder/output/dictionary.sqlite` | Canonical build artifact. The default `--output` of `main.py` and the file `release_dictionary.sh` uploads to GitHub Releases. | Builder maintainer (Python pipeline) |
-| `KotobaLab/Resources/dictionary.sqlite` | App-bundle staging copy. What `DatabaseManager` reads from `Bundle.main` and copies into `Application Support` on first launch. | Ordinary developer (downloads from GitHub Release); maintainer (after a fresh build) |
+## Build Outputs
 
-The two never need to be in sync byte-for-byte. The builder writes the canonical artifact and ships it via Release; whoever wants to build the app drops that artifact into `KotobaLab/Resources/`.
+| Path | Role |
+| --- | --- |
+| `Tools/DictionaryBuilder/output/dictionary.sqlite` | canonical default builder output and release input |
+| `KotobaLab/Resources/dictionary.sqlite` | gitignored app-bundle staging copy used by local builds/CI |
+| `KotobaLabTests/Fixtures/test_dictionary.sqlite` | committed small repository-test fixture |
 
-## Building locally
+## Commands
 
-For a one-shot rebuild that also overwrites the app-bundle copy:
+Build directly into app resources:
 
 ```bash
 python3 Tools/DictionaryBuilder/main.py \
@@ -60,122 +65,75 @@ python3 Tools/DictionaryBuilder/main.py \
   --output KotobaLab/Resources/dictionary.sqlite
 ```
 
-For the default build path (artifact-only, no app-bundle write):
+Run builder tests:
 
 ```bash
-python3 Tools/DictionaryBuilder/main.py \
-  --source dataset/source/jitendex-yomitan
+cd Tools/DictionaryBuilder
+python3 -m pytest
 ```
 
-Verify whichever database you just built — point `--db` at the same path you used for `--output` (`KotobaLab/Resources/dictionary.sqlite` for the first form above, `Tools/DictionaryBuilder/output/dictionary.sqlite` for the default form):
-
-```bash
-python3 Tools/DictionaryBuilder/debug/verify_database.py \
-  --db <path-to-your-built-dictionary.sqlite>
-```
-
-## Current Schema Summary
-
-The app database currently stores:
-
-- `words`
-- `meanings`
-
-Raw source JSON is intentionally not stored in the app database.
-
-This keeps the app database much smaller and closer to a product database.
-
-## Delivery Strategy
-
-The app resource database `dictionary.sqlite` is intentionally ignored by git (`*.sqlite` rule).
-
-The production delivery path is **GitHub Release artifact**:
-
-- The full prebuilt `dictionary.sqlite` is published as an asset of a tagged GitHub Release at
-  `https://github.com/shiinayane/KotobaLab/releases/latest`.
-- Ordinary developers and CI obtain the database by downloading this artifact. They do **not** need to install the Python pipeline or the source dataset.
-- Only the builder maintainer needs the source dataset (`dataset/source/jitendex-yomitan`) and runs `Tools/DictionaryBuilder/main.py` to regenerate and publish a new release.
-
-### Onboarding flow
-
-```text
-1. git clone git@github.com:shiinayane/KotobaLab.git
-2. Download dictionary.sqlite from the latest GitHub Release
-3. Place it at KotobaLab/Resources/dictionary.sqlite
-4. Open KotobaLab.xcodeproj and build
-```
-
-### Re-generating the database (builder maintainer only)
-
-For a one-shot build + verify + publish, use the helper script:
-
-```bash
-Tools/scripts/release_dictionary.sh dict-v2026.05.21
-```
-
-The script builds the database with `main.py`, runs `verify_database.py`,
-computes a SHA-256, and creates a tagged GitHub Release with both the
-`dictionary.sqlite` artifact and the checksum attached. It refuses to
-overwrite an existing release tag.
-
-Manual equivalent, if you want to drive the steps individually:
-
-```text
-1. Obtain the jitendex-yomitan source dataset (see jitendex upstream).
-2. Place it under dataset/source/jitendex-yomitan.
-3. Run the build command above to produce a fresh dictionary.sqlite.
-4. Verify it (see "Database verification").
-5. Tag a new GitHub Release and upload the artifact.
-```
-
-### License attribution
-
-The shipped `dictionary.sqlite` is a derivative work of [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html) via [jitendex-yomitan](https://github.com/stephenmk/jitendex), distributed under **CC BY-SA 4.0**. The KotobaLab app must surface this attribution in its in-app acknowledgements before any App Store release.
-
-## Database verification
-
-`Tools/DictionaryBuilder/debug/verify_database.py` provides a single command that fails hard on any structural regression in the generated database:
+Verify and benchmark the same artifact queried by the app:
 
 ```bash
 python3 Tools/DictionaryBuilder/debug/verify_database.py \
   --db KotobaLab/Resources/dictionary.sqlite
+
+python3 Tools/DictionaryBuilder/debug/benchmark_search.py \
+  --db KotobaLab/Resources/dictionary.sqlite
 ```
 
-It checks:
+Publish a maintained artifact:
 
-- file existence and that the path is a regular file
-- file size against `--max-size-mb` (default **100 MB** hard limit)
-- presence of required tables (`words`, `meanings`)
-- presence of required indexes (`idx_words_term`, `idx_words_reading`, `idx_meanings_word_id`)
-- that the search query plan uses `idx_words_term` (not `SCAN words`)
-- that the meaning detail query plan uses `idx_meanings_word_id` (not `SCAN meanings`)
+```bash
+Tools/scripts/release_dictionary.sh dict-vYYYY.MM.DD
+```
 
-Any failure raises `RuntimeError` and aborts the script with a non-zero exit, so this can be wired into release-time verification.
+The release script builds, verifies, computes SHA-256, and creates a GitHub
+Release without overwriting an existing tag.
 
-## Current Risks
+## Current Delivery Contract
 
-### Build Command
+`dictionary.sqlite` is ignored by git. Developers and iOS CI download it from a
+GitHub Release and place it under `KotobaLab/Resources/`. On first launch,
+`DatabaseManager` copies the bundle resource to Application Support.
 
-`Tools/DictionaryBuilder/main.py` supports CLI arguments for source, schema, and output paths. The release pipeline is driven by `Tools/scripts/release_dictionary.sh`, which composes build + verify + upload into a single command (see "Re-generating the database" above).
+This is adequate for development onboarding, but not yet a complete app-update
+contract: an existing Application Support file is never replaced, schema/source
+metadata is absent, and startup failure terminates the app. Phases 4 and 7 own
+versioned activation, migration, rollback, and recovery.
 
-### Search Index
+## Current Fidelity Limitation
 
-The schema declares four indexes: `idx_words_term`, `idx_words_reading`, `idx_words_sequence`, and `idx_meanings_word_id`.
+The current builder must not be described as a lossless JMdict/Jitendex import:
 
-Prefix search has a measured dependency on SQLite `LIKE` behavior. Without `PRAGMA case_sensitive_like = ON`, SQLite falls back to `SCAN words`. With the PRAGMA enabled, the repository's `WHERE w.term LIKE ? OR w.reading LIKE ?` resolves to a `MULTI-INDEX OR` plan using `idx_words_term` + `idx_words_reading`.
+- `parse.py` extracts glosses/forms from presentation-oriented content.
+- `transform.py` concatenates all glosses into one definition.
+- extracted forms are not exported.
+- one `meanings` row is emitted for every inserted `words` row.
+- source revision/license metadata is not embedded in the database.
 
-Benchmark record:
+Phase 4 replaces this contract using representative real-source fixtures before
+search/detail UI expands.
 
-| Setting | Query | Average time | Query plan |
-| --- | --- | ---: | --- |
-| Before `PRAGMA case_sensitive_like = ON` | `見る` | ~16.8 ms | `SCAN words` |
-| Before `PRAGMA case_sensitive_like = ON` | `zzzznotfound` | ~16.2 ms | `SCAN words` |
-| After `PRAGMA case_sensitive_like = ON` | `見る` | ~0.034 ms | `MULTI-INDEX OR` (`idx_words_term` + `idx_words_reading`) |
-| After `PRAGMA case_sensitive_like = ON` | `zzzznotfound` | ~0.012 ms | `MULTI-INDEX OR` (`idx_words_term` + `idx_words_reading`) |
+## Verification Policy
 
-The app enables this PRAGMA in `DatabaseManager`.
+Every schema, parser, transform, projection, ranking, or index change must:
 
-## Next Steps
+1. update/add builder fixtures
+2. regenerate the repository fixture where required
+3. run pytest
+4. build a fresh production database
+5. run hard database verification
+6. run production-shaped benchmarks
+7. update current schema/count/plan documentation
+8. run iOS repository/use-case tests
 
-1. Keep benchmark records current when schema or search SQL changes.
-2. Align `verify_database.py` search-plan check with the app's actual `WHERE term LIKE ? OR reading LIKE ?` SQL shape.
+Historical measurements may remain in phase records, but active docs must label
+the artifact/date they describe.
+
+## Licensing Boundary
+
+Application source code is MIT licensed. Dictionary artifacts retain their own
+provider/upstream licenses and attribution obligations. A future dictionary
+pack must ship its own source/license metadata; adding a provider never inherits
+the app source-code license.

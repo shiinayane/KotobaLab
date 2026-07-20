@@ -1,238 +1,220 @@
 # Product Roadmap
 
 Status: Active
-Last updated: 2026-05-21
+Last updated: 2026-07-21
 
-## Positioning
+## North Star
 
-KotobaLab should be positioned as:
+KotobaLab should become a dependable, offline-first Japanese dictionary before
+it becomes a study platform or an AI product.
 
-```text
-An offline-first Japanese dictionary and study app,
-enhanced by AI explanations and personalized learning tools.
-```
+The current implementation proves the lookup/save loop and its architecture.
+The remaining path to a formal app is dictionary fidelity, search quality,
+complete daily-use UX, update safety, and release hardening. A second dictionary
+source comes after that baseline, through an explicit multi-dictionary model.
 
-The dictionary should remain the product foundation. Backend and AI features should support the dictionary experience, not replace it.
+## How to Read This Roadmap
 
-## Strategic Order
+- This file defines product order, phase boundaries, and exit gates.
+- [`docs/phases/`](../phases/README.md) contains executable plans and historical
+  completion records.
+- Completed historical phases are not retroactively expanded to include later
+  expectations.
+- A phase closes only when its acceptance gate is met or an exception is
+  recorded explicitly.
 
-Recommended order:
+## Phase Summary
 
-1. Stabilize the dictionary pipeline.
-2. Polish the core app experience.
-3. Strengthen architecture and tests.
-4. Add minimal backend support only where local-first is not enough.
-5. Experiment with AI features.
-6. Productize AI only after cost, cache, and quality controls exist.
+| Phase | Status | Outcome |
+| --- | --- | --- |
+| 0 — MVP Baseline | Complete | Working Search → Detail → Save → Saved loop |
+| 1 — Pipeline Stabilization | Complete | Reproducible, verified, releasable dictionary artifact |
+| 2 — Core Experience | Complete | Explicit UI state and a coherent core flow |
+| 3 — Architecture and CI | Complete | Async GRDB boundary, explicit actor isolation, iOS CI, real query-plan verification |
+| **4 — Dictionary Fidelity and Stable Identity** | **Current** | Lossless-enough entry model, stable saved references, versioned asset contract |
+| 5 — Search and Lookup Quality | Planned | Predictable ranked search and useful structured detail |
+| 6 — Daily-Use Product Completion | Planned | No placeholders; complete Home/Search/Saved/Settings behavior |
+| 7 — v1 Release Readiness | Planned | Safe startup/update, test matrix, accessibility, legal and App Store gate |
+| 8 — Multi-Dictionary Foundation | Planned | Installable source-aware dictionary packs and cross-pack lookup |
+| 9 — Dictionary Catalog Expansion | Planned | At least one additional licensed dictionary/language source ships well |
 
-Do not start with backend or AI. The current core value is the dictionary and saved-word learning loop.
+## Completed Foundation
 
-## Relationship to Phase Records
+### Phase 0 — MVP Baseline
 
-This document is the plan. `docs/phases/` is the execution record.
+Established the local lookup/save loop, layered feature structure, SQLite and
+SwiftData split, and initial use-case tests.
 
-Create a new phase document only when a phase is started or completed. Do not treat planned roadmap sections as proof that the work has already been done.
+Record: [`phase-00-current-mvp.md`](../phases/phase-00-current-mvp.md)
 
-## Phase 1: Dictionary Pipeline Stabilization
+### Phase 1 — Dictionary Pipeline Stabilization
 
-Status: **Completed**. Execution record: [`docs/phases/phase-01-pipeline-stabilization.md`](../phases/phase-01-pipeline-stabilization.md).
+Established the Python builder, compact schema, fixture tests, database
+verification, GitHub Release artifact, checksum, and builder CI.
 
-Goal:
+Record: [`phase-01-pipeline-stabilization.md`](../phases/phase-01-pipeline-stabilization.md)
 
-Make the dictionary database reproducible, lean, and measurable.
+### Phase 2 — Core App Experience
 
-Tasks (all closed):
+Established explicit Search state, loading/empty/error rendering, intentional
+term/reading display, saved-list refresh behavior, preview fixtures, hidden
+unfinished tabs, and in-app attribution.
 
-- ✅ Keep the DictionaryBuilder CLI command documented.
-- ✅ Keep raw source data out of the app database.
-- ✅ Add database size checks (`verify_database.py` enforces a 100 MB hard limit).
-- ✅ Keep query plan checks for important queries (`verify_database.py` + benchmark records).
-- ✅ Add a small fixture database for tests (`KotobaLabTests/Fixtures/test_dictionary.sqlite`).
-- ✅ Decide how the production database is delivered (GitHub Release artifact; `Tools/scripts/release_dictionary.sh` for builder maintainer).
+Record: [`phase-02-core-experience.md`](../phases/phase-02-core-experience.md)
 
-Completion criteria (all met):
+### Phase 3 — Architecture and CI
 
-- ✅ A clean checkout can obtain `dictionary.sqlite` from the latest GitHub Release.
-- ✅ Search, detail, and saved flows still pass tests.
-- ✅ The database size is understood and intentional (52 MB / 293,471 words / 4 indexes).
-- ✅ Query plans for critical paths are documented (benchmark tables in `docs/dictionary/`).
+Established async dictionary repository APIs backed by GRDB reads, explicit
+`@MainActor` Stores, nonisolated default actor settings, typed GRDB records,
+production-shaped query verification/benchmarks, iOS lint/test CI, and expanded
+SwiftData repository tests.
 
-## Phase 2: Core App Experience
+Record: [`phase-03-architecture-tests.md`](../phases/phase-03-architecture-tests.md)
 
-Status: **Completed**. Execution record: [`docs/phases/phase-02-core-experience.md`](../phases/phase-02-core-experience.md).
+## Path to a Formal Single-Dictionary v1
 
-Goal:
+### Phase 4 — Dictionary Fidelity and Stable Identity
 
-Make the app feel like a real dictionary MVP instead of a demo.
+Goal: make the data trustworthy across source parsing, display, rebuilds, and
+app updates.
 
-Tasks:
+Primary outcomes:
 
-- ✅ Improve Search empty, loading, and error states (explicit `SearchViewState`).
-- ✅ Word Detail information hierarchy — resolved by design (term + reading shown intentionally).
-- ✅ Saved list refresh behavior — already consistent via `onAppear` re-fire on pop.
-- ✅ Add explicit Search state.
-- ✅ Keep previews working (preview mocks now tracked).
-- ✅ Remove or hide unfinished product surfaces (Analysis / Study hidden).
+- preserve ordered senses/glosses, forms, readings, POS, and supported tags
+- define a stable source entry key and migrate saved references away from raw
+  autoincrement IDs
+- add schema/content/source/license metadata
+- define asset compatibility, replacement, and rollback behavior
+- strengthen builder fixtures and invariants before changing UI
 
-Completion criteria:
+Why first: every search/detail/product improvement depends on this data contract.
 
-- ✅ The core flow is understandable without explanation.
-- ✅ Search feels responsive.
-- ✅ Saved state stays consistent.
-- ⚠️ Main pages no longer feel like placeholders — partially met; the Home landing
-  tab still shows empty stubs (carryover, see execution record).
+Plan: [`phase-04-dictionary-fidelity.md`](../phases/phase-04-dictionary-fidelity.md)
 
-## Phase 3: Architecture and Tests
+### Phase 5 — Search and Lookup Quality
 
-Status: **Planned**. Execution record: [`docs/phases/phase-03-architecture-tests.md`](../phases/phase-03-architecture-tests.md).
+Goal: make lookup behavior predictable and useful with the richer model.
 
-Goal:
+Primary outcomes:
 
-Make the current lightweight architecture durable.
+- documented normalization and matching rules
+- exact-first, deterministic ranking across term, reading, and alternative forms
+- a measured result-limit/pagination strategy
+- structured sense/detail rendering with source attribution
+- copy/share and retry behavior
+- search and detail contract tests plus refreshed benchmarks
 
-Tasks:
+Plan: [`phase-05-search-lookup.md`](../phases/phase-05-search-lookup.md)
 
-- Decide whether repository APIs should become async (or move behind a database actor).
-- Mark `WordDetailStore` and `SavedStore` `@MainActor` (only `SearchStore` is today).
-- Add iOS xcodebuild CI to GitHub Actions.
-- Align `verify_database.py` search-plan check with the app's actual two-column SQL.
-- Keep Domain free of SwiftUI, SwiftData, GRDB, and SQLite row types — currently clean; preserve.
-- Keep local experiments out of the app target — already satisfied (`TestView` gitignored + target-excluded).
+### Phase 6 — Daily-Use Product Completion
 
-Phase 3 inherits these from Phase 1 as completed prerequisites:
+Goal: remove the remaining demo surfaces and make the app pleasant for repeated
+daily use.
 
-- ✅ Repository tests with a fixture SQLite database.
-- ✅ DictionaryBuilder pipeline tests (16 pytest cases + GitHub Actions CI).
-- ✅ GRDB pinned to `7.0.0+`.
+Primary outcomes:
 
-Completion criteria:
+- choose and complete the primary information architecture: useful Home with
+  recent activity, or remove Home and launch into Search
+- remove the Profile dead end and all commented/placeholder product surfaces
+- remove the unexplained 50-item Saved cap; add explicit saved management
+- surface dictionary/app versions, source, licenses, and local-data behavior
+- centralize user-facing strings and complete accessibility passes
+- add a real app icon and polished empty/error/retry states
 
-- New feature code has an obvious home.
-- Core domain behavior is tested.
-- Data layer changes can be validated without manually running the app.
+Plan: [`phase-06-product-completion.md`](../phases/phase-06-product-completion.md)
 
-## Phase 4: Minimal Backend
+### Phase 7 — v1 Release Readiness
 
-Goal:
+Goal: prove the single-dictionary app survives real installation, update, and
+distribution conditions.
 
-Add backend support only for work that does not belong on device.
+Primary outcomes:
 
-Potential backend responsibilities:
+- recoverable startup and incompatible/corrupt asset handling
+- clean-install and upgrade-install matrix for dictionary and SwiftData versions
+- Store and critical-flow UI tests in CI
+- performance, memory, accessibility, privacy, license, and device checks
+- deployment-target decision, versioning policy, release checklist, and beta run
 
-- dictionary asset manifest
-- dictionary asset download metadata
-- AI API proxy
-- basic logging and rate limiting
+Exit gate: all criteria in
+[Product Requirements and v1 Baseline](../product/mvp_prd.md#v1-release-gate)
+are met. This is the first App Store-ready milestone.
 
-Avoid early:
+Plan: [`phase-07-release-readiness.md`](../phases/phase-07-release-readiness.md)
 
-- full account system
-- complex sync
-- social features
-- admin dashboard
+## Post-v1 Dictionary Expansion
 
-Example manifest endpoint:
+### Phase 8 — Multi-Dictionary Foundation
 
-```text
-GET /dictionary/manifest
-```
+Goal: support multiple independently versioned dictionary packs without
+breaking lookup, saved state, attribution, or offline behavior.
 
-Example response:
+Primary outcomes:
 
-```json
-{
-  "latestDictionaryVersion": "2026.05.01",
-  "assets": [
-    {
-      "name": "dictionary.sqlite",
-      "url": "https://example.com/dictionary.sqlite",
-      "sha256": "...",
-      "size": 54525952
-    }
-  ]
-}
-```
+- common pack manifest and schema compatibility contract
+- source-aware composite entry identity
+- enabled-pack registry and deterministic aggregate search
+- source-grouped detail presentation and per-pack attribution
+- install/update/disable/remove lifecycle with integrity checks
+- migration from the bundled v1 dictionary into the pack model
 
-## Phase 5: AI Experiments
+No semantic merging of equivalent entries is required in this phase.
 
-Goal:
+Plan: [`phase-08-multi-dictionary.md`](../phases/phase-08-multi-dictionary.md)
 
-Validate whether AI improves the learning experience.
+### Phase 9 — Dictionary Catalog Expansion
 
-Good first experiments:
+Goal: ship at least one additional high-quality, legally redistributable source
+and make source selection valuable rather than cosmetic.
 
-- AI word explanation.
-- AI example sentence generation.
-- Nuance comparison.
-- Saved-word quiz generation.
+Candidate directions include Japanese-Chinese definitions, a Japanese
+monolingual dictionary, or a complementary Japanese-English source. The exact
+source is not selected by this roadmap; licensing, redistribution, update
+availability, structured-data quality, size, and maintenance cost must be
+evaluated first.
 
-Rules:
+Primary outcomes:
 
-- Dictionary data is the source of truth.
-- AI output should be clearly marked.
-- AI should receive grounded word data from the dictionary.
-- AI output should be structured for UI rendering.
+- documented source evaluation and license decision
+- source-specific importer with fixtures and quality report
+- cross-pack search/detail UX validated with real overlapping entries
+- size, latency, and update-cost budgets remain within product limits
 
-Example structured output:
+Plan: [`phase-09-catalog-expansion.md`](../phases/phase-09-catalog-expansion.md)
 
-```json
-{
-  "simpleExplanation": "...",
-  "nuance": "...",
-  "examples": [
-    {
-      "ja": "...",
-      "en": "...",
-      "level": "N4"
-    }
-  ],
-  "commonMistakes": ["..."]
-}
-```
+## Later Opportunities — Not Yet Numbered
 
-## Phase 6: AI Productization
+These are intentionally outside the committed phase sequence:
 
-Goal:
+- spaced-repetition study and review scheduling
+- user notes, tags, and export/import
+- optional cloud sync
+- backend-hosted dictionary catalog or delta updates
+- AI explanations, example generation, or nuance comparison
 
-Make AI sustainable instead of a demo feature.
-
-Tasks:
-
-- cache AI results
-- version prompts
-- add rate limiting
-- control cost
-- add failure fallback
-- collect quality feedback
-- avoid hallucinated dictionary facts
-
-Suggested cache key:
-
-```text
-word_id + prompt_version + user_level + language
-```
+They should receive a numbered phase only after v1 and multi-dictionary results
+show a concrete product need. AI output must never replace licensed dictionary
+content as the source of truth.
 
 ## Current Priorities
 
-With Phase 2 (Core App Experience) closed, the immediate next priorities sit in Phase 3 (Architecture and Tests):
+Phase 4 starts with decisions that are expensive to change later:
 
-1. Decide whether repository APIs should become `async`, or move behind a database actor.
-2. Mark `WordDetailStore` and `SavedStore` as `@MainActor` (only `SearchStore` is today).
-3. Add iOS `xcodebuild` CI to GitHub Actions.
-4. Align `verify_database.py`'s search-plan check with the app's actual two-column `LIKE` SQL.
+1. Define the canonical entry/sense/form model from representative Jitendex
+   source records.
+2. Define stable entry identity and the migration path for existing saved IDs.
+3. Add database metadata and compatibility rules.
+4. Expand builder fixtures and verification around the new contract.
+5. Rebuild, benchmark, and only then update app repository/domain models.
 
-Phase 2 carryover to fold in opportunistically: hide or fill the Home landing tab,
-resolve the Settings → Profile dead-end, and confirm `TestView` is out of the app
-build target.
+## Guardrails
 
-## What Not To Do Next
-
-Do not prioritize:
-
-- backend first
-- AI chat first
-- complex cloud sync
-- advanced study system
-- broad UI redesign
-
-The strongest path is to finish the local-first dictionary foundation first.
+- Do not add backend or AI work before the v1 release gate.
+- Do not polish the current flattened detail model instead of fixing fidelity.
+- Do not add FTS, fuzzy search, or deinflection without behavior requirements,
+  representative fixtures, and production-query benchmarks.
+- Do not use SQLite autoincrement IDs as durable user-data identity.
+- Do not combine different providers into one apparent definition without
+  preserving source boundaries and licenses.
+- Do not select a second dictionary source until redistribution and update terms
+  are verified.

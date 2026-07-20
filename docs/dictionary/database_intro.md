@@ -1,117 +1,110 @@
 # Dictionary Database Overview
 
 Status: Active
-Last updated: 2026-05-20
+Last updated: 2026-07-21
 
-This document describes the current app-facing dictionary database. Design rationale and future storage rules belong in [Dictionary Database Strategy](database_strategy.md).
+This document describes the database the app uses today. The target model and
+multi-dictionary direction are documented separately in
+[Database Strategy](database_strategy.md) and
+[Multi-Dictionary Strategy](multi_dictionary_strategy.md).
 
-## Current Dictionary Schema
+## Current Artifact
 
-The current dictionary database has two main tables:
+Local verification on 2026-07-21:
+
+| Property | Current value |
+| --- | ---: |
+| File | `KotobaLab/Resources/dictionary.sqlite` |
+| Size | 51.88 MB |
+| Words | 293,471 |
+| Meanings | 293,471 |
+| Words without a meaning | 0 |
+| Words where term equals reading | 70,640 |
+| Distinct POS strings | 40 |
+
+The one-to-one word/meaning count is an implementation limitation, not a source
+truth: the builder currently joins all extracted glosses into one definition
+row.
+
+The local source metadata identifies Jitendex revision `2026.03.05.0`, Japanese
+source language, and English target language. The built SQLite file does not yet
+store that metadata.
+
+## Current Schema
 
 ```text
 words
+  id INTEGER PRIMARY KEY AUTOINCREMENT
+  term TEXT NOT NULL
+  reading TEXT
+  sequence INTEGER
+
 meanings
+  id INTEGER PRIMARY KEY AUTOINCREMENT
+  word_id INTEGER NOT NULL -> words.id
+  sequence INTEGER NOT NULL
+  part_of_speech TEXT
+  definition_text TEXT NOT NULL
 ```
 
-### words
+Indexes:
 
-Stores the word identity and basic display fields.
+- `idx_words_term`
+- `idx_words_reading`
+- `idx_words_sequence`
+- `idx_meanings_word_id`
 
-Current fields:
+## Current Query Paths
 
-- `id`
-- `term`
-- `reading`
-- `sequence`
+### Search Summary
 
-### meanings
+`SQLiteDictionaryRepository.searchWords` searches term and reading prefixes,
+limits to 20 through the UseCase, and projects the first ordered meaning:
 
-Stores meanings associated with a word.
+```sql
+WHERE w.term LIKE ? OR w.reading LIKE ?
+```
 
-Current fields:
+There is no explicit production `ORDER BY`, ranking policy, normalization beyond
+trimmed input, alternative-form search, or pagination.
 
-- `id`
-- `word_id`
-- `sequence`
-- `part_of_speech`
-- `definition_text`
+### Word Detail
 
-The schema declares four indexes (see `Tools/DictionaryBuilder/schema/dictionary_schema.sql`):
+GRDB loads `WordRecord` plus ordered associated `MeaningRecord` rows. Although
+the app model supports an array, the current production artifact has one meaning
+row per word because of builder flattening.
 
-- `idx_words_term` on `words(term)`
-- `idx_words_reading` on `words(reading)`
-- `idx_words_sequence` on `words(sequence)`
-- `idx_meanings_word_id` on `meanings(word_id)`
+### Saved Summaries
 
-`idx_words_term` and `idx_words_reading` together back the search query plan; `idx_meanings_word_id` backs the detail-side meaning lookup.
+SwiftData returns saved SQLite IDs; the dictionary repository resolves summaries
+with `WHERE w.id IN (...)` and restores requested order in memory.
 
-## Current App Models
+## Current Query Plan Snapshot
 
-The app does not expose raw database rows to features.
+`DatabaseManager` enables `PRAGMA case_sensitive_like = ON`, allowing SQLite to
+use both prefix indexes.
 
-Feature-facing models include:
+On the 2026-07-21 artifact:
 
-- `WordSummary`
-- `WordDetail`
-- `Meaning`
-- `WordDetailDisplayData`
+- Search: `MULTI-INDEX OR` over `idx_words_term` and `idx_words_reading`.
+- Preview/detail meaning lookup: `idx_meanings_word_id`.
+- Representative search averages: about 0.014–0.072 ms on the local benchmark
+  environment.
 
-This keeps the UI independent from SQLite details.
+These numbers describe one artifact and machine. Re-run the production-shaped
+benchmark whenever schema, projection, ranking, indexes, or SQLite configuration
+changes.
 
-## Query Types
+## Known Limitations
 
-### Search
+- Autoincrement `words.id` is incorrectly used as durable user-data identity.
+- Distinct senses/glosses are flattened.
+- Extracted alternative forms are discarded.
+- Source tags/restrictions/examples/furigana metadata are mostly absent.
+- Database schema/content/source/license versions are absent.
+- There is no asset upgrade/rollback contract after first copy to Application
+  Support.
+- Schema and repositories assume exactly one dictionary source.
 
-Search returns a list of `WordSummary`.
-
-It needs:
-
-- id
-- term
-- reading
-- preview part of speech
-- preview meaning
-
-### Detail
-
-Detail returns `WordDetail`.
-
-It needs:
-
-- word identity
-- display fields
-- all meanings for the selected word
-
-### Saved Words
-
-Saved words are stored as user data in SwiftData.
-
-The app loads saved word ids from SwiftData, then resolves those ids through the dictionary repository.
-
-## Current Limits
-
-The current schema is good enough for the MVP, but search behavior depends on SQLite connection configuration.
-
-Known limits:
-
-- prefix search scans `words` unless `PRAGMA case_sensitive_like = ON` is enabled
-- there is no dedicated search ranking yet
-- there is no FTS table yet
-
-Current measured result (`WHERE w.term LIKE ? OR w.reading LIKE ?`):
-
-- before `PRAGMA case_sensitive_like = ON`: `見る` ~16.8 ms, `zzzznotfound` ~16.2 ms, plan `SCAN words`
-- after `PRAGMA case_sensitive_like = ON`: `見る` ~0.034 ms, `zzzznotfound` ~0.012 ms, plan `MULTI-INDEX OR` using `idx_words_term` + `idx_words_reading`
-
-## Next Step
-
-Before changing search architecture, measure:
-
-- database size
-- row counts
-- query plans
-- search latency
-- detail latency
-
-Then choose the simplest search design that meets product needs.
+These are Phase 4 blockers, not optional long-term refinements. See
+[Phase 4](../phases/phase-04-dictionary-fidelity.md).
