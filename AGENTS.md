@@ -66,6 +66,14 @@ change, or materially improves testability.
 - Mark work complete only when supported by actual evidence.
 - Close a phase only when its acceptance gate is satisfied.
 
+## Apple Platform Validation
+
+When a Swift, SwiftUI, Xcode, Simulator, device, signing, UI, or performance
+change requires executable Apple-platform evidence, use the available
+`apple-dev-loop` skill to select and run the smallest sufficient validation
+profile. Do not invoke it for documentation-only work, source-only explanations,
+or changes that require no Apple toolchain or runtime evidence.
+
 ## Language
 
 Source code, comments, test names, formal documentation, commits, branches, pull
