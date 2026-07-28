@@ -3,11 +3,11 @@
 Python toolchain that builds the KotobaLab SQLite dictionary from Yomitan source
 files, verifies it, and publishes it as a GitHub Release artifact.
 
-The current builder is stable as an MVP pipeline, but its data model is
-intentionally being replaced in Phase 4: it flattens extracted glosses into one
-meaning row, does not export extracted alternative forms, and does not embed
-source/schema metadata or stable user-facing identity. See the
-[Phase 4 plan](../../docs/phases/phase-04-dictionary-fidelity.md).
+The current builder is stable as an MVP pipeline, but its data model is lossy:
+it flattens extracted glosses into one meaning row, does not export extracted
+alternative forms, and does not embed source/schema metadata or stable
+user-facing identity. See the
+[Phase 4 source-contract plan](../../docs/phases/phase-04-dictionary-source-contract.md).
 
 ## Layout
 
@@ -113,5 +113,6 @@ Recorded results are artifact- and machine-specific. The 2026-07-21 local
 | `あ` | 50 | ~0.070 ms | `MULTI-INDEX OR` |
 | `zzzznotfound` | 0 | ~0.014 ms | `MULTI-INDEX OR` |
 
-Re-run this benchmark and update the active dictionary docs whenever schema,
+Re-run this benchmark and update the active
+[pipeline documentation](../../docs/dictionary/pipeline.md) whenever schema,
 indexes, projection, ranking, or result ordering changes.

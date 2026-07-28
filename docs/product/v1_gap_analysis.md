@@ -1,7 +1,12 @@
 # v1 Gap Analysis
 
-Status: Active
+Status: Historical snapshot
 Last updated: 2026-07-21
+
+> This document preserves the repository audit that informed the documentation
+> and roadmap reset. Its phase assignments reflect the plan on 2026-07-21 and
+> are not the current execution plan. See [Current Work](../development/current_work.md)
+> for current status.
 
 ## Purpose
 
@@ -71,6 +76,6 @@ These are foundation strengths and should be preserved rather than rewritten.
    composite identities. It should not attempt automatic semantic merging in
    its first version.
 
-See the [Product Roadmap](../roadmap/product_roadmap.md) for the resulting phase
-order and [Multi-Dictionary Strategy](../dictionary/multi_dictionary_strategy.md)
-for the post-v1 data direction.
+See the [Product Roadmap](../roadmap/product_roadmap.md) for long-term direction
+and [Dictionary Strategy](../dictionary/strategy.md) for the current data
+principles.
