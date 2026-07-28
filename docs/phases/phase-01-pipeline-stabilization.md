@@ -30,7 +30,7 @@ The following were deliberately out of scope and deferred to later phases:
 
 - **Delivery strategy locked**: the prebuilt `dictionary.sqlite` ships as an asset of a tagged GitHub Release at `github.com/shiinayane/KotobaLab/releases/latest`. Ordinary developers and CI download the artifact; only the builder maintainer needs the `jitendex-yomitan` source dataset.
 - README has a Getting Started section describing the four-step onboarding flow from a fresh clone to a buildable Xcode project.
-- A JMdict / CC BY-SA 4.0 attribution note is recorded in `docs/dictionary/dictionary_pipeline.md` as a precondition for the eventual App Store release.
+- A JMdict / CC BY-SA 4.0 attribution note is recorded in `docs/dictionary/pipeline.md` as a precondition for the eventual App Store release.
 
 ### Builder pipeline
 
@@ -76,8 +76,8 @@ The first release, `dict-v2026.05.21`, was published and validated the end-to-en
 
 ### Documentation
 
-- `docs/dictionary/dictionary_pipeline.md` now documents the delivery strategy, the maintainer-only re-generation flow, the license attribution requirement, and the verification command.
-- `docs/architecture/overview.md`, `docs/dictionary/database_intro.md`, `docs/dictionary/dictionary_pipeline.md`, and `Tools/DictionaryBuilder/README.md` were synced to describe the actual `MULTI-INDEX OR` query plan (the old single-index description predated the addition of `reading LIKE ?` to the repository SQL).
+- `docs/dictionary/pipeline.md` now documents the delivery strategy, the maintainer-only re-generation flow, the license attribution requirement, and the verification command.
+- `docs/architecture/overview.md`, `docs/dictionary/strategy.md`, `docs/dictionary/pipeline.md`, and `Tools/DictionaryBuilder/README.md` were synced to describe the actual `MULTI-INDEX OR` query plan (the old single-index description predated the addition of `reading LIKE ?` to the repository SQL).
 
 ## Key Decisions
 

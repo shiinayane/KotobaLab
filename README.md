@@ -14,12 +14,12 @@
 </p>
 
 > [!NOTE]
-> KotobaLab is a personal project in active development. The MVP architecture and CI foundation are complete; the current focus is **Phase 4 — Dictionary Fidelity and Stable Identity**, the first step toward a formal single-dictionary v1. See the [Roadmap](#roadmap) below.
+> KotobaLab is a personal project in active development. The MVP architecture and CI foundation are complete. See [Current Work](docs/development/current_work.md) for the active objective and [Product Roadmap](docs/roadmap/product_roadmap.md) for long-term direction.
 
-The dictionary ships as a bundled, indexed SQLite asset — **293,471 entries in 52 MB** — for sub-millisecond offline prefix search. User data lives in a separate SwiftData store. Current work is upgrading source fidelity, stable identity, search quality, update safety, and release readiness before backend, AI, or broad study features are considered.
+The dictionary ships as a bundled, indexed SQLite asset — **293,471 entries in 52 MB** — for sub-millisecond offline prefix search. User data lives in a separate SwiftData store. The product direction prioritizes dictionary fidelity, stable identity, search quality, update safety, and daily usability before backend, AI, or broad study features.
 
 > [!WARNING]
-> The current asset is an MVP projection, not a source-complete dictionary model: distinct glosses are flattened into one meaning, extracted alternative forms are not stored, and saved data still references rebuild-dependent SQLite IDs. See the [v1 Gap Analysis](docs/product/v1_gap_analysis.md).
+> The current asset is an MVP projection, not a source-complete dictionary model: distinct glosses are flattened into one meaning, extracted alternative forms are not stored, and saved data still references rebuild-dependent SQLite IDs. See the [Dictionary Strategy](docs/dictionary/strategy.md).
 
 ## Screenshots
 
@@ -177,39 +177,38 @@ Self-contained — no source dataset or main database required.
 Tools/scripts/release_dictionary.sh dict-vYYYY.MM.DD
 ```
 
-Wraps build + verify + SHA-256 + `gh release create` into one command. The artifact is published at <https://github.com/shiinayane/KotobaLab/releases>. See [`docs/dictionary/dictionary_pipeline.md`](docs/dictionary/dictionary_pipeline.md) for the full delivery contract.
+Wraps build + verify + SHA-256 + `gh release create` into one command. The artifact is published at <https://github.com/shiinayane/KotobaLab/releases>. See [`docs/dictionary/pipeline.md`](docs/dictionary/pipeline.md) for the full delivery contract.
 
 </details>
 
 ## Roadmap
 
-| Phase | Status | Focus |
-| --- | --- | --- |
-| 0 — MVP Baseline | Complete | Search / Detail / Save / Saved loop |
-| 1 — Pipeline Stabilization | Complete | Reproducible, verified dictionary delivery |
-| 2 — Core Experience | Complete | Explicit UI state and coherent core flow |
-| 3 — Architecture and CI | Complete | Async GRDB access, actor isolation, iOS CI |
-| **4 — Dictionary Fidelity and Stable Identity** | **Current** | Structured senses/forms, durable references, versioned asset |
-| 5 — Search and Lookup Quality | Planned | Ranking, normalization, structured detail |
-| 6 — Daily-Use Product Completion | Planned | Complete navigation, Saved, Settings, accessibility |
-| 7 — v1 Release Readiness | Planned | Upgrade safety, test matrix, App Store gate |
-| 8 — Multi-Dictionary Foundation | Planned | Source-aware offline dictionary packs |
-| 9 — Dictionary Catalog Expansion | Planned | Ship an additional licensed source/language |
+KotobaLab's durable directions are:
 
-Full roadmap: [`docs/roadmap/product_roadmap.md`](docs/roadmap/product_roadmap.md). Phase execution records: [`docs/phases/`](docs/phases).
+- a trustworthy dictionary foundation
+- a complete daily lookup experience
+- an extensible, source-aware dictionary ecosystem
+- continuity and portability for user-owned data
+
+The [Product Roadmap](docs/roadmap/product_roadmap.md) intentionally avoids
+status and task tracking. See [Current Work](docs/development/current_work.md)
+for the immediate objective and [Phase Records](docs/phases/README.md) for
+execution evidence.
 
 ## Documentation
 
 | Topic | Document |
 | --- | --- |
-| Product requirements and v1 gate | [`docs/product/mvp_prd.md`](docs/product/mvp_prd.md) |
-| Repository-grounded gap analysis | [`docs/product/v1_gap_analysis.md`](docs/product/v1_gap_analysis.md) |
-| Architecture and testing | [`overview.md`](docs/architecture/overview.md) · [`testing_strategy.md`](docs/architecture/testing_strategy.md) |
-| Dictionary current state and strategy | [`database_intro.md`](docs/dictionary/database_intro.md) · [`database_strategy.md`](docs/dictionary/database_strategy.md) |
-| Build pipeline and delivery | [`dictionary_pipeline.md`](docs/dictionary/dictionary_pipeline.md) |
-| Multi-dictionary direction | [`multi_dictionary_strategy.md`](docs/dictionary/multi_dictionary_strategy.md) |
-| Roadmap | [`docs/roadmap/product_roadmap.md`](docs/roadmap/product_roadmap.md) |
-| Phase plans and records | [`docs/phases/`](docs/phases/README.md) |
+| Documentation entry point | [`docs/README.md`](docs/README.md) |
+| Product definition and v1 gate | [`product_contract.md`](docs/product/product_contract.md) |
+| Current objective and next action | [`current_work.md`](docs/development/current_work.md) |
+| Engineering workflow | [`engineering_workflow.md`](docs/development/engineering_workflow.md) |
+| Architecture | [`overview.md`](docs/architecture/overview.md) |
+| Dictionary data direction | [`strategy.md`](docs/dictionary/strategy.md) |
+| Build pipeline and delivery | [`pipeline.md`](docs/dictionary/pipeline.md) |
+| Long-term roadmap | [`product_roadmap.md`](docs/roadmap/product_roadmap.md) |
+| Phase plans and records | [`phases/README.md`](docs/phases/README.md) |
+| Historical v1 audit | [`v1_gap_analysis.md`](docs/product/v1_gap_analysis.md) |
 
 ## Attribution
 

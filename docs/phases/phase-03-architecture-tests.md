@@ -120,6 +120,6 @@ not an accidental SQL cleanup.
 
 ## Next Phase
 
-[Phase 4: Dictionary Fidelity and Stable Identity](phase-04-dictionary-fidelity.md)
-fixes destructive source flattening, durable entry identity, and dictionary
-asset versioning before search/detail UX grows.
+[Phase 4: Dictionary Source Contract](phase-04-dictionary-source-contract.md)
+starts by defining the supported source model and stable identity contract before
+production data and UI migration.

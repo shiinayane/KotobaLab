@@ -1,7 +1,7 @@
 # Architecture Overview
 
 Status: Active
-Last updated: 2026-07-21
+Last updated: 2026-07-28
 
 ## Summary
 
@@ -17,11 +17,11 @@ App / Scene
 -> GRDB SQLite / SwiftData
 ```
 
-This is intentionally not a full Clean Architecture implementation. New layers
-are justified only when they isolate a real source of change, remove duplication,
-or materially improve testability.
+This is not a full Clean Architecture implementation. Add a layer only when it
+isolates a real source of change, removes duplication, or materially improves
+testability.
 
-## Current Directory Map
+## Directory Map
 
 ```text
 KotobaLab
@@ -33,11 +33,11 @@ KotobaLab
 ├── Data
 │   ├── Database        GRDB manager and database records
 │   ├── Persistence     SwiftData models
-│   ├── Preview         preview fixtures/helpers
+│   ├── Preview         preview fixtures and helpers
 │   └── Repository      concrete and mock repositories
 ├── Features            Scene + Store + View feature units
-├── Navigation          app routing/sheets
-├── Resources           bundled/staged dictionary asset
+├── Navigation          app routing and sheets
+├── Resources           staged dictionary asset
 └── Shared              reusable UI components
 ```
 
@@ -48,89 +48,76 @@ KotobaLab
 - Construct long-lived dependencies.
 - Bind concrete repositories to Domain protocols.
 - Create feature Stores and inject UseCases.
-- Own launch state and database compatibility/recovery in future Phase 4/7 work.
+- Own application launch and dependency readiness.
 
 Current root composition is `KotobaLabApp -> RootView -> FeatureScene`.
 
 ### View
 
-- Render Store state.
-- Forward user actions.
-- Own view-local presentation state only.
-- Never query GRDB/SwiftData or construct repositories directly.
+- Render Store state and forward user actions.
+- Own only view-local presentation state.
+- Never query GRDB or SwiftData or construct repositories directly.
 
 ### Store
 
 - Acts as the feature ViewModel.
-- Is explicitly `@MainActor @Observable` when it owns UI-observed state.
-- Models meaningful state transitions, cancellation, retry, and user action
-  orchestration.
+- Is explicitly `@MainActor @Observable` when state is observed by UI.
+- Models meaningful loading, empty, loaded, error, retry, and cancellation
+  transitions.
 - Delegates business operations to UseCases.
-
-Current Stores: `SearchStore`, `SavedStore`, and `WordDetailStore`.
 
 ### Domain
 
-- Defines app-facing entities and repository contracts.
-- Contains UseCases for search, detail, saved loading, and saved toggling.
+- Defines app-facing entities, repository contracts, and UseCases.
 - Must not import SwiftUI, SwiftData, GRDB, or SQLite row types.
-- Value models crossing async dictionary boundaries should remain `Sendable`.
+- Keeps values crossing async dictionary boundaries `Sendable` where required.
 
 ### Data
 
-- Owns GRDB records, SQL/query-interface code, SQLite setup, SwiftData models,
-  migrations, and concrete repository implementations.
-- Converts concrete records into Domain entities.
+- Owns GRDB records and queries, SQLite setup, SwiftData models, migrations, and
+  concrete repository implementations.
+- Converts storage-specific records into Domain entities.
 - Keeps dictionary content and user-owned data in separate storage engines.
 
-## Concurrency Model
+## Concurrency
 
 The Xcode target uses `SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated`.
 
 - UI Stores are explicitly `@MainActor`.
 - `DictionaryRepositoryProtocol` methods are `async throws`.
-- `SQLiteDictionaryRepository` is `Sendable` and performs reads through GRDB
-  `DatabaseQueue.read`, which owns SQLite serialization.
-- UseCases propagate suspension to Stores without importing GRDB.
-- SwiftData repositories remain `@MainActor` because they own a main
-  `ModelContext` and currently expose synchronous operations.
+- `SQLiteDictionaryRepository` is `Sendable` and reads through GRDB
+  `DatabaseQueue.read`.
+- UseCases propagate suspension without importing GRDB.
+- SwiftData repositories remain `@MainActor` while they own a main
+  `ModelContext`.
 
 Do not add a custom database actor unless a measured requirement is not served
-by GRDB's queue and current repository boundary.
+by GRDB's queue and the current repository boundary.
 
 ## Persistence Boundaries
 
-### Dictionary Data
+Read-heavy dictionary reference content belongs in versioned, read-only SQLite
+assets. Saved entries, history, preferences, notes, and future import registry
+state belong in SwiftData.
 
-Read-heavy reference content belongs in versioned, read-only SQLite assets.
-Today there is one Jitendex-derived database. Phase 8 may generalize this to one
-SQLite pack per dictionary provider while preserving a common repository model.
+User data must reference dictionary entries through stable, source-aware
+identity rather than transient SQLite row IDs. Dictionary records and SwiftData
+models do not import or join each other's storage technologies; UseCases
+coordinate Domain values.
 
-### User Data
-
-Saved entries, recent lookup history, future notes, and user pack preferences
-belong in SwiftData. User data must reference dictionary entries by stable,
-source-aware identity rather than transient SQLite row IDs.
-
-Dictionary records and SwiftData models must not be joined by importing one
-storage technology into the other. UseCases coordinate their Domain values.
+The durable data direction is defined in
+[Dictionary Strategy](../dictionary/strategy.md).
 
 ## GRDB Query Policy
 
-Use the simplest representation that keeps the production query understandable
-and testable:
-
-- GRDB Query Interface for table relationships and ordinary typed filtering.
-- Typed `SQLRequest`/`SQL` fragments when a projection or ranking query is
-  clearer and more stable as SQL.
-- Parameter interpolation through GRDB, never string-built user values.
-- Benchmark the complete production query whenever SQL, indexes, projection,
+- Use GRDB Query Interface for ordinary typed relationships and filtering.
+- Use typed `SQLRequest` or `SQL` fragments when a projection or ranking query
+  is clearer as SQL.
+- Interpolate values through GRDB; never construct SQL from user strings.
+- Benchmark the complete production query when SQL, indexes, projection,
   ranking, or result limits change.
 
-The current summary projection intentionally uses a correlated first-meaning
-subquery. The current detail query uses the `WordRecord.meanings` association.
-
-## Feature Placement Rules
+## Feature Placement
 
 | Concern | Location |
 | --- | --- |
@@ -140,33 +127,34 @@ subquery. The current detail query uses the `WordRecord.meanings` association.
 | Business operation | `Domain/UseCase/` |
 | Technology-neutral model | `Domain/Entity/` |
 | Data-access contract | `Domain/Repository/` |
-| GRDB/SwiftData record and implementation | `Data/` |
-| App launch/composition | `App/` |
+| Concrete persistence | `Data/` |
+| App launch and composition | `App/` |
 
-Not every static screen needs a Store. Add a Scene/Store when the feature has
+Not every static screen needs a Store. Add a Scene or Store when a feature has
 dependencies, asynchronous state, business actions, or meaningful testable
 behavior.
 
-## Current Strengths
+## Test Ownership
 
-- Dependency direction is clear and Domain remains framework-neutral.
-- Dictionary I/O is async and UI state is main-actor isolated.
-- Mocks and a fixture SQLite database support UseCase/repository tests.
-- Dictionary and user persistence are separated.
-- Builder and iOS CI protect the current foundation.
+- Builder tests own source decoding, transformation, export invariants, and
+  deterministic fixtures.
+- Database verification owns schema, indexes, integrity, production query
+  plans, and asset budgets.
+- Repository tests own concrete record mapping and persistence behavior.
+- UseCase tests own framework-independent business coordination.
+- Store tests own UI state machines, cancellation, and stale-result handling.
+- UI tests should cover only critical integrated user journeys.
 
-## Current Architecture Risks
+Detailed verification requirements are selected through
+[Engineering Workflow](../development/engineering_workflow.md).
 
-- Saved user state references transient autoincrement word IDs.
-- Launch composition fails with `fatalError` rather than a recoverable launch
-  state.
-- Dictionary asset copying has no schema/content-version upgrade contract.
-- Domain entry models are too flat for source-faithful senses/forms and for
-  future multiple providers.
-- Store and UI state machines lack direct automated coverage.
-- `AnyView` destination factories erase type information; acceptable in the
-  small current shell, but re-evaluate if navigation grows rather than building
-  a speculative router now.
+## Known Risks
 
-These risks are owned by Phases 4–8 in the
-[Product Roadmap](../roadmap/product_roadmap.md).
+- Saved user state still references transient autoincrement word IDs.
+- Launch composition still uses fatal failure instead of recoverable readiness.
+- Runtime dictionary copying has no versioned replacement or rollback contract.
+- Current dictionary entities are too flat for source-faithful detail.
+- Store and critical-flow UI behavior lack direct automated coverage.
+
+These are current implementation facts. Their order and resolution belong in
+[Current Work](../development/current_work.md) and phase records.
