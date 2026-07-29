@@ -1,7 +1,7 @@
 # Phase Records
 
 Status: Active
-Last updated: 2026-07-28
+Last updated: 2026-07-30
 
 Phase records connect durable product direction to reviewable execution. They
 are plans and evidence, not permanent doctrine.
@@ -25,7 +25,7 @@ The absence of a numbered future phase is intentional.
 | 1 — Pipeline Stabilization | Completed | [phase-01-pipeline-stabilization.md](phase-01-pipeline-stabilization.md) |
 | 2 — Core Experience | Completed | [phase-02-core-experience.md](phase-02-core-experience.md) |
 | 3 — Architecture and CI | Completed | [phase-03-architecture-tests.md](phase-03-architecture-tests.md) |
-| 4 — Dictionary Source Contract | Current | [phase-04-dictionary-source-contract.md](phase-04-dictionary-source-contract.md) |
+| 4 — System-wide Lookup and Dictionary Fidelity Spikes | Completed | [phase-04-system-wide-lookup-spikes.md](phase-04-system-wide-lookup-spikes.md) |
 
 Current status and the immediate next action are owned by
 [Current Work](../development/current_work.md).

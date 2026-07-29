@@ -1,7 +1,7 @@
 # Product Contract
 
 Status: Active
-Last updated: 2026-07-28
+Last updated: 2026-07-30
 
 ## Product Definition
 
@@ -9,11 +9,19 @@ KotobaLab is a native, local-first Japanese dictionary and light study app for
 iOS. It should first become dependable for everyday lookup, then grow through
 additional dictionary sources and user-owned learning features.
 
-The core loop is:
+The target everyday loop is:
 
 ```text
-Search -> Word Detail -> Save -> Saved List -> Reopen Detail
+Encounter Japanese anywhere
+-> invoke KotobaLab explicitly
+-> inspect a dictionary-backed result in context
+-> save the relevant entry or context
+-> reopen it later
 ```
+
+In-app search remains a first-class path through the same dictionary experience.
+System-wide entry is a product direction, not a claim that its production
+surface has already been selected or implemented.
 
 ## Target Users
 
@@ -24,6 +32,8 @@ The first release serves Japanese learners who need to:
 - inspect structured senses and usage information
 - save an entry and find it again later
 - use the dictionary without a network connection
+- begin a lookup from Japanese encountered outside KotobaLab through an
+  explicitly invoked path
 
 The initial definition language may remain English.
 
@@ -34,6 +44,12 @@ The initial definition language may remain English.
 Lookup and saved-word access must work without an account or network connection.
 Dictionary content is read-only reference data; saved words and other personal
 state are user-owned data.
+
+### Explicit Invocation
+
+System-wide lookup begins with an intentional user action. Selected text,
+clipboard text, and screenshot OCR may provide entry paths, but KotobaLab does
+not continuously inspect other apps or silently capture user content.
 
 ### Source Aware
 
