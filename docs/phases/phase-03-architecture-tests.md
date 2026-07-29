@@ -120,6 +120,5 @@ not an accidental SQL cleanup.
 
 ## Next Phase
 
-[Phase 4: Dictionary Source Contract](phase-04-dictionary-source-contract.md)
-starts by defining the supported source model and stable identity contract before
-production data and UI migration.
+The originally planned dictionary source-contract work was later superseded by
+[Phase 4: System-wide Lookup and Dictionary Fidelity Spikes](phase-04-system-wide-lookup-spikes.md).

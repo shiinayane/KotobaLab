@@ -1,7 +1,7 @@
 # Dictionary Pipeline
 
 Status: Active
-Last updated: 2026-07-28
+Last updated: 2026-07-30
 
 ## Current Flow
 
@@ -112,8 +112,10 @@ The current builder is not a lossless JMdict or Jitendex importer:
 - one `meanings` row is emitted per `words` row
 - source revision and license metadata are not embedded in SQLite
 
-The current [Phase 4](../phases/phase-04-dictionary-source-contract.md) defines
-the supported source contract before production schema migration.
+The completed
+[Phase 4](../phases/phase-04-system-wide-lookup-spikes.md) records feasibility
+evidence for runtime import and dictionary fidelity. Its disposable
+implementations are not part of this production pipeline.
 
 ## Change Verification
 

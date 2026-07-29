@@ -1,7 +1,7 @@
 # Dictionary Strategy
 
 Status: Active
-Last updated: 2026-07-28
+Last updated: 2026-07-30
 
 ## Purpose
 
@@ -87,6 +87,23 @@ For every supported source shape:
   it
 
 Compactness is a measured constraint, not permission to lose meaning.
+
+Yomitan compatibility describes a transport and structural container, not a
+shared semantic ontology. Dictionaries using the same format may encode
+provider-specific meaning in different tag sets and structured-content shapes.
+
+The default fidelity path is an ordered structural projection that:
+
+- preserves supported text, inline content, ruby, lists, tables, links, and
+  disclosure structure
+- keeps source order and nesting visible
+- renders unknown valid nodes through an explicit fallback instead of silently
+  dropping their content
+
+A selected provider may add a semantic projection when its stable conventions
+support materially better search, grouping, cross-references, or detail
+presentation. Such an adapter sits above generic decoding; it does not redefine
+Yomitan or require one parser per dictionary.
 
 ## Identity Contract
 

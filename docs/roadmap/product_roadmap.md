@@ -1,7 +1,7 @@
 # Product Roadmap
 
 Status: Active
-Last updated: 2026-07-28
+Last updated: 2026-07-30
 
 ## Purpose
 
@@ -31,9 +31,12 @@ usable.
 
 ## Direction 2: Complete Daily Dictionary Experience
 
-The core lookup loop should feel complete and reliable in ordinary use.
+The core lookup loop should feel complete and reliable in ordinary use,
+including Japanese encountered outside KotobaLab.
 
 - Make search predictable and useful.
+- Provide explicit system-wide entry without continuous background capture.
+- Preserve enough selected or recognized context to make the result useful.
 - Present structured detail without hiding source meaning.
 - Preserve saved entries across supported content updates.
 - Remove placeholders and dead ends from visible product surfaces.
@@ -81,5 +84,7 @@ These are opportunities, not commitments or phase assignments.
 - Provider identity and attribution are never erased for convenience.
 - Commercial or unclear-license dictionary data is not redistributed.
 - Product breadth does not come before correctness and daily usability.
+- Use bounded, disposable spikes to answer high-risk product or technical
+  questions. A successful spike does not authorize production implementation.
 - A roadmap direction may be revisited when evidence changes; implementation
   plans must not be treated as permanent doctrine.
