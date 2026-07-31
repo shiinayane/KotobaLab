@@ -22,6 +22,11 @@ propose a correction instead of silently choosing one.
 ## Collaboration
 
 - Inspect and propose before modifying files.
+- When isolated development is needed, default to a separate Codex managed
+  Worktree conversation. Do not manually run `git worktree add` in the current
+  conversation or modify across worktrees by changing `workdir`. Use Local,
+  Handoff, a permanent worktree, or a manual Git worktree only when the user
+  explicitly requests it.
 - State the goal, scope, architecture impact, risks, non-goals, and verification
   plan.
 - Implement only after explicit approval and only within the approved scope.
