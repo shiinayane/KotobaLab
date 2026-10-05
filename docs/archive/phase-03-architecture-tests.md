@@ -116,7 +116,7 @@ not an accidental SQL cleanup.
 - CI's latest-release artifact dependency needs a pinned/manifested update
   contract before v1.
 - Product/data limitations are now tracked by the
-  [v1 Gap Analysis](../product/v1_gap_analysis.md), not by extending this phase.
+  [v1 Gap Analysis](v1_gap_analysis.md), not by extending this phase.
 
 ## Next Phase
 

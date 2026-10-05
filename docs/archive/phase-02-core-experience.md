@@ -195,6 +195,6 @@ Completion criteria (roadmap):
 ## Next Phase
 
 `Phase 3: Architecture and Tests` (see
-[`docs/roadmap/product_roadmap.md`](../roadmap/product_roadmap.md)): async
+[`docs/product.md`](../product.md)): async
 repository decision, `@MainActor` on all stores, iOS `xcodebuild` CI, and the
 `verify_database.py` search-plan alignment.
