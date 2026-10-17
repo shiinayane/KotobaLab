@@ -36,7 +36,7 @@ struct LoadSavedWordsUseCaseTests {
                 SavedWordRecordData(
                     wordID: 2,
                     savedAt: Date(timeIntervalSince1970: 200)
-                ),
+                )
             ]
         )
 

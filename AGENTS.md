@@ -1,91 +1,113 @@
 # AGENTS.md
 
-Minimum constraints for agents working in the KotobaLab repository.
+Rules for every agent task in KotobaLab. This file holds only what cannot be
+inferred from the code. Each fact in the repository has exactly one owner
+document; link to it instead of restating it.
 
-This file contains only rules that apply to every task and cannot be inferred
-reliably from the code. Product state, current work, engineering workflow, and
-execution plans belong under [`docs/`](docs/README.md).
+## Reading
 
-## Required Reading
+Always read [`docs/current_work.md`](docs/current_work.md) first. Then read only
+what the task touches:
 
-Before changing the repository, read:
+| Task touches | Read |
+| --- | --- |
+| Swift code, layering, concurrency, tests | [`docs/architecture.md`](docs/architecture.md) |
+| Dictionary data, builder, schema, assets | [`docs/dictionary.md`](docs/dictionary.md) |
+| Product scope, priorities, licensing | [`docs/product.md`](docs/product.md) |
 
-1. [`docs/README.md`](docs/README.md)
-2. [`docs/development/current_work.md`](docs/development/current_work.md)
-3. The phase, architecture, or dictionary documents linked by the current work
-4. The relevant source code and tests
+`docs/archive/` holds frozen phase records. Read them only to trace the history
+of a decision. `docs/_local/` is gitignored scratch and never a contract.
 
-Documentation records intent and constraints. Source code and verification
-results record the implementation. When they conflict, report the evidence and
-propose a correction instead of silently choosing one.
+Documentation records intent; source code and verification record the
+implementation. When they conflict, report the evidence and propose a
+correction instead of silently choosing one.
 
-## Collaboration
-
-- Inspect and propose before modifying files.
-- When isolated development is needed, default to a separate Codex managed
-  Worktree conversation. Do not manually run `git worktree add` in the current
-  conversation or modify across worktrees by changing `workdir`. Use Local,
-  Handoff, a permanent worktree, or a manual Git worktree only when the user
-  explicitly requests it.
-- State the goal, scope, architecture impact, risks, non-goals, and verification
-  plan.
-- Implement only after explicit approval and only within the approved scope.
-- Pause for renewed approval if implementation would materially expand scope,
-  change product behavior, alter a persistence contract, or add a dependency.
-- Keep changes small enough for the user to understand and review completely.
-- Explain behavior changes, key mechanisms, verification evidence, and
-  unverified boundaries after implementation.
-- Do not ask the user to copy code mechanically unless they request a snippet.
-
-Implementation, documentation, commit, push, pull request, merge, and release
-are separate permissions. Never infer one from another.
-
-## Architecture Boundaries
-
-Dependency direction remains one-way:
+## Workflow
 
 ```text
-App / Scene → Feature View → Store → UseCase → Repository protocol
-→ Repository implementation → SQLite / SwiftData
+Inspect -> Propose -> Approve -> Implement -> Verify -> Report
 ```
 
-- `Domain/` must not import SwiftUI, SwiftData, GRDB, or SQLite record types.
-- Views must not hold repositories or database references directly.
-- Features use the `Scene + Store + View` structure.
-- Observable UI Stores are explicitly `@MainActor @Observable`.
-- Dictionary content remains in SQLite; user data remains in SwiftData.
-- Business logic must not bypass UseCases and move into Views.
-- Do not add layers, protocols, generics, or abstractions for unconfirmed future
-  needs.
+- Inspect the relevant code, tests, docs, and existing worktree changes.
+- Propose the goal, scope, affected layers, data/persistence/concurrency impact,
+  risks, non-goals, and verification plan. Low-risk work may use a short
+  proposal.
+- Implement only after explicit approval and only within the approved scope.
+  Direct compile fixes, related tests, fixtures, and formatting stay in scope.
+- Pause for renewed approval if scope expands materially, product behavior or a
+  persistence contract changes, a dependency or layer is added, user changes
+  would be overwritten, or verification disproves the design.
+- Report what changed and why, the key call chain, verification evidence, and
+  unverified boundaries.
 
-Add an abstraction only when it removes real duplication, isolates a known
-change, or materially improves testability.
+Review requests are not implementation requests. Preserve unrelated worktree
+changes. Do not refactor outside the approved task or hide architecture changes
+inside a bug fix. Do not add layers, protocols, or generics for unconfirmed
+future needs.
 
-## Scope and Evidence
+When isolation is needed, use the isolated workspace the host tool provides.
+Create a manual Git worktree only when the user asks for one.
 
-- Preserve unrelated worktree changes.
-- Do not refactor outside the approved task.
-- Do not turn review requests into implementation.
-- Do not hide unrelated architecture changes inside a bug fix.
-- Report unavailable verification explicitly; never describe it as passing.
-- Mark work complete only when supported by actual evidence.
-- Close a phase only when its acceptance gate is satisfied.
+## Permissions
 
-## Apple Platform Validation
+Implementation, documentation, staging, commit, push, pull request, merge, and
+release are separate permissions. Never infer one from another. Agents never
+merge.
 
-When a Swift, SwiftUI, Xcode, Simulator, device, signing, UI, or performance
-change requires executable Apple-platform evidence, use the available
-`apple-dev-loop` skill to select and run the smallest sufficient validation
-profile. Do not invoke it for documentation-only work, source-only explanations,
-or changes that require no Apple toolchain or runtime evidence.
+## Verification
+
+| Change | Minimum evidence |
+| --- | --- |
+| Docs or configuration | Targeted check and `git diff --check` |
+| Swift source | `swift format lint -r -s -p KotobaLab/ KotobaLabTests/` and relevant tests |
+| Feature or composition | iOS build and tests |
+| Builder | `cd Tools/DictionaryBuilder && python3 -m pytest` |
+| SQL, schema, or index | Builder tests, verifier, query plan, and benchmark |
+| Dictionary asset or migration | Reproducible rebuild, integrity checks, old/new fixtures |
+| UI behavior | State tests and runtime inspection |
+
+iOS tests:
+
+```bash
+xcodebuild test -project KotobaLab.xcodeproj -scheme KotobaLab \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
+```
+
+Use a host-provided Apple validation skill when one is available. Builds do not
+prove runtime behavior, mocks do not prove migration, and local results on a
+newer Xcode do not prove CI, which pins its own Xcode version. Report
+unavailable verification explicitly; never describe it as passing.
+
+## Documentation
+
+- Update `docs/current_work.md` when the objective, next action, or an open
+  decision changes.
+- Update the owner document when a decision or contract changes. Do not copy
+  counts, measurements, or rules into a second document.
+- Record measurements only in `docs/dictionary.md`, with artifact and date.
+- Do not edit `docs/archive/` except to fix links or factual errors.
+- Replace obsolete text instead of appending.
+
+## Git
+
+Commits use `<type>(optional scope): <imperative summary>` with types `feat`,
+`fix`, `refactor`, `test`, `docs`, `build`, `ci`, or `chore`. One commit is one
+semantic change; add a body only for rationale or verification limits.
+
+Branches use ASCII kebab-case `<type>/<short-description>`, plus any prefix the
+host tool requires.
+
+A pull request with passing remote CI is required before `main` for schema,
+runtime format, stable identity, persisted migration, database replacement,
+privacy or entitlements, dependencies, build, signing, CI, the dictionary
+release pipeline, and broad cross-layer refactors. Other changes may skip a pull
+request after user review. PR descriptions contain Why, What, Verification, and
+Known limits.
 
 ## Language
 
-Source code, comments, test names, formal documentation, commits, branches, pull
-requests, and review text use English. User-facing localization follows its
-target language. Preserve the original language of third-party licenses,
-dictionary metadata, quoted errors, and citations. Communicate with the user in
-the language they use.
-
-Engineering, verification, and Git conventions are defined in
-[`docs/development/engineering_workflow.md`](docs/development/engineering_workflow.md).
+Code, comments, tests, formal docs, commits, branches, pull requests, and review
+text use English. User-facing localization follows its target language.
+Preserve the original language of third-party licenses, dictionary metadata,
+quoted errors, and citations. Communicate with the user in the language they
+use.
