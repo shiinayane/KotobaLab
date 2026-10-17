@@ -38,14 +38,14 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol, Sendable {
         """
 
     func searchWords(query: String, limit: Int) async throws -> [WordSummary] {
-        let pattern = "\(query)%"
+        let pattern = Self.likePrefixPattern(for: query)
 
         return try await dbQueue.read { db in
             let request: SQLRequest<WordSummaryRecord> = """
                 \(Self.wordSummaryBaseSQL)
                 WHERE
-                    w.term LIKE \(pattern)
-                    OR w.reading LIKE \(pattern)
+                    w.term LIKE \(pattern) ESCAPE '\\'
+                    OR w.reading LIKE \(pattern) ESCAPE '\\'
                 LIMIT \(limit)
                 """
 
@@ -54,6 +54,19 @@ final class SQLiteDictionaryRepository: DictionaryRepositoryProtocol, Sendable {
                 .fetchAll(db)
                 .map { $0.toDomain() }
         }
+    }
+
+    /// Builds a `LIKE` prefix pattern that matches `query` literally.
+    ///
+    /// The backslash is escaped first so the escapes added for `%` and `_`
+    /// are not doubled. The query must pair the pattern with `ESCAPE '\'`.
+    static func likePrefixPattern(for query: String) -> String {
+        let escaped =
+            query
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "%", with: "\\%")
+            .replacingOccurrences(of: "_", with: "\\_")
+        return escaped + "%"
     }
 
     func fetchWordDetail(wordID: Int64) async throws -> WordDetail? {

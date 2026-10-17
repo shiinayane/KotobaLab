@@ -42,6 +42,19 @@ struct SQLiteDictionaryRepositoryTests {
         #expect(result.map(\.term) == ["食べる"])
     }
 
+    @Test(arguments: ["%", "_", "\\", "食_", "食%"])
+    func searchWithLikeWildcard_shouldMatchLiterally(query: String) async throws {
+        let result = try await repository.searchWords(query: query, limit: 10)
+
+        #expect(result.isEmpty)
+    }
+
+    @Test func likePrefixPattern_shouldEscapeWildcardsAndBackslash() {
+        let pattern = SQLiteDictionaryRepository.likePrefixPattern(for: #"a%b_c\d"#)
+
+        #expect(pattern == #"a\%b\_c\\d%"#)
+    }
+
     @Test func loadWordDetail_shouldReturnMeaningsInSequenceOrder() async throws {
         let detail = try #require(
             try await repository.fetchWordDetail(wordID: 1)
