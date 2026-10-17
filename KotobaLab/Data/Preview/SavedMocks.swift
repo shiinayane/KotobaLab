@@ -18,6 +18,6 @@ extension SavedWordRecordData {
         SavedWordRecordData(
             wordID: 2,
             savedAt: Date.now
-        ),
+        )
     ]
 }
