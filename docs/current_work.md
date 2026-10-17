@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-10-05
+Last updated: 2026-10-17
 
 ## Status
 
@@ -10,21 +10,17 @@ production.
 
 ## Current Objective
 
-Consolidate the documentation into one owner per fact: `AGENTS.md`,
-[product](product.md), [architecture](architecture.md),
-[dictionary](dictionary.md), and this file. The restructure was drafted on
-2026-10-05 as a documentation-only change for user review.
+Select and propose one small production slice for explicit approval.
+Documentation now has one owner per fact: `AGENTS.md`, [product](product.md),
+[architecture](architecture.md), [dictionary](dictionary.md), and this file.
 
 ## Next Action
 
-After the documentation change is reviewed, propose one small production slice
-for explicit approval. Candidates found in the 2026-10-05 repository review:
+Propose the search wildcard fix first. Other candidates from the 2026-10-05
+repository review follow.
 
 - **Search wildcard escaping.** User input reaches `LIKE` unescaped, so `%` or
   `_` match arbitrary entries and a leading wildcard forces a full table scan.
-- **swift-format configuration.** Local Xcode 27 rejects the committed
-  `.swift-format`; the uncommitted replacement adds trailing-comma rules that
-  flag five existing violations. Confirm CI's Xcode 26.4 accepts it first.
 - **Save-toggle failure.** A failed toggle replaces the loaded detail with an
   error screen.
 - **Unused code.** `AppRouter` path navigation, `AppRoute`, and the bundled
