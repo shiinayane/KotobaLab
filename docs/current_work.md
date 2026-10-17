@@ -16,11 +16,10 @@ Documentation now has one owner per fact: `AGENTS.md`, [product](product.md),
 
 ## Next Action
 
-Propose the search wildcard fix first. Other candidates from the 2026-10-05
-repository review follow.
+Propose one of the remaining candidates from the 2026-10-05 repository review.
+The search wildcard fix is delivered by the `fix/search-wildcard-escaping`
+branch.
 
-- **Search wildcard escaping.** User input reaches `LIKE` unescaped, so `%` or
-  `_` match arbitrary entries and a leading wildcard forces a full table scan.
 - **Save-toggle failure.** A failed toggle replaces the loaded detail with an
   error screen.
 - **Unused code.** `AppRouter` path navigation, `AppRoute`, and the bundled

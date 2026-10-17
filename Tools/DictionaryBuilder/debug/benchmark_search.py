@@ -30,8 +30,8 @@ LEFT JOIN meanings AS preview
         LIMIT 1
     )
 WHERE
-    w.term LIKE ?
-    OR w.reading LIKE ?
+    w.term LIKE ? ESCAPE '\\'
+    OR w.reading LIKE ? ESCAPE '\\'
 LIMIT ?;
 """
 
@@ -44,8 +44,14 @@ def parse_args():
     return parser.parse_args()
 
 
+def like_prefix_pattern(query):
+    """Match the app's escaping so the benchmark runs the production query."""
+    escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    return f"{escaped}%"
+
+
 def explain_query_plan(conn, query, limit):
-    pattern = f"{query}%"
+    pattern = like_prefix_pattern(query)
     rows = conn.execute(
         "EXPLAIN QUERY PLAN " + SEARCH_SQL, (pattern, pattern, limit)
     ).fetchall()
@@ -56,7 +62,7 @@ def explain_query_plan(conn, query, limit):
 
 
 def benchmark_query(conn, query, runs, limit):
-    pattern = f"{query}%"
+    pattern = like_prefix_pattern(query)
 
     # warm-up
     conn.execute(SEARCH_SQL, (pattern, pattern, limit)).fetchall()
@@ -90,7 +96,7 @@ def main():
     # This matters because the default QUERY PLAN is SCAN words
     conn.execute("PRAGMA case_sensitive_like = ON")
 
-    queries = ["日", "食", "見る", "あ", "zzzznotfound"]
+    queries = ["日", "食", "見る", "あ", "zzzznotfound", "%"]
 
     for query in queries:
         explain_query_plan(conn, query, args.limit)

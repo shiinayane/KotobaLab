@@ -128,8 +128,8 @@ def check_search_query_uses_index(conn: sqlite3.Connection):
                 LIMIT 1
             )
         WHERE
-            w.term LIKE ?
-            OR w.reading LIKE ?
+            w.term LIKE ? ESCAPE '\\'
+            OR w.reading LIKE ? ESCAPE '\\'
         LIMIT 50
     """
 

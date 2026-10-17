@@ -46,9 +46,10 @@ latest GitHub Release into `KotobaLab/Resources/`. Releases replace git-lfs,
 which would exhaust the free quota, and local generation, which would block
 onboarding.
 
-Search uses `term LIKE 'prefix%' OR reading LIKE 'prefix%'`. SQLite uses the two
-indexes only when `PRAGMA case_sensitive_like = ON`, which `DatabaseManager`
-sets.
+Search uses `term LIKE 'prefix%' ESCAPE '\' OR reading LIKE 'prefix%' ESCAPE '\'`.
+The repository escapes `\`, `%`, and `_` in user input so they match literally;
+the verifier and benchmark use the same escaping. SQLite uses the two indexes
+only when `PRAGMA case_sensitive_like = ON`, which `DatabaseManager` sets.
 
 ## Commands
 
@@ -74,7 +75,9 @@ repository and UseCase tests.
 
 ## Measurements
 
-Artifact built 2026-07-21 from the snapshot above, measured locally:
+Asset `dictionary.sqlite` built from the snapshot above (54,394,880 bytes).
+Counts verified and search measured locally on 2026-10-17, after adding
+`ESCAPE`. Rows use the benchmark limit of 50, not the app limit of 20.
 
 | Property | Value |
 | --- | ---: |
@@ -85,11 +88,12 @@ Artifact built 2026-07-21 from the snapshot above, measured locally:
 
 | Query | Rows | Average | Plan |
 | --- | ---: | ---: | --- |
-| `日` | 50 | ~0.072 ms | `MULTI-INDEX OR` |
-| `食` | 50 | ~0.067 ms | `MULTI-INDEX OR` |
-| `見る` | 21 | ~0.036 ms | `MULTI-INDEX OR` |
-| `あ` | 50 | ~0.070 ms | `MULTI-INDEX OR` |
-| `zzzznotfound` | 0 | ~0.014 ms | `MULTI-INDEX OR` |
+| `日` | 50 | ~0.070 ms | `MULTI-INDEX OR` |
+| `食` | 50 | ~0.069 ms | `MULTI-INDEX OR` |
+| `見る` | 21 | ~0.038 ms | `MULTI-INDEX OR` |
+| `あ` | 50 | ~0.071 ms | `MULTI-INDEX OR` |
+| `zzzznotfound` | 0 | ~0.013 ms | `MULTI-INDEX OR` |
+| `%` | 0 | ~0.013 ms | `MULTI-INDEX OR` |
 
 ## Data Boundaries
 
