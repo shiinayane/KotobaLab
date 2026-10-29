@@ -53,13 +53,40 @@ jobs:
             --pattern 'dictionary.sqlite' \
             --dir KotobaLab/Resources
 
+      # Runner images change which simulators exist, so pick an available iPhone
+      # on the newest iOS runtime instead of naming one.
+      - name: Pick an iPhone simulator
+        id: simulator
+        shell: python3 {0}
+        run: |
+          import json, os, re, subprocess, sys
+
+          listing = subprocess.run(
+              ["xcrun", "simctl", "list", "devices", "available", "--json"],
+              capture_output=True, check=True,
+          ).stdout
+          devices = json.loads(listing)["devices"]
+
+          def version(runtime):
+              match = re.search(r"iOS-(\d+)-(\d+)", runtime)
+              return (int(match[1]), int(match[2])) if match else None
+
+          for runtime in sorted((r for r in devices if version(r)), key=version, reverse=True):
+              for device in devices[runtime]:
+                  if device["name"].startswith("iPhone"):
+                      print(f"Using {device['name']} on {runtime.split('.')[-1]}")
+                      with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+                          output.write(f"udid={device['udid']}\n")
+                      sys.exit(0)
+          sys.exit("No available iPhone simulator")
+
       - name: Build and test
         run: |
           set -o pipefail
           xcodebuild test \
             -project KotobaLab.xcodeproj \
             -scheme KotobaLab \
-            -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
+            -destination 'platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}' \
             -derivedDataPath /tmp/KotobaLabReviewDerived \
             -resultBundlePath TestResults.xcresult \
             | xcbeautify
