@@ -5,8 +5,12 @@ Last updated: 2026-10-29
 ## Status
 
 No phase is active. Phases 0–4 are complete and archived in
-[`archive/`](archive/). Phase 4 proved feasibility only; no spike code is in
-production.
+[`archive/`](archive/). No spike code is in production.
+
+The 2026-10-29 native-rendering spike passed, and native rendering is the
+default; see [Rendering](dictionary.md#rendering). Its code is reference
+material on the local, unpushed branch `spike/native-rendering` in
+`.claude/worktrees/spike-native-rendering`, and must not be merged.
 
 ## Current Objective
 
@@ -25,9 +29,10 @@ slice from the open decisions below and propose it for approval.
   screenshot OCR is in it.
 - Whether user-facing Yomitan import belongs in v1, which
   [product](product.md) currently lists as a non-goal.
-- How far native rendering of imported dictionaries should go. A local study
-  suggests a CSS-subset projection covers most entries of heavily styled
-  dictionaries, but it is unverified beyond one sample.
+- Which rendering gaps to close first: vertical writing, grid placement, row
+  spans, SVG, or ruby inside labels.
+- What import precomputes, such as compiled styles, rasterized SVG, or render
+  data stored in SQLite.
 - Which providers justify a semantic adapter beyond generic rendering.
 - Production import, identity, activation, recovery, and saved-reference
   contracts.
