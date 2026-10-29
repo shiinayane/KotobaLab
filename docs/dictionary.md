@@ -95,6 +95,36 @@ Counts verified and search measured locally on 2026-10-17, after adding
 | `zzzznotfound` | 0 | ~0.013 ms | `MULTI-INDEX OR` |
 | `%` | 0 | ~0.013 ms | `MULTI-INDEX OR` |
 
+### Native-rendering spike, 2026-10-29
+
+The spike rendered Jitendex `2026.03.05.0` and the user-supplied
+小学館例解学習国語 第十二版 (`rgko12;2025-08-18`) with one engine and no
+per-dictionary parser.
+
+All 30 samples, 10 from Jitendex and 20 from 小学館, were compared with a
+WebKit reference on the iOS 26 Simulator in light mode, and four of them in dark
+mode. Most were visually near-identical. The remaining differences match the known gaps under
+Rendering.
+
+Full-dictionary style resolution on macOS. A note is layout-affecting unless it
+only changes typographic detail such as `word-break` or font family.
+
+| Dictionary | Entries | Unsupported selectors | Layout-affecting notes | Row span or SVG |
+| --- | ---: | ---: | ---: | ---: |
+| Jitendex | 427,064 | 0 | 0.00% | 0.34% |
+| 小学館 | 48,523 | 5, appendix only | 19.45% | 0.04% |
+
+For 小学館, 16.06% of entries are flex labels that render correctly as inline
+labels. Vertical writing affects 3.14% and grid placement 0.89%.
+
+Release build on iPhone 16 Pro Max, style and render-model construction:
+
+| Sample | Elements | Time |
+| --- | ---: | ---: |
+| 掛ける (Jitendex) | 542 | 12.9 ms |
+| 犯す (小学館) | 289 | 12.5 ms |
+| 小倉百人一首 appendix (小学館) | 15,290 | 111.3 ms |
+
 ## Data Boundaries
 
 ```text
@@ -141,6 +171,29 @@ Jitendex and a second, structurally different source, and a Jitendex adapter
 recovered grouped senses and cross-references. See
 [the Phase 4 record](archive/phase-04-system-wide-lookup-spikes.md). No spike
 code is in production.
+
+## Rendering
+
+Decision, 2026-10-29: dictionary entries render natively by default.
+
+- A CSS subset engine applies each dictionary's own `styles.css` with browser
+  semantics: nesting, cascade and specificity, `:has()`, `:not()`,
+  `::before`/`::after`, `var()`, `calc()`, and `color-mix()`. Theme variables
+  map to system colors, so light and dark mode follow the platform.
+- TextKit 2 lays out text, ruby, and selection. SwiftUI lays out boxes, lists,
+  tables, images, and disclosures. Decorated inline labels are drawn as
+  attachments.
+- CSS the engine cannot honor degrades to readable structure and is reported.
+  Content is never dropped silently.
+- WebKit is not the display path. It may serve as an optional per-dictionary
+  view of the original styling, and as an import-time tool, for example to
+  rasterize SVG images.
+- Known gaps: vertical writing mode, grid placement, row spans, SVG images,
+  gradients (approximated by their first color), ruby inside decorated labels,
+  and hanging indents.
+
+The evidence is the native-rendering spike under Measurements. Its code is
+reference material only and is not part of production.
 
 ## Identity
 
