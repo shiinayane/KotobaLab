@@ -12,8 +12,10 @@ import Foundation
     private let toggleSavedWordUseCase: ToggleSavedWordUseCase
 
     var isSaved = false
+    /// Whether the saved state is known, so the bookmark can be toggled safely.
+    private(set) var canToggleSaved = false
     private(set) var state: WordDetailViewState = .idle
-    /// The message to show when saving or unsaving fails.
+    /// The message to show when the saved state cannot be read or changed.
     ///
     /// The loaded detail stays on screen while this is set.
     private(set) var saveErrorMessage: String?
@@ -36,7 +38,7 @@ import Foundation
 
             if let displayData {
                 state = .loaded(displayData.detail)
-                isSaved = displayData.isSaved
+                applySavedState(displayData.isSaved)
             } else {
                 state = .notFound
             }
@@ -46,6 +48,8 @@ import Foundation
     }
 
     func toggleSaved() {
+        guard canToggleSaved else { return }
+
         do {
             isSaved = try toggleSavedWordUseCase.execute()
         } catch {
@@ -55,6 +59,17 @@ import Foundation
 
     func dismissSaveError() {
         saveErrorMessage = nil
+    }
+
+    private func applySavedState(_ savedState: Bool?) {
+        guard let savedState else {
+            isSaved = false
+            canToggleSaved = false
+            saveErrorMessage = "Could not check whether this word is saved."
+            return
+        }
+        isSaved = savedState
+        canToggleSaved = true
     }
 }
 

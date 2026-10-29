@@ -73,4 +73,19 @@ struct LoadWordDetailUseCaseTests {
         #expect(result?.detail.id == wordID)
         #expect(result?.isSaved == false)
     }
+
+    @Test func loadWordDetail_whenSavedStateReadFails_shouldReturnDetailWithUnknownSavedState()
+        async throws
+    {
+        let useCase = LoadWordDetailUseCase(
+            wordID: 1,
+            dictionaryRepository: MockDictionaryRepository(),
+            userDataRepository: FailingUserDataRepository(failsReads: true)
+        )
+
+        let result = try #require(try await useCase.execute())
+
+        #expect(result.detail.id == 1)
+        #expect(result.isSaved == nil)
+    }
 }
