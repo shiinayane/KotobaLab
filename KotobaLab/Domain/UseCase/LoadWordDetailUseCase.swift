@@ -26,7 +26,9 @@ struct LoadWordDetailUseCase {
         guard let fetchedDetail else {
             return nil
         }
-        let isSaved = (try? userDataRepository.isWordSaved(wordID: wordID)) ?? false
+        // A failed read must not look like "not saved": toggling would then
+        // unsave a word the user already saved. Report it as unknown instead.
+        let isSaved = try? userDataRepository.isWordSaved(wordID: wordID)
         return WordDetailDisplayData(
             detail: fetchedDetail,
             isSaved: isSaved

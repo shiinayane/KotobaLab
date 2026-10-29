@@ -25,7 +25,7 @@ struct WordDetailView: View {
                 await store.load()
             }
             .alert(
-                "Could Not Update Saved Words",
+                "Saved Words Unavailable",
                 isPresented: isShowingSaveError,
                 presenting: store.saveErrorMessage
             ) { _ in
@@ -106,6 +106,7 @@ struct WordDetailView: View {
         } label: {
             store.isSaved ? Image(systemName: "bookmark.fill") : Image(systemName: "bookmark")
         }
+        .disabled(!store.canToggleSaved)
     }
 
     private var notFoundView: some View {

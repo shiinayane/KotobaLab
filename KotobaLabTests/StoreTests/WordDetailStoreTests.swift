@@ -12,7 +12,7 @@ import Testing
 
 @MainActor struct WordDetailStoreTests {
     @Test func toggleSaved_whenSaveFails_shouldKeepLoadedDetail() async throws {
-        let store = makeStore(userDataRepository: FailingWriteUserDataRepository())
+        let store = makeStore(userDataRepository: FailingUserDataRepository(failsWrites: true))
         await store.load()
 
         store.toggleSaved()
@@ -27,7 +27,7 @@ import Testing
     }
 
     @Test func dismissSaveError_shouldClearMessage() async throws {
-        let store = makeStore(userDataRepository: FailingWriteUserDataRepository())
+        let store = makeStore(userDataRepository: FailingUserDataRepository(failsWrites: true))
         await store.load()
         store.toggleSaved()
 
@@ -43,6 +43,31 @@ import Testing
         store.toggleSaved()
 
         #expect(store.isSaved == true)
+        #expect(store.saveErrorMessage == nil)
+    }
+
+    @Test func load_whenSavedStateReadFails_shouldShowDetailAndDisableToggle() async throws {
+        let store = makeStore(userDataRepository: FailingUserDataRepository(failsReads: true))
+
+        await store.load()
+
+        guard case .loaded(let detail) = store.state else {
+            Issue.record("Expected loaded state, got \(store.state)")
+            return
+        }
+        #expect(detail.id == 1)
+        #expect(store.canToggleSaved == false)
+        #expect(store.saveErrorMessage != nil)
+    }
+
+    @Test func toggleSaved_whenSavedStateIsUnknown_shouldNotChangeSavedState() async throws {
+        let store = makeStore(userDataRepository: FailingUserDataRepository(failsReads: true))
+        await store.load()
+        store.dismissSaveError()
+
+        store.toggleSaved()
+
+        #expect(store.isSaved == false)
         #expect(store.saveErrorMessage == nil)
     }
 
@@ -63,17 +88,4 @@ import Testing
             )
         )
     }
-}
-
-/// Reads succeed and report nothing saved; every write fails.
-private final class FailingWriteUserDataRepository: UserDataRepositoryProtocol {
-    struct WriteError: Error {}
-
-    func isWordSaved(wordID: Int64) throws -> Bool { false }
-
-    func saveWord(wordID: Int64) throws { throw WriteError() }
-
-    func unsaveWord(wordID: Int64) throws { throw WriteError() }
-
-    func fetchSavedWordIDs() throws -> [Int64] { [] }
 }

@@ -38,5 +38,6 @@ struct Meaning: Identifiable, Hashable, Sendable {
 
 struct WordDetailDisplayData {
     let detail: WordDetail
-    let isSaved: Bool
+    /// Whether the word is saved, or `nil` when the saved state could not be read.
+    let isSaved: Bool?
 }

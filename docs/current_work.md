@@ -16,13 +16,8 @@ Documentation now has one owner per fact: `AGENTS.md`, [product](product.md),
 
 ## Next Action
 
-Propose one of the remaining candidates from the 2026-10-05 repository review.
-The search wildcard and save-toggle fixes are done.
-
-- **Silent saved-state read failure.** When loading a detail, a failure to read
-  the saved state is treated as "not saved" without telling the user.
-- **Unused code.** `AppRouter` path navigation, `AppRoute`, and the bundled
-  `Resources/MockData` JSON are unused.
+All candidates from the 2026-10-05 repository review are done. Choose the next
+slice from the open decisions below and propose it for approval.
 
 ## Open Decisions
 

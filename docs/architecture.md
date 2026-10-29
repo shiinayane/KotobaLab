@@ -34,7 +34,7 @@ Hard rules:
 | Business operations | `Domain/UseCase/` |
 | GRDB records, SQLite setup, SwiftData models, repositories | `Data/` |
 | Feature UI | `Features/<Feature>/` |
-| Routing and sheets | `Navigation/` |
+| Sheet presentation (`AppRouter`) | `Navigation/` |
 | Shared components | `Shared/` |
 
 A feature with dependencies, asynchronous state, or testable behavior uses
