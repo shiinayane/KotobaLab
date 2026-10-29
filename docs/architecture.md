@@ -76,7 +76,7 @@ alone.
 | Database verifier | Schema, indexes, integrity, production query plans, size |
 | Repository tests | Record mapping and persistence, against the fixture database |
 | UseCase tests | Framework-independent coordination, with mock repositories |
-| Store tests | State machines, cancellation, stale results (none yet) |
+| Store tests | State machines, cancellation, stale results (only `WordDetailStore` so far) |
 | UI tests | Only critical integrated journeys (none yet) |
 
 CI runs `swift format lint` and the iOS tests on Xcode 26.4, and the builder
@@ -91,4 +91,5 @@ tests on Python 3.14.
   replaced on app update.
 - Domain entities are too flat for structured dictionary detail.
 - Home and Settings → Profile are still placeholders.
-- Stores and critical UI flows have no automated tests.
+- Only `WordDetailStore` has Store tests; other Stores and critical UI flows
+  have none.

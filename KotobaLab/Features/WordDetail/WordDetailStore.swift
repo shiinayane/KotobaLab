@@ -13,6 +13,10 @@ import Foundation
 
     var isSaved = false
     private(set) var state: WordDetailViewState = .idle
+    /// The message to show when saving or unsaving fails.
+    ///
+    /// The loaded detail stays on screen while this is set.
+    private(set) var saveErrorMessage: String?
 
     init(
         loadWordDetailUseCase: LoadWordDetailUseCase,
@@ -45,8 +49,12 @@ import Foundation
         do {
             isSaved = try toggleSavedWordUseCase.execute()
         } catch {
-            state = .error(error.localizedDescription)
+            saveErrorMessage = error.localizedDescription
         }
+    }
+
+    func dismissSaveError() {
+        saveErrorMessage = nil
     }
 }
 

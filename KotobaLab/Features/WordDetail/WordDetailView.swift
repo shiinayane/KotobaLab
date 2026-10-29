@@ -24,6 +24,26 @@ struct WordDetailView: View {
             .task {
                 await store.load()
             }
+            .alert(
+                "Could Not Update Saved Words",
+                isPresented: isShowingSaveError,
+                presenting: store.saveErrorMessage
+            ) { _ in
+                Button("OK", role: .cancel) {}
+            } message: { message in
+                Text(message)
+            }
+    }
+
+    private var isShowingSaveError: Binding<Bool> {
+        Binding(
+            get: { store.saveErrorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    store.dismissSaveError()
+                }
+            }
+        )
     }
 
     @ViewBuilder private var content: some View {

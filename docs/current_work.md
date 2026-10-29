@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-10-17
+Last updated: 2026-10-29
 
 ## Status
 
@@ -17,11 +17,10 @@ Documentation now has one owner per fact: `AGENTS.md`, [product](product.md),
 ## Next Action
 
 Propose one of the remaining candidates from the 2026-10-05 repository review.
-The search wildcard fix is delivered by the `fix/search-wildcard-escaping`
-branch.
+The search wildcard and save-toggle fixes are done.
 
-- **Save-toggle failure.** A failed toggle replaces the loaded detail with an
-  error screen.
+- **Silent saved-state read failure.** When loading a detail, a failure to read
+  the saved state is treated as "not saved" without telling the user.
 - **Unused code.** `AppRouter` path navigation, `AppRoute`, and the bundled
   `Resources/MockData` JSON are unused.
 
