@@ -59,6 +59,13 @@ import Testing
         #expect(try repository.fetchSavedWordIDs() == [3, 2, 1])
     }
 
+    @Test func fetchSavedWordIDs_shouldReturnEverySavedWord() throws {
+        for wordID in Int64(1)...60 {
+            try repository.saveWord(wordID: wordID)
+        }
+        #expect(try repository.fetchSavedWordIDs().count == 60)
+    }
+
     @Test func isWordSaved_whenNothingSaved_shouldReturnFalse() throws {
         #expect(!(try repository.isWordSaved(wordID: 1)))
         #expect(try repository.fetchSavedWordIDs().isEmpty)
