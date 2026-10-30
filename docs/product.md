@@ -140,9 +140,9 @@ Each milestone starts with a proposal and explicit approval.
 
 | Milestone | Scope |
 | --- | --- |
-| M0 Cleanup | Remove demo views, load every saved word, replace the fatal launch path with a recoverable state |
-| M1 Data foundation | Structured-content storage, stable entry identity, dictionary registry, a Swift Yomitan importer core, downloading and importing Jitendex, measured download size and on-device import time; retire the Python builder, the released SQLite asset, and its CI download |
-| M2 Native detail | Production native renderer for imported dictionaries, linked entries, the rendering gaps v1 needs |
+| M0 Cleanup | Review code and architecture against v1 needs; remove demo and placeholder views, load every saved word, replace the fatal launch path with a failure screen |
+| M1 Data foundation | A local Swift package shared with extensions, user data in an App Group, structured-content storage, stable entry identity, dictionary registry, a Swift Yomitan importer core and import service, downloading and importing Jitendex, measured download size and on-device import time; retire the Python builder, the released SQLite asset, and its CI download |
+| M2 Native detail | Production native renderer for imported dictionaries, value-based navigation, linked entries, the rendering gaps v1 needs |
 | M3 Import | Import from Files and URLs, the recommended list, update checks, removal, multi-dictionary lookup with source sections, deinflection |
 | M4 System-wide lookup | Clipboard Shortcut, Share Sheet, screenshot OCR, word segmentation, on-device translation |
 | M5 Release | Home, localization, accessibility, privacy manifest and policy, icon, App Store metadata, TestFlight |

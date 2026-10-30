@@ -76,20 +76,35 @@ alone.
 | Database verifier | Schema, indexes, integrity, production query plans, size |
 | Repository tests | Record mapping and persistence, against the fixture database |
 | UseCase tests | Framework-independent coordination, with mock repositories |
-| Store tests | State machines, cancellation, stale results (only `WordDetailStore` so far) |
+| Store tests | State machines, cancellation, stale results (only `WordDetailStore` so far; `SearchStore` and `SavedStore` tests come with M3) |
 | UI tests | Only critical integrated journeys (none yet) |
 
 CI runs `swift format lint` and the iOS tests on Xcode 26.4, and the builder
 tests on Python 3.14.
 
+## Planned Changes
+
+The 2026-10-30 review kept the one-way layers, Store state enums, and fixture
+tests, and found structure the v1 roadmap needs. Each change lands in the
+milestone that first needs it.
+
+| Change | Reason | Milestone |
+| --- | --- | --- |
+| Local Swift package for the dictionary core (import, storage, search) and the renderer | The Share Extension and App Intents need the same code as the app | M1 |
+| An import service with progress and cancellation, not a UseCase | Import is a long-running background task | M1 |
+| User data in an App Group container, composed at launch | App Intents have no view environment to supply a `ModelContext` | M1 decides, M4 uses |
+| UseCases only where they coordinate repositories or hold domain rules | `SearchWordsUseCase` and `ToggleSavedWordUseCase` only forward calls; stable identity changes every signature anyway | M1 |
+| Value-based navigation with `navigationDestination(for:)` instead of `AnyView` destination closures | Linked entries and deep links from system-wide entry need to open an entry by value | M2 |
+
 ## Known Gaps
 
 - Saved words persist transient SQLite row IDs, not stable source identity.
-- Saved-word loading silently stops at 50 records.
-- Launch failure ends in `fatalError` instead of a recoverable state.
 - The bundled database is copied to Application Support once and never
-  replaced on app update.
+  replaced on app update. `DatabaseManager(databaseName:)` names only the
+  copy; the bundled resource name is fixed.
+- The license screen hard-codes Jitendex attribution instead of reading
+  dictionary metadata.
 - Domain entities are too flat for structured dictionary detail.
-- Home and Settings → Profile are still placeholders.
-- Only `WordDetailStore` has Store tests; other Stores and critical UI flows
-  have none.
+- Home is still a placeholder.
+- Interface text is not localized, and some strings need copy editing, such as
+  "Fail to load".
