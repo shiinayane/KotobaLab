@@ -30,8 +30,8 @@ KotobaLab differentiates by combining four strengths:
 
 - **Abundant imported dictionaries:** users bring as many Yomitan dictionaries
   as they own.
-- **Native rendering:** every entry, bundled or imported, renders natively,
-  which enables linked entries and other cross-entry interactions.
+- **Native rendering:** every entry renders natively, which enables linked
+  entries and other cross-entry interactions.
 - **System-wide lookup:** from any screen, a screenshot becomes recognized text
   whose words can be tapped and looked up, or the whole passage translated.
 - **A native iOS app:** platform text, accessibility, and appearance
@@ -40,12 +40,14 @@ KotobaLab differentiates by combining four strengths:
 ## Principles
 
 - **Local first.** Lookup and saved words work without an account or network.
+  Only downloading a dictionary needs a connection.
 - **Explicit invocation.** System-wide lookup starts with a deliberate user
   action. KotobaLab never watches other apps or captures content silently.
 - **Source aware.** Every entry keeps its dictionary identity and attribution.
   Look-alike entries from different providers are never merged silently.
-- **Faithful before broad.** One redistributable bundled dictionary is enough
-  for v1, but its supported content must not be destructively flattened.
+- **One import path.** The app bundles no dictionary. Recommended and
+  user-supplied dictionaries all go through the same Swift importer, and
+  supported content is never destructively flattened.
 - **Replaceable content.** Dictionary assets evolve independently of the app;
   user references survive compatible rebuilds or migrate explicitly.
 - **Explicit scope.** Placeholder tabs, dead-end navigation, and speculative
@@ -74,10 +76,13 @@ It must provide:
 
 - the complete core loop with no placeholder destinations
 - a Home screen with recent lookups and a daily entry
-- at least one bundled dictionary whose license permits redistribution
-- private user import of Yomitan dictionaries from Files: imported entries
-  render natively with their source and attribution, and the user can remove a
-  dictionary again
+- an in-app list of recommended openly licensed dictionaries, starting with
+  Jitendex, downloaded from their upstream on request; first launch guides the
+  user to download one
+- private user import of Yomitan dictionaries from Files or a URL: imported
+  entries render natively with their source and attribution, updatable
+  dictionaries can be checked for updates through their `indexUrl`, and the
+  user can remove a dictionary again
 - source-aware, stable entry identity
 - ordered, structured detail for the supported source subset
 - predictable, measured offline search over headwords and readings
@@ -105,7 +110,7 @@ v1 ships when:
 
 - parsing, runtime projection, and visible detail preserve the declared
   dictionary contract
-- rebuilds preserve identity or migrate user references safely
+- dictionary updates preserve identity or migrate user references safely
 - a failed import leaves the previous state intact, unsupported content in an
   imported dictionary is reported instead of dropped silently, and removing or
   replacing an imported dictionary never deletes saved entries silently
@@ -113,16 +118,19 @@ v1 ships when:
 - clean install and supported updates preserve the core loop
 - no placeholder, fatal startup path, missing attribution, or known destructive
   flattening remains
-- builder and app checks pass in CI
+- importer and app checks pass in CI, using small self-made Yomitan fixtures
 - accessibility, privacy, license, metadata, and distribution checks are done
 
 ## Dictionary Ecosystem Boundary
 
-User import of Yomitan dictionaries is part of v1; the import proposal decides
-whether several dictionaries and updates of an imported one are in scope.
-User-imported dictionaries may later sync privately between one user's devices.
+Yomitan import from Files, a URL, or the recommended list is part of v1.
+Recommended dictionaries are downloaded from their own upstream, so KotobaLab
+does not redistribute them; their attribution comes from each dictionary's
+`index.json`. Downloads accept only HTTPS, check size before downloading, and
+validate the archive before importing. User-imported dictionaries may later
+sync privately between one user's devices.
 
-KotobaLab will not bundle a dictionary without confirmed permission, scrape
+KotobaLab will not recommend a dictionary without confirmed permission, scrape
 commercial dictionary sites, run a public exchange for unknown commercial data,
 or treat AI output as licensed dictionary content.
 
@@ -133,9 +141,9 @@ Each milestone starts with a proposal and explicit approval.
 | Milestone | Scope |
 | --- | --- |
 | M0 Cleanup | Remove demo views, load every saved word, replace the fatal launch path with a recoverable state |
-| M1 Data foundation | Structured-content storage, stable entry identity, asset metadata, asset replacement on update, saved-reference migration |
-| M2 Native detail | Production native renderer for the bundled dictionary, linked entries, the rendering gaps v1 needs |
-| M3 Import | Private Yomitan import and removal, multi-dictionary lookup with source sections, deinflection |
+| M1 Data foundation | Structured-content storage, stable entry identity, dictionary registry, a Swift Yomitan importer core, downloading and importing Jitendex, measured download size and on-device import time; retire the Python builder, the released SQLite asset, and its CI download |
+| M2 Native detail | Production native renderer for imported dictionaries, linked entries, the rendering gaps v1 needs |
+| M3 Import | Import from Files and URLs, the recommended list, update checks, removal, multi-dictionary lookup with source sections, deinflection |
 | M4 System-wide lookup | Clipboard Shortcut, Share Sheet, screenshot OCR, word segmentation, on-device translation |
 | M5 Release | Home, localization, accessibility, privacy manifest and policy, icon, App Store metadata, TestFlight |
 

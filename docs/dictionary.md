@@ -246,7 +246,7 @@ definitions.
 
 Application code is MIT, so code and data from GPL projects such as Yomitan,
 including its deinflection rules, are never copied into the app. Every
-dictionary asset keeps its own provider and upstream obligations. A bundled source must pass a redistribution,
-attribution, commercial-use, maintenance, quality, size, and update-cadence
-review. User-imported commercial dictionaries may be synced privately between
+dictionary keeps its own provider and upstream obligations. A recommended
+source must pass a license, attribution, commercial-use, maintenance, quality,
+size, and update-cadence review. User-imported commercial dictionaries may be synced privately between
 one user's devices but never redistributed.
