@@ -14,19 +14,16 @@ material on the local, unpushed branch `spike/native-rendering` in
 
 ## Current Objective
 
-Select and propose one small production slice for explicit approval.
-Documentation now has one owner per fact: `AGENTS.md`, [product](product.md),
-[architecture](architecture.md), [dictionary](dictionary.md), and this file.
+Deliver v1 along the [roadmap](product.md#roadmap), one approved milestone at a
+time.
 
 ## Next Action
 
-All candidates from the 2026-10-05 repository review are done. Choose the next
-slice from the open decisions below and propose it for approval.
+Propose M0 Cleanup: remove the demo views, load every saved word instead of the
+first 50, and replace the fatal launch path with a recoverable state.
 
 ## Open Decisions
 
-- Which system entry path becomes the first production slice, and whether
-  screenshot OCR is in it.
 - Which rendering gaps to close first: vertical writing, grid placement, row
   spans, SVG, or ruby inside labels.
 - What import precomputes, such as compiled styles, rasterized SVG, or render
