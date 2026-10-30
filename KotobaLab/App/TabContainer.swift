@@ -28,7 +28,7 @@ struct TabContainer<Content: View>: View {
                         Button {
                             router.present(sheet: .settings)
                         } label: {
-                            Image(systemName: "person.crop.circle.fill")
+                            Image(systemName: "gearshape")
                                 .font(.title2)
                         }
                     }
