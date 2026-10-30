@@ -34,7 +34,9 @@ first 50, and replace the fatal launch path with a recoverable state.
 - How to store structured content compactly; see
   [the compression measurements](dictionary.md#structured-content-compression-2026-10-30).
   zlib with a preset dictionary needs no new dependency; zstd would add one.
-- What replaces the verifier's fixed 100 MB size limit, which a large
-  dictionary can exceed: for example a bundled-asset budget derived from the
-  app download size plus a growth report against the previous release, and for
-  imports a size estimate and free-space check instead of a fixed cap.
+- How import guards storage once the Python verifier's fixed 100 MB limit is
+  retired: for example a size estimate and free-space check instead of a fixed
+  cap.
+- Whether KotobaLab mirrors recommended dictionaries in its own GitHub Release
+  as a fallback when an upstream download fails or changes format. Jitendex's
+  CC BY-SA 4.0 license allows it with attribution.
