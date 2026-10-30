@@ -60,6 +60,9 @@ It must provide:
 
 - the complete core loop with no placeholder destinations
 - at least one bundled dictionary whose license permits redistribution
+- private user import of Yomitan dictionaries from Files: imported entries
+  render natively with their source and attribution, and the user can remove a
+  dictionary again
 - source-aware, stable entry identity
 - ordered, structured detail for the supported source subset
 - predictable, measured offline search over headwords and readings
@@ -71,9 +74,9 @@ It must provide:
 Romaji, fuzzy matching, deinflection, definition search, and a larger study
 system are added only after their behavior and value are specified.
 
-v1 non-goals: mandatory accounts or backend, a public dictionary marketplace, a
-general user dictionary import UI, cloud sync, AI-generated definitions, social
-features, full spaced repetition, and automatic merging across providers.
+v1 non-goals: mandatory accounts or backend, a public dictionary marketplace,
+cloud sync, AI-generated definitions, social features, full spaced repetition,
+and automatic merging across providers.
 
 ## Release Gate
 
@@ -82,6 +85,9 @@ v1 ships when:
 - parsing, runtime projection, and visible detail preserve the declared
   dictionary contract
 - rebuilds preserve identity or migrate user references safely
+- a failed import leaves the previous state intact, unsupported content in an
+  imported dictionary is reported instead of dropped silently, and removing or
+  replacing an imported dictionary never deletes saved entries silently
 - search is fixture-backed, deterministic, and measured
 - clean install and supported updates preserve the core loop
 - no placeholder, fatal startup path, missing attribution, or known destructive
@@ -91,8 +97,8 @@ v1 ships when:
 
 ## Dictionary Ecosystem Boundary
 
-A general Yomitan import interface is not a v1 requirement, but the source
-model, identity, and asset contract must not make later user import hard.
+User import of Yomitan dictionaries is part of v1; the import proposal decides
+whether several dictionaries and updates of an imported one are in scope.
 User-imported dictionaries may later sync privately between one user's devices.
 
 KotobaLab will not bundle a dictionary without confirmed permission, scrape

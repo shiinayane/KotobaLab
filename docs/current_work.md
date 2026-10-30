@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-10-29
+Last updated: 2026-10-30
 
 ## Status
 
@@ -27,8 +27,6 @@ slice from the open decisions below and propose it for approval.
 
 - Which system entry path becomes the first production slice, and whether
   screenshot OCR is in it.
-- Whether user-facing Yomitan import belongs in v1, which
-  [product](product.md) currently lists as a non-goal.
 - Which rendering gaps to close first: vertical writing, grid placement, row
   spans, SVG, or ruby inside labels.
 - What import precomputes, such as compiled styles, rasterized SVG, or render
