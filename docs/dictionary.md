@@ -125,6 +125,31 @@ Release build on iPhone 16 Pro Max, style and render-model construction:
 | 犯す (小学館) | 289 | 12.5 ms |
 | 小倉百人一首 appendix (小学館) | 15,290 | 111.3 ms |
 
+### Structured-content compression, 2026-10-30
+
+Storage for each entry's Yomitan structured content, which the native renderer
+needs and the current asset does not keep. Every entry is compressed on its own
+so lookup can decode one entry. Interned binary replaces tags, keys, and
+repeated values with indexes into a per-dictionary table. The zstd trained
+dictionary is 112 KB, trained on 20,000 random entries; the zlib preset
+dictionary is its last 32 KB. Sizes include these dictionaries.
+
+| Encoding | 小学館 | Jitendex, estimate |
+| --- | ---: | ---: |
+| JSON | 221.3 MB | 457 MB |
+| JSON, zlib per entry | 35.6 MB | 171 MB |
+| JSON, zlib with preset dictionary | 11.6 MB | 50 MB |
+| Interned binary, zlib with preset dictionary | 9.0 MB | 44 MB |
+| Interned binary, zstd with trained dictionary | 7.5 MB | 43 MB |
+
+小学館 was measured in full with zstd level 19. Jitendex is ten times a
+one-in-ten sample of 42,707 entries with zstd level 12; its per-entry zlib
+estimate matches a full-dictionary run. zlib used level 9. Decoding one entry
+with zlib and a preset dictionary took 3–4 µs in Python.
+
+Not measured: decoding in Swift on a device, building a preset dictionary
+without the zstd trainer, and the plain text that search still needs.
+
 ## Data Boundaries
 
 ```text

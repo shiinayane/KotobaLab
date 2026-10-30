@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-10-29
+Last updated: 2026-10-30
 
 ## Status
 
@@ -36,3 +36,10 @@ slice from the open decisions below and propose it for approval.
 - Which providers justify a semantic adapter beyond generic rendering.
 - Production import, identity, activation, recovery, and saved-reference
   contracts.
+- How to store structured content compactly; see
+  [the compression measurements](dictionary.md#structured-content-compression-2026-10-30).
+  zlib with a preset dictionary needs no new dependency; zstd would add one.
+- What replaces the verifier's fixed 100 MB size limit, which a large
+  dictionary can exceed: for example a bundled-asset budget derived from the
+  app download size plus a growth report against the previous release, and for
+  imports a size estimate and free-space check instead of a fixed cap.
