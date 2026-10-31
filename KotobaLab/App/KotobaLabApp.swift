@@ -10,34 +10,21 @@ import SwiftUI
 
 @main
 struct KotobaLabApp: App {
-    private let rootView: RootView
-
-    init() {
-        do {
-            let databaseManager = try DatabaseManager()
-            let dictionaryRepository = SQLiteDictionaryRepository(databaseManager: databaseManager)
-
-            let dependencies = AppDependencies(
-                dictionaryRepository: dictionaryRepository,
-                userDataRepositoryFactory: UserDataRepositoryFactory { context in
-                    SwiftDataUserDataRepository(context: context)
-                }
-            )
-
-            self.rootView = RootView(
-                dependencies: dependencies
-            )
-        } catch {
-            fatalError("Failed to initialize app dependencies: \(error)")
-        }
+    private let launchState = AppLaunchState.make {
+        try DatabaseManager()
     }
 
     var body: some Scene {
         WindowGroup {
-            rootView
-                .modelContainer(for: [
-                    SavedWordRecord.self
-                ])
+            switch launchState {
+            case .ready(let dependencies):
+                RootView(dependencies: dependencies)
+                    .modelContainer(for: [
+                        SavedWordRecord.self
+                    ])
+            case .failed(let message):
+                LaunchFailureView(message: message)
+            }
         }
     }
 }

@@ -19,8 +19,9 @@ time.
 
 ## Next Action
 
-Propose M0 Cleanup: remove the demo views, load every saved word instead of the
-first 50, and replace the fatal launch path with a recoverable state.
+M0 Cleanup is implemented and in review. After it merges, propose M1 Data
+foundation, starting with the structural changes in
+[architecture](architecture.md#planned-changes).
 
 ## Open Decisions
 

@@ -7,6 +7,12 @@
 
 import Foundation
 
+/// A plain copy of `SavedWordRecord` for previews and tests.
+struct SavedWordRecordData {
+    let wordID: Int64
+    let savedAt: Date
+}
+
 extension SavedWordRecordData {
     static let sample = SavedWordRecordData(
         wordID: 1,

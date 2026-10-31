@@ -13,7 +13,6 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                profileSection
                 settingsSection
             }
             .navigationTitle("Settings")
@@ -27,16 +26,6 @@ struct SettingsView: View {
                 }
             }
             .toolbarTitleDisplayMode(.inline)
-        }
-    }
-
-    private var profileSection: some View {
-        Section("Profile") {
-            NavigationLink {
-                EmptyView()
-            } label: {
-                Label("Profile", systemImage: "person.crop.circle.fill")
-            }
         }
     }
 

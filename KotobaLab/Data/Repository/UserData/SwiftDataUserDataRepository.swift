@@ -55,14 +55,11 @@ import SwiftData
     }
 
     func fetchSavedWordIDs() throws -> [Int64] {
-        var descriptor = FetchDescriptor<SavedWordRecord>(
+        let descriptor = FetchDescriptor<SavedWordRecord>(
             sortBy: [
                 .init(\.savedAt, order: .reverse)
             ]
         )
-
-        // Fetch 50 records at first.
-        descriptor.fetchLimit = 50
 
         let results = try context.fetch(descriptor)
 
