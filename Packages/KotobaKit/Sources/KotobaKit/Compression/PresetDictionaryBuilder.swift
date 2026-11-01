@@ -11,8 +11,8 @@ import Foundation
 /// sequences that recur across entries. This is a greedy cover, after the idea behind zstd's COVER
 /// trainer: split the samples into segments, score each segment by how many samples share its
 /// 8-byte substrings, and repeatedly take the best segment, not counting substrings already taken.
-/// The best segments go last, nearest the data they compress. On 2026-11-01 it came within 5% of a
-/// zstd-trained dictionary; see `docs/dictionary.md`.
+/// The best segments go last, nearest the data they compress. For how it compares with a
+/// zstd-trained dictionary, see `docs/dictionary.md#swift-import-2026-11-01`.
 enum PresetDictionaryBuilder {
     static let segmentSize = 256
 

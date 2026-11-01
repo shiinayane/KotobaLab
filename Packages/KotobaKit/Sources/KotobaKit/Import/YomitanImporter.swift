@@ -15,7 +15,7 @@ public struct YomitanImporter: Sendable {
     public struct Options: Sendable {
         /// The zlib level for glossaries, from 1 (fastest) to 9 (smallest).
         ///
-        /// Level 6 imported Jitendex 16% faster than level 9 for 4% more space.
+        /// For the speed and size of each level, see `docs/dictionary.md#swift-import-2026-11-01`.
         public var compressionLevel: Int32 = 6
         /// How many entries are sampled across the dictionary to build the preset dictionary.
         public var presetSampleCount = 512
