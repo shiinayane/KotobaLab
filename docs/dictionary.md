@@ -169,7 +169,7 @@ bytes.
 | Glossary JSON | 466.3 MB | 221.3 MB |
 | Glossary compressed | 51.8 MB | 12.9 MB |
 | Media | 5.0 MB, 250 files | 69.4 MB, 3,604 files |
-| Pack file | 104.8 MB | 90.0 MB |
+| Pack file | 115.0 MB | 90.6 MB |
 | Import time | 30.3 s | 10.7 s |
 | Peak memory | 249 MB | 409 MB |
 | Decode and parse one random entry | 27 µs | 54 µs |
@@ -177,8 +177,11 @@ bytes.
 | Peak memory footprint, iPhone 16 Pro Max | 202 MB | not measured |
 | Decode and parse one random entry, iPhone 16 Pro Max | 34 µs | not measured |
 
-The iPhone ran the same importer in a Release build of a throwaway host app,
-once, at nominal thermal state, and wrote the same sizes as the Mac. The upstream
+Pack sizes include the indexes added on 2026-11-01 for search; the other rows
+were measured before them, when the packs were 104.8 MB and 90.0 MB and the
+indexes took 0.1 s less to build. The iPhone ran the same importer in a Release
+build of a throwaway host app, once, at nominal thermal state, and wrote the
+same sizes as the Mac. The upstream
 download took 12.7 s on that run's network. 小学館 is user-supplied and was not
 copied to the device.
 
@@ -204,13 +207,42 @@ level 6, it compressed 小学館 17.0 times and Jitendex 9.0 times. The last 32 
 of a zstd-trained dictionary reached 17.9 and 9.0, and concatenated whole
 entries reached 10.3 and 8.3.
 
-In the Jitendex pack, the entries table is 79.0 MB and the term and reading
-indexes are 9.5 MB and 11.0 MB. The 小学館 pack is mostly media, 72.2 MB.
+In the Jitendex pack, the entries table is 79.0 MB and the term, reading, and
+sequence indexes are 12.0 MB, 13.5 MB, and 5.2 MB. The 小学館 pack is mostly
+media, 72.2 MB.
 
 Jitendex `2026.10.03.0` has 10,059 rows that equal another row of the same
 sequence under Unicode canonical equivalence but not by code point, such as
 `御雜煮` written with U+FA48 or U+716E. Swift `String` equality treats them as
 the same, so identity compares code points.
+
+### Pack search, 2026-11-01
+
+`kotoba-pack search` on the packs above, limit 20, same Mac. Each prefix ran
+once from a fresh process and then 100 times; the average is warm. Every plan
+searches both covering indexes and reads the table only for the 20 results.
+
+| Prefix | Jitendex matches | First | Average |
+| --- | ---: | ---: | ---: |
+| `し` | 15,485 | 22.9 ms | 21.6 ms |
+| `あ` | 7,387 | 10.8 ms | 10.5 ms |
+| `た` | 6,034 | 8.6 ms | 8.3 ms |
+| `食` | 577 | 1.1 ms | 0.8 ms |
+| `日本` | 403 | 0.9 ms | 0.6 ms |
+| `たべ` | 67 | 0.4 ms | 0.3 ms |
+| `見る` | 29 | 0.3 ms | 0.2 ms |
+
+小学館 averaged 3.2 ms for `し` and 1.5 ms for `あ`. Single-kana prefixes cost
+the most because every match is ranked and grouped. Before the covering
+indexes, ranking `あ` read 2,744 table pages; with them it reads 63 index pages.
+Times are warm; a cold first query on a device is measured when the app adopts
+packs.
+
+Known limits: a single-kanji prefix ranks long compounds before common words,
+because Jitendex scores encode priority, not frequency (`食べる` is not in the
+top 20 for `食`). Hiragana and katakana do not match each other, and 19,614
+Jitendex readings mix both. A redirect row is the result when only it matches,
+such as `見る将` for `見る`; display should show its group's main entry.
 
 ## Data Boundaries
 
@@ -295,13 +327,70 @@ SQLite row IDs are internal. App-facing and persisted identity is
   numbers rows that share the other three fields, in source order.
 - Terms and readings compare by code point, never by Swift `String` equality,
   which merges CJK compatibility ideographs with their unified forms.
-- `ordinal` is weak: an upstream that reorders duplicate rows moves it. Saved
-  references therefore keep a term and reading snapshot, and report an entry
-  that no longer matches instead of opening a different one.
+- A saved entry stores a snapshot: the key plus a SHA-256 fingerprint of the
+  glossary. Among rows with the same sequence, term, and reading, resolving it
+  prefers the row with the same fingerprint, and the same ordinal among several
+  such rows. The fingerprint catches reordered homographs, which `ordinal`
+  alone cannot. Without a fingerprint match, the ordinal decides only when one
+  row has that identity, since homographs that were both reordered and edited
+  cannot be told apart.
+- Otherwise the entry has changed and is never silently replaced. Candidates
+  are the rows with its identity, then rows with the same absolute sequence,
+  then rows with the same term and reading. Measured on 2026-11-01 between Jitendex `2026.03.05.0`
+  and `2026.10.03.0`: 1,396 keys disappeared, 1,319 of them (94%) kept their
+  sequence, and 57 changed the sign of their sequence, 56 of them becoming
+  redirects.
+- In memory, an entry is addressed by a reference that carries the pack's
+  import ID. A reference from an earlier import is rejected, because row IDs
+  change on every import.
 
 A rebuild of the same source must preserve logical identity or ship an explicit
 migration map. Equivalent-looking entries from different providers stay
 distinct.
+
+## Pack Format
+
+Each imported dictionary is one SQLite file, `KotobaKit` pack format 1. Opening
+a pack checks its format version and metadata.
+
+| Table | Contents |
+| --- | --- |
+| `meta` | Format version, import ID, importer version, import time, source SHA-256, `index.json`, `styles.css`, preset dictionary |
+| `entries` | Term, reading, sequence, ordinal, tags, rules, score, compressed glossary |
+| `tags` | Tag bank rows; the first definition of a name wins |
+| `media` | Images and other files the glossaries reference, by archive path |
+| `source_banks` | Raw-deflated banks the format does not read yet, such as kanji and frequency banks |
+
+Changes follow three rules, so most changes need no source archive:
+
+- Data columns are frozen. Changing one bumps the format version and requires
+  re-importing the source.
+- Indexes and derived columns are upgraded in place: on a copy, which then
+  replaces the pack. A future kana-folded reading column belongs here.
+- New meta keys and new tables are additive and need no version bump. The first
+  in-place upgrade adds a meta key recording which upgrades a pack has; a pack
+  without that key has none.
+
+Replacing a pack file makes a `DictionaryPack` opened earlier fail with an I/O
+error instead of reading the new file, so holders reopen after a replace. Reads
+of one pack run one at a time.
+
+Glossaries are JSON with sorted keys, each raw-deflated on its own with the
+pack's preset dictionary, so lookup decodes one entry at a time. The preset
+dictionary is text both sides treat as if it came just before each entry, so
+markup the entries share becomes short back-references. Jitendex `食べる` is
+3,185 bytes of JSON, 808 bytes deflated alone, and 362 bytes with the preset
+dictionary. The dictionary is built during import; see
+[Swift import](#swift-import-2026-11-01).
+
+Search matches a prefix of the term or reading with `GLOB`, which is
+case-sensitive and so uses the indexes without `PRAGMA case_sensitive_like`.
+Results rank by the length of the matched term or reading, then score, then
+source order. In a `sequenced` dictionary, rows with the same absolute sequence
+form one result, represented by the best-matching row: Jitendex lists each
+spelling, and each redirect with a negative sequence, as its own row. The
+`(term, score, sequence)` and `(reading, score, sequence)` indexes cover the
+ranking, and `(sequence)` serves groups and saved-entry candidates.
 
 ## Assets and Multiple Dictionaries
 

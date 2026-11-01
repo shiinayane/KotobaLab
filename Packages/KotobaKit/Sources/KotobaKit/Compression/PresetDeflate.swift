@@ -8,9 +8,16 @@ import zlib
 
 /// Raw deflate streams that share one preset dictionary.
 ///
-/// Every entry is compressed on its own so lookup can decode one entry at a time. The preset
-/// dictionary supplies the markup the entries have in common. Raw deflate omits the zlib header and
-/// checksum, which would add 10 bytes to every entry; SQLite already guards the stored bytes.
+/// Every entry is compressed on its own so lookup can decode one entry at a time. On its own, a
+/// short entry compresses poorly: deflate saves space by referring back to text it has already
+/// seen, and one entry has little to refer to. A preset dictionary is up to 32 KB of text that
+/// both sides pretend came just before the entry, so markup every entry shares, such as
+/// `{"content":"sense"}`, becomes a short back-reference into the dictionary.
+///
+/// The compressor and decompressor each reset their zlib stream to that state for every entry,
+/// which is why loading the dictionary dominates import time. Raw deflate omits the zlib header and
+/// checksum, which would add 10 bytes to every entry; SQLite already guards the stored bytes. See
+/// `docs/dictionary.md#pack-format` for a worked example.
 public enum PresetDeflate {
     /// The largest dictionary deflate can use: its 32 KB window.
     public static let maximumDictionarySize = 32 * 1024

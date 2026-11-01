@@ -3,6 +3,7 @@
 //  KotobaKit
 //
 
+import CryptoKit
 import Foundation
 import GRDB
 import ZIPFoundation
@@ -12,6 +13,10 @@ import ZIPFoundation
 /// The pack is written to a temporary file next to the destination and moved into place only
 /// after every step succeeds, so a failed or cancelled import leaves no partial pack.
 public struct YomitanImporter: Sendable {
+    /// Bumped when the importer writes different content for the same source, such as a fix to
+    /// how glossaries are serialized.
+    public static let version = 1
+
     public struct Options: Sendable {
         /// The zlib level for glossaries, from 1 (fastest) to 9 (smallest).
         ///
@@ -63,6 +68,9 @@ public struct YomitanImporter: Sendable {
             throw YomitanImportError.noTermBanks
         }
 
+        let sourceSHA256 = try Self.sha256(of: archiveURL)
+        let importID = UUID()
+
         let presetStart = clock.now
         let preset = try buildPresetDictionary(termBanks: termBanks, archive: archive)
         timings.presetDictionary = clock.now - presetStart
@@ -86,10 +94,20 @@ public struct YomitanImporter: Sendable {
         var counts = EntryCounts()
         var tagCount = 0
         var media = (count: 0, bytes: 0)
+        var storedBanks: [String: Int] = [:]
         try queue.inDatabase { db in
             try DictionaryPackSchema.createTables(in: db)
             try db.inTransaction {
-                try writeMeta(index: indexData, preset: preset, archive: archive, db: db)
+                try writeMeta(
+                    Meta(
+                        importID: importID,
+                        sourceSHA256: sourceSHA256,
+                        index: indexData,
+                        preset: preset
+                    ),
+                    archive: archive,
+                    db: db
+                )
                 tagCount = try writeTags(
                     banks: layout.banks(of: .tag),
                     archive: archive,
@@ -106,6 +124,7 @@ public struct YomitanImporter: Sendable {
                 let mediaStart = clock.now
                 media = try writeMedia(paths: layout.mediaPaths, archive: archive, db: db)
                 timings.media = clock.now - mediaStart
+                storedBanks = try writeSourceBanks(layout: layout, archive: archive, db: db)
                 return .commit
             }
             let indexStart = clock.now
@@ -113,18 +132,6 @@ public struct YomitanImporter: Sendable {
             timings.indexes = clock.now - indexStart
         }
         try queue.close()
-
-        var skippedRows: [String: Int] = [:]
-        for kind in [YomitanArchiveLayout.BankKind.termMeta, .kanji, .kanjiMeta] {
-            let rows = try layout.banks(of: kind).reduce(0) { total, bank in
-                try Task.checkCancellation()
-                return total
-                    + (try autoreleasepool { try Self.parseBank(bank, from: archive).count })
-            }
-            if rows > 0 {
-                skippedRows[kind.rawValue] = rows
-            }
-        }
 
         if FileManager.default.fileExists(atPath: packURL.path) {
             _ = try FileManager.default.replaceItemAt(packURL, withItemAt: temporaryURL)
@@ -136,6 +143,8 @@ public struct YomitanImporter: Sendable {
         let packBytes = try packURL.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
         timings.total = clock.now - start
         return YomitanImportReport(
+            importID: importID,
+            sourceSHA256: sourceSHA256,
             index: index,
             entryCount: counts.entries,
             duplicateIdentityCount: counts.duplicates,
@@ -145,7 +154,7 @@ public struct YomitanImporter: Sendable {
             glossaryBytes: counts.glossaryBytes,
             compressedGlossaryBytes: counts.compressedBytes,
             presetDictionaryBytes: preset.count,
-            skippedRows: skippedRows,
+            storedSourceBanks: storedBanks,
             packBytes: packBytes,
             timings: timings
         )
@@ -180,14 +189,28 @@ public struct YomitanImporter: Sendable {
 
     // MARK: - Tables
 
-    private func writeMeta(index: Data, preset: Data, archive: ArchiveFiles, db: Database) throws {
+    private struct Meta {
+        let importID: UUID
+        let sourceSHA256: String
+        let index: Data
+        let preset: Data
+    }
+
+    private func writeMeta(_ meta: Meta, archive: ArchiveFiles, db: Database) throws {
         let insert = try db.makeStatement(sql: "INSERT INTO meta (key, value) VALUES (?, ?)")
         typealias Key = DictionaryPackSchema.MetaKey
-        try insert.execute(arguments: [
-            Key.formatVersion.rawValue, DictionaryPackSchema.formatVersion
-        ])
-        try insert.execute(arguments: [Key.indexJSON.rawValue, index])
-        try insert.execute(arguments: [Key.presetDictionary.rawValue, preset])
+        let values: [(Key, any DatabaseValueConvertible)] = [
+            (.formatVersion, DictionaryPackSchema.formatVersion),
+            (.importID, meta.importID.uuidString),
+            (.importerVersion, Self.version),
+            (.importedAt, Int64(Date().timeIntervalSince1970)),
+            (.sourceSHA256, meta.sourceSHA256),
+            (.indexJSON, meta.index),
+            (.presetDictionary, meta.preset)
+        ]
+        for (key, value) in values {
+            try insert.execute(arguments: [key.rawValue, value])
+        }
         if let styles = try archive.read(YomitanArchiveLayout.stylesPath) {
             try insert.execute(arguments: [Key.styles.rawValue, styles])
         }
@@ -225,34 +248,6 @@ public struct YomitanImporter: Sendable {
         var compressedBytes = 0
     }
 
-    /// Compares term and reading by code points.
-    ///
-    /// `String` equality uses canonical equivalence, which merges CJK compatibility ideographs
-    /// with their unified forms, such as U+FA48 and U+716E for 煮; Jitendex has separate entries
-    /// for both. SQLite compares the same bytes this key does.
-    private struct IdentityKey: Hashable {
-        let sequence: Int
-        let term: String
-        let reading: String
-
-        static func == (lhs: Self, rhs: Self) -> Bool {
-            lhs.sequence == rhs.sequence
-                && lhs.term.utf8.elementsEqual(rhs.term.utf8)
-                && lhs.reading.utf8.elementsEqual(rhs.reading.utf8)
-        }
-
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(sequence)
-            for byte in term.utf8 {
-                hasher.combine(byte)
-            }
-            hasher.combine(0xFF as UInt8)
-            for byte in reading.utf8 {
-                hasher.combine(byte)
-            }
-        }
-    }
-
     private func writeEntries(
         banks: [YomitanArchiveLayout.Bank],
         sequenced: Bool,
@@ -275,7 +270,8 @@ public struct YomitanImporter: Sendable {
                 """
         )
         var counts = EntryCounts()
-        var nextOrdinal: [IdentityKey: Int] = [:]
+        // Counts rows per sequence, term, and reading; the key's ordinal stays 0.
+        var nextOrdinal: [DictionaryEntryKey: Int] = [:]
 
         for bank in banks {
             try Task.checkCancellation()
@@ -302,10 +298,11 @@ public struct YomitanImporter: Sendable {
                     throw YomitanImportError.malformedRow(path: bank.path, row: rowIndex)
                 }
                 // Without `sequenced`, sequence numbers carry no identity.
-                let key = IdentityKey(
-                    sequence: sequenced ? row.sequence : 0,
+                let key = DictionaryEntryKey(
+                    sequence: sequenced ? Int64(row.sequence) : 0,
                     term: row.term,
-                    reading: row.reading
+                    reading: row.reading,
+                    ordinal: 0
                 )
                 let ordinal = nextOrdinal[key, default: 0]
                 nextOrdinal[key] = ordinal + 1
@@ -353,7 +350,43 @@ public struct YomitanImporter: Sendable {
         return (paths.count, bytes)
     }
 
+    /// Stores the banks this format does not read, so a later upgrade needs no source archive.
+    private func writeSourceBanks(
+        layout: YomitanArchiveLayout,
+        archive: ArchiveFiles,
+        db: Database
+    ) throws -> [String: Int] {
+        let insert = try db.makeStatement(
+            sql: "INSERT INTO source_banks (path, kind, data) VALUES (?, ?, ?)"
+        )
+        let compressor = try PresetCompressor(dictionary: Data(), level: options.compressionLevel)
+        var counts: [String: Int] = [:]
+        for kind in [YomitanArchiveLayout.BankKind.termMeta, .kanji, .kanjiMeta] {
+            for bank in layout.banks(of: kind) {
+                try Task.checkCancellation()
+                guard let data = try archive.read(bank.path) else {
+                    throw YomitanImportError.malformedBank(path: bank.path)
+                }
+                try insert.execute(arguments: [
+                    bank.path, kind.rawValue, try compressor.compress(data)
+                ])
+                counts[kind.rawValue, default: 0] += 1
+            }
+        }
+        return counts
+    }
+
     // MARK: - Archive and JSON
+
+    private static func sha256(of url: URL) throws -> String {
+        let handle = try FileHandle(forReadingFrom: url)
+        defer { try? handle.close() }
+        var hasher = SHA256()
+        while let chunk = try handle.read(upToCount: 1024 * 1024), !chunk.isEmpty {
+            hasher.update(data: chunk)
+        }
+        return hasher.finalize().map { String(format: "%02x", $0) }.joined()
+    }
 
     private static func parseBank(
         _ bank: YomitanArchiveLayout.Bank,

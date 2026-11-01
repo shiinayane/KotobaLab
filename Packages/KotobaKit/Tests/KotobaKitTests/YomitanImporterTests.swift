@@ -3,6 +3,7 @@
 //  KotobaKitTests
 //
 
+import CryptoKit
 import Foundation
 import GRDB
 import Testing
@@ -44,14 +45,28 @@ struct YomitanImporterTests {
         )
 
         #expect(report.index.title == "KotobaKit Fixture [2026-01-01]")
-        #expect(report.entryCount == 5)
+        #expect(report.entryCount == 8)
         #expect(report.tagCount == 2)
         #expect(report.mediaCount == 1)
-        #expect(report.skippedRows == ["kanji": 1])
+        #expect(report.storedSourceBanks == ["kanji": 1])
         #expect(report.presetDictionaryBytes > 0)
+        let archive = try Data(contentsOf: fixture.archiveURL)
+        #expect(
+            report.sourceSHA256
+                == SHA256.hash(data: archive).map { String(format: "%02x", $0) }.joined()
+        )
 
         let queue = try DatabaseQueue(path: fixture.packURL.path)
         try queue.read { db in
+            let kanjiBank = try Row.fetchOne(db, sql: "SELECT path, kind, data FROM source_banks")
+            #expect(kanjiBank?["path"] == "kanji_bank_1.json")
+            #expect(kanjiBank?["kind"] == "kanji")
+            let stored: Data = try #require(kanjiBank?["data"])
+            let source = try Data(
+                contentsOf: fixture.directory.appendingPathComponent("content/kanji_bank_1.json")
+            )
+            #expect(try PresetDecompressor(dictionary: Data()).decompress(stored) == source)
+
             let notes = try String.fetchOne(db, sql: "SELECT notes FROM tags WHERE name = 'n'")
             #expect(notes == "noun")
             let mediaPaths = try String.fetchAll(db, sql: "SELECT path FROM media")
@@ -73,8 +88,10 @@ struct YomitanImporterTests {
         _ = try YomitanImporter().importArchive(at: fixture.archiveURL, to: fixture.packURL)
 
         let rows = try entryRows(in: fixture.packURL)
-        #expect(rows.map(\.term) == ["食べる", "食べる", "煮る", "\u{FA48}る", "ねこ"])
-        #expect(rows.last?.reading == "ねこ")
+        #expect(
+            rows.map(\.term) == ["食べる", "食べる", "煮る", "\u{FA48}る", "ねこ", "喰べる", "食べ物", "多弁"]
+        )
+        #expect(rows[4].reading == "ねこ")
     }
 
     @Test func sequencedIdentity_shouldCountDuplicatesByCodePoint() throws {
@@ -88,8 +105,8 @@ struct YomitanImporterTests {
 
         let rows = try entryRows(in: fixture.packURL)
         // The repeated 食べる row is a duplicate; the compatibility ideograph 煮 is not.
-        #expect(rows.map(\.ordinal) == [0, 1, 0, 0, 0])
-        #expect(rows.map(\.sequence) == [100, 100, 200, 200, 300])
+        #expect(rows.map(\.ordinal) == [0, 1, 0, 0, 0, 0, 0, 0])
+        #expect(rows.map(\.sequence) == [100, 100, 200, 200, 300, -100, 400, 500])
         #expect(report.duplicateIdentityCount == 1)
     }
 
@@ -120,12 +137,12 @@ struct YomitanImporterTests {
         #expect(report.index.stableIdentity == "Unsequenced")
     }
 
-    @Test func glossary_shouldRoundTripThroughThePack() throws {
+    @Test func glossary_shouldRoundTripThroughThePack() async throws {
         let fixture = try FixtureArchive()
         defer { fixture.remove() }
         _ = try YomitanImporter().importArchive(at: fixture.archiveURL, to: fixture.packURL)
 
-        let reader = try DictionaryPackReader(url: fixture.packURL)
+        let pack = try DictionaryPack(url: fixture.packURL)
         let source = try #require(
             try JSONSerialization.jsonObject(
                 with: Data(
@@ -134,21 +151,24 @@ struct YomitanImporterTests {
             ) as? [[Any]]
         )
         for (offset, row) in source.enumerated() {
-            let stored = try #require(try reader.glossaryJSON(entryID: Int64(offset + 1)))
-            let glossary = try JSONSerialization.jsonObject(with: stored) as? NSArray
+            let reference = DictionaryEntryReference(
+                importID: pack.info.importID,
+                rowID: Int64(offset + 1)
+            )
+            let entry = try #require(try await pack.entry(reference))
+            let glossary = try JSONSerialization.jsonObject(with: entry.glossaryJSON) as? NSArray
             #expect(glossary == row[5] as? NSArray)
         }
-        #expect(try reader.glossaryJSON(entryID: 99) == nil)
     }
 
-    @Test func importArchive_shouldReplaceAnExistingPack() throws {
+    @Test func importArchive_shouldReplaceAnExistingPack() async throws {
         let fixture = try FixtureArchive()
         defer { fixture.remove() }
         try Data("old".utf8).write(to: fixture.packURL)
 
         _ = try YomitanImporter().importArchive(at: fixture.archiveURL, to: fixture.packURL)
 
-        #expect(try DictionaryPackReader(url: fixture.packURL).entryCount() == 5)
+        #expect(try await DictionaryPack(url: fixture.packURL).entryCount() == 8)
         #expect(try fixture.strayFiles().isEmpty)
     }
 
