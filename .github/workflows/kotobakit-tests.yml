@@ -1,0 +1,40 @@
+name: KotobaKit tests
+
+on:
+  push:
+    branches: [main]
+    paths: &paths
+      - 'Packages/KotobaKit/**'
+      - '.swift-format'
+      - '.github/workflows/kotobakit-tests.yml'
+  pull_request:
+    paths: *paths
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.4'
+
+      - name: Run swift-format lint
+        run: swift format lint -r -s -p Packages/KotobaKit/Package.swift Packages/KotobaKit/Sources Packages/KotobaKit/Tests
+
+      - name: Run package tests
+        working-directory: Packages/KotobaKit
+        run: swift test
+
+      # The tests run on macOS; this checks that the package also builds for the app.
+      - name: Build for iOS
+        working-directory: Packages/KotobaKit
+        run: |
+          set -o pipefail
+          xcodebuild build -scheme KotobaKit -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO | xcbeautify
