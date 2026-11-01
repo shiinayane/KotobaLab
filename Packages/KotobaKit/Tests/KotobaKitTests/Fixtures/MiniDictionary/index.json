@@ -1,0 +1,11 @@
+{
+    "title": "KotobaKit Fixture [2026-01-01]",
+    "revision": "2026.01.01",
+    "format": 3,
+    "sequenced": true,
+    "author": "KotobaKit tests",
+    "attribution": "Written for KotobaKit tests.",
+    "isUpdatable": true,
+    "indexUrl": "https://example.com/kotobakit-fixture/index.json",
+    "downloadUrl": "https://example.com/kotobakit-fixture/dictionary.zip"
+}
