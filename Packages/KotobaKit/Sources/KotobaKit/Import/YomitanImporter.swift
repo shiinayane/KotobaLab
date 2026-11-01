@@ -402,11 +402,17 @@ private struct ArchiveFiles {
         entries.keys
     }
 
+    /// The most a read reserves up front, above the largest known term bank.
+    ///
+    /// The size comes from the archive's own header, which a damaged or crafted file can set to
+    /// any value; larger entries still read in full, growing as they go.
+    private static let maximumReservation: UInt64 = 64 * 1024 * 1024
+
     func read(_ path: String) throws -> Data? {
         guard let entry = entries[path] else {
             return nil
         }
-        var data = Data(capacity: Int(entry.uncompressedSize))
+        var data = Data(capacity: Int(min(entry.uncompressedSize, Self.maximumReservation)))
         _ = try archive.extract(entry, skipCRC32: false) { data.append($0) }
         return data
     }
