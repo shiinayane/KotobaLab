@@ -1,0 +1,79 @@
+[
+ [
+  "食べる",
+  "たべる",
+  "v1",
+  "v1",
+  10,
+  [
+   {
+    "type": "structured-content",
+    "content": [
+     {
+      "tag": "div",
+      "data": {
+       "content": "sense"
+      },
+      "content": [
+       {
+        "tag": "ruby",
+        "content": [
+         "食",
+         {
+          "tag": "rt",
+          "content": "た"
+         }
+        ]
+       },
+       {
+        "tag": "ul",
+        "content": {
+         "tag": "li",
+         "content": "to eat"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  100,
+  ""
+ ],
+ [
+  "食べる",
+  "たべる",
+  "v1",
+  "v1",
+  5,
+  [
+   "to live on"
+  ],
+  100,
+  ""
+ ],
+ [
+  "煮る",
+  "にる",
+  "v1",
+  "v1",
+  0,
+  [
+   "to boil"
+  ],
+  200,
+  ""
+ ],
+ [
+  "煮る",
+  "にる",
+  "v1",
+  "v1",
+  0,
+  [
+   "to boil (compatibility ideograph)"
+  ],
+  200,
+  ""
+ ]
+]

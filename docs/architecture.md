@@ -36,6 +36,7 @@ Hard rules:
 | Feature UI | `Features/<Feature>/` |
 | Sheet presentation (`AppRouter`) | `Navigation/` |
 | Shared components | `Shared/` |
+| Yomitan import and dictionary packs, not yet used by the app | `Packages/KotobaKit/` |
 
 A feature with dependencies, asynchronous state, or testable behavior uses
 `Scene + Store + View`: the Scene assembles UseCases, the Store owns state, and
@@ -73,14 +74,15 @@ alone.
 | Layer | Owns |
 | --- | --- |
 | Builder pytest | Source decoding, transformation, export invariants |
+| KotobaKit `swift test` | Yomitan import, pack contents, identity, compression; runs on macOS against a handwritten Yomitan fixture |
 | Database verifier | Schema, indexes, integrity, production query plans, size |
 | Repository tests | Record mapping and persistence, against the fixture database |
 | UseCase tests | Framework-independent coordination, with mock repositories |
 | Store tests | State machines, cancellation, stale results (only `WordDetailStore` so far; `SearchStore` and `SavedStore` tests come with M3) |
 | UI tests | Only critical integrated journeys (none yet) |
 
-CI runs `swift format lint` and the iOS tests on Xcode 26.4, and the builder
-tests on Python 3.14.
+CI runs `swift format lint`, the iOS tests, and the KotobaKit tests and iOS
+build on Xcode 26.4, and the builder tests on Python 3.14.
 
 ## Planned Changes
 
