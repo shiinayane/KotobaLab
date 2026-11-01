@@ -42,8 +42,12 @@ public struct YomitanImporter: Sendable {
 
     /// Imports the archive at `archiveURL` into a pack at `packURL`, replacing any existing file.
     ///
-    /// Checks for task cancellation between banks.
-    public func importArchive(at archiveURL: URL, to packURL: URL) throws -> YomitanImportReport {
+    /// Checks for task cancellation between banks, and calls `progress` after each term bank.
+    public func importArchive(
+        at archiveURL: URL,
+        to packURL: URL,
+        progress: (YomitanImportProgress) -> Void = { _ in }
+    ) throws -> YomitanImportReport {
         let clock = ContinuousClock()
         let start = clock.now
         var timings = YomitanImportReport.Timings()
@@ -119,7 +123,8 @@ public struct YomitanImporter: Sendable {
                     preset: preset,
                     archive: archive,
                     db: db,
-                    timings: &timings
+                    timings: &timings,
+                    progress: progress
                 )
                 let mediaStart = clock.now
                 media = try writeMedia(paths: layout.mediaPaths, archive: archive, db: db)
@@ -254,7 +259,8 @@ public struct YomitanImporter: Sendable {
         preset: Data,
         archive: ArchiveFiles,
         db: Database,
-        timings: inout YomitanImportReport.Timings
+        timings: inout YomitanImportReport.Timings,
+        progress: (YomitanImportProgress) -> Void
     ) throws -> EntryCounts {
         let clock = ContinuousClock()
         let compressor = try PresetCompressor(
@@ -273,12 +279,15 @@ public struct YomitanImporter: Sendable {
         // Counts rows per sequence, term, and reading; the key's ordinal stays 0.
         var nextOrdinal: [DictionaryEntryKey: Int] = [:]
 
-        for bank in banks {
+        for (position, bank) in banks.enumerated() {
             try Task.checkCancellation()
             // JSONSerialization autoreleases its objects; drain them after every bank.
             try autoreleasepool {
                 try writeBank(bank)
             }
+            progress(
+                YomitanImportProgress(completedTermBanks: position + 1, termBankCount: banks.count)
+            )
         }
         return counts
 

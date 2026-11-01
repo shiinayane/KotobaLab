@@ -16,6 +16,11 @@ struct FixtureArchive {
         directory.appendingPathComponent("pack.sqlite")
     }
 
+    /// A directory for a ``DictionaryLibrary``, not created yet.
+    var libraryURL: URL {
+        directory.appendingPathComponent("library")
+    }
+
     /// Writes `files`, keyed by archive path, over the fixture before zipping it.
     init(replacing files: [String: String] = [:], removing removed: [String] = []) throws {
         let fileManager = FileManager.default
@@ -46,7 +51,7 @@ struct FixtureArchive {
     /// Files in the directory other than the archive, its source, and the pack.
     func strayFiles() throws -> [String] {
         try FileManager.default.contentsOfDirectory(atPath: directory.path)
-            .filter { !["content", "dictionary.zip", "pack.sqlite"].contains($0) }
+            .filter { !["content", "dictionary.zip", "pack.sqlite", "library"].contains($0) }
     }
 
     func remove() {
