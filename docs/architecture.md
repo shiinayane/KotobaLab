@@ -74,7 +74,7 @@ alone.
 | Layer | Owns |
 | --- | --- |
 | Builder pytest | Source decoding, transformation, export invariants |
-| KotobaKit `swift test` | Yomitan import, pack contents, identity, compression; runs on macOS against a handwritten Yomitan fixture |
+| KotobaKit `swift test` | Yomitan import, pack contents, search, identity resolution, compression; runs on macOS against a handwritten Yomitan fixture |
 | Database verifier | Schema, indexes, integrity, production query plans, size |
 | Repository tests | Record mapping and persistence, against the fixture database |
 | UseCase tests | Framework-independent coordination, with mock repositories |
