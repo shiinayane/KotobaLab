@@ -58,10 +58,6 @@ guard arguments.count == 2 else {
 let archiveURL = URL(fileURLWithPath: arguments[0])
 let packURL = URL(fileURLWithPath: arguments[1])
 
-func megabytes(_ bytes: Int) -> String {
-    String(format: "%.1f MB", Double(bytes) / 1_000_000)
-}
-
 do {
     let report = try YomitanImporter(options: options).importArchive(at: archiveURL, to: packURL)
     print(report)
@@ -82,22 +78,16 @@ do {
             }
             _ = try JSONSerialization.jsonObject(with: json)
         }
-        let elapsed = clock.now - start
-        let perEntry =
-            Double(elapsed.components.attoseconds) / 1e12 / Double(ids.count)
-            + Double(elapsed.components.seconds) * 1e6 / Double(ids.count)
+        let perEntry = (clock.now - start) / ids.count
+        let microseconds = perEntry.formatted(.units(allowed: [.microseconds], width: .narrow))
         print(
-            String(
-                format: "verify              %d random entries decoded and parsed, %.0f µs each",
-                ids.count,
-                perEntry
-            )
+            "verify              \(ids.count) random entries decoded and parsed, \(microseconds) each"
         )
     }
 
     var usage = rusage()
     getrusage(RUSAGE_SELF, &usage)
-    print("peak memory         \(megabytes(Int(usage.ru_maxrss)))")
+    print("peak memory         \(Int64(usage.ru_maxrss).formatted(.byteCount(style: .decimal)))")
 } catch {
     fail("import failed: \(error)")
 }
