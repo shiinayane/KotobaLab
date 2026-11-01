@@ -23,6 +23,9 @@ public struct YomitanImportReport: Sendable {
         public var total: Duration = .zero
     }
 
+    public let importID: UUID
+    /// Lowercase hex SHA-256 of the source archive.
+    public let sourceSHA256: String
     public let index: YomitanIndex
     public let entryCount: Int
     /// Rows that share sequence, term, and reading with an earlier row, told apart by ordinal.
@@ -34,8 +37,8 @@ public struct YomitanImportReport: Sendable {
     public let glossaryBytes: Int
     public let compressedGlossaryBytes: Int
     public let presetDictionaryBytes: Int
-    /// Rows of banks this importer does not read yet, keyed by bank kind, such as `kanji`.
-    public let skippedRows: [String: Int]
+    /// Files of banks the pack keeps without reading, keyed by bank kind, such as `kanji`.
+    public let storedSourceBanks: [String: Int]
     public let packBytes: Int
     public let timings: Timings
 }
@@ -51,14 +54,14 @@ extension YomitanImportReport: CustomStringConvertible {
             let value = Double(components.seconds) + Double(components.attoseconds) / 1e18
             return String(format: "%.2f s", value)
         }
-        let skipped = skippedRows.isEmpty ? "none" : "\(skippedRows)"
+        let stored = storedSourceBanks.isEmpty ? "none" : "\(storedSourceBanks)"
         return """
             dictionary          \(index.title) (\(index.revision))
             identity            \(index.stableIdentity)
             entries             \(entryCount), duplicate identities \(duplicateIdentityCount)
             tags                \(tagCount)
             media               \(mediaCount) files, \(megabytes(mediaBytes))
-            skipped rows        \(skipped)
+            stored banks        \(stored)
             glossary JSON       \(megabytes(glossaryBytes))
             glossary compressed \(megabytes(compressedGlossaryBytes)) \
             (preset \(presetDictionaryBytes) bytes)
