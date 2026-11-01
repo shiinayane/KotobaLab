@@ -20,6 +20,9 @@ The current builder is an MVP projection, not a faithful importer:
 - Source revision and license metadata are not stored in SQLite.
 - Autoincrement row IDs are exposed as durable saved references.
 
+M1 replaces this pipeline with the Swift importer in `Packages/KotobaKit`,
+which the app does not use yet.
+
 ## Pipeline
 
 ```text
@@ -147,8 +150,67 @@ one-in-ten sample of 42,707 entries with zstd level 12; its per-entry zlib
 estimate matches a full-dictionary run. zlib used level 9. Decoding one entry
 with zlib and a preset dictionary took 3–4 µs in Python.
 
-Not measured: decoding in Swift on a device, building a preset dictionary
-without the zstd trainer, and the plain text that search still needs.
+The Swift import below measures decoding in Swift and a preset dictionary built
+without the zstd trainer.
+
+### Swift import, 2026-11-01
+
+`kotoba-pack` release build of `KotobaKit` pack format 1 on an Apple-silicon
+Mac. Jitendex `2026.10.03.0` came from its upstream download URL as a
+38,831,822-byte zip. 小学館 `rgko12;2025-08-18` was zipped locally, 79,489,317
+bytes. Glossaries are JSON with sorted keys, each compressed as raw deflate at
+level 6 with a 32 KB preset dictionary built during import. Megabytes are 10⁶
+bytes.
+
+| Property | Jitendex | 小学館 |
+| --- | ---: | ---: |
+| Entries | 436,555 | 48,523 |
+| Rows that need a nonzero ordinal | 0 | 432 |
+| Glossary JSON | 466.3 MB | 221.3 MB |
+| Glossary compressed | 51.8 MB | 12.9 MB |
+| Media | 5.0 MB, 250 files | 69.4 MB, 3,604 files |
+| Pack file | 104.8 MB | 90.0 MB |
+| Import time | 30.3 s | 10.7 s |
+| Peak memory | 249 MB | 409 MB |
+| Decode and parse one random entry | 27 µs | 54 µs |
+| Import time, iPhone 16 Pro Max | 29.5 s | not measured |
+| Peak memory footprint, iPhone 16 Pro Max | 202 MB | not measured |
+| Decode and parse one random entry, iPhone 16 Pro Max | 34 µs | not measured |
+
+The iPhone ran the same importer in a Release build of a throwaway host app,
+once, at nominal thermal state, and wrote the same sizes as the Mac. The upstream
+download took 12.7 s on that run's network. 小学館 is user-supplied and was not
+copied to the device.
+
+The iPhone import is far inside the M1 gate of about three minutes, so pack
+format 1 keeps JSON glossaries, raw deflate at level 6, and a 32 KB preset
+dictionary built during import.
+
+Compression takes 58% of the Jitendex import because every entry reloads the
+preset dictionary. Trade-offs on Jitendex:
+
+| Level | Preset dictionary | Glossary compressed | Import time |
+| ---: | ---: | ---: | ---: |
+| 9 | 32 KB | 49.8 MB | 36.2 s |
+| 6 | 32 KB | 51.8 MB | 30.3 s |
+| 6 | 16 KB | 54.7 MB | 23.0 s |
+| 6 | 8 KB | 58.2 MB | 20.0 s |
+| 6 | none | 172.9 MB | 19.3 s |
+
+The preset dictionary is a greedy cover of 256-byte segments from 512 entries
+sampled across up to eight term banks, scored by how many samples share each 8-byte
+substring. In a Python comparison on held-out entries, with raw deflate at
+level 6, it compressed 小学館 17.0 times and Jitendex 9.0 times. The last 32 KB
+of a zstd-trained dictionary reached 17.9 and 9.0, and concatenated whole
+entries reached 10.3 and 8.3.
+
+In the Jitendex pack, the entries table is 79.0 MB and the term and reading
+indexes are 9.5 MB and 11.0 MB. The 小学館 pack is mostly media, 72.2 MB.
+
+Jitendex `2026.10.03.0` has 10,059 rows that equal another row of the same
+sequence under Unicode canonical equivalence but not by code point, such as
+`御雜煮` written with U+FA48 or U+716E. Swift `String` equality treats them as
+the same, so identity compares code points.
 
 ## Data Boundaries
 
@@ -222,10 +284,24 @@ reference material only and is not part of production.
 
 ## Identity
 
-SQLite row IDs are internal. App-facing and persisted identity is conceptually
-`dictionaryID + stableSourceEntryKey`. A rebuild of the same source must
-preserve logical identity or ship an explicit migration map. Equivalent-looking
-entries from different providers stay distinct.
+SQLite row IDs are internal. App-facing and persisted identity is
+`dictionaryID + entryKey`:
+
+- The dictionary ID is `indexUrl` when `index.json` has one, otherwise the
+  title. Titles of updatable dictionaries carry a date, such as
+  `Jitendex.org [2026-10-03]`.
+- The entry key is `(sequence, term, reading, ordinal)`. `sequence` is 0 unless
+  `index.json` declares `sequenced`. An empty reading takes the term. `ordinal`
+  numbers rows that share the other three fields, in source order.
+- Terms and readings compare by code point, never by Swift `String` equality,
+  which merges CJK compatibility ideographs with their unified forms.
+- `ordinal` is weak: an upstream that reorders duplicate rows moves it. Saved
+  references therefore keep a term and reading snapshot, and report an entry
+  that no longer matches instead of opening a different one.
+
+A rebuild of the same source must preserve logical identity or ship an explicit
+migration map. Equivalent-looking entries from different providers stay
+distinct.
 
 ## Assets and Multiple Dictionaries
 

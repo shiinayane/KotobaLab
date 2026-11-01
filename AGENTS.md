@@ -59,7 +59,8 @@ merge.
 | Change | Minimum evidence |
 | --- | --- |
 | Docs or configuration | Targeted check and `git diff --check` |
-| Swift source | `swift format lint -r -s -p KotobaLab/ KotobaLabTests/` and relevant tests |
+| Swift source | `swift format lint -r -s -p KotobaLab/ KotobaLabTests/ Packages/KotobaKit/Package.swift Packages/KotobaKit/Sources Packages/KotobaKit/Tests` and relevant tests |
+| KotobaKit package | `cd Packages/KotobaKit && swift test` |
 | Feature or composition | iOS build and tests |
 | Builder | `cd Tools/DictionaryBuilder && python3 -m pytest` |
 | SQL, schema, or index | Builder tests, verifier, query plan, and benchmark |

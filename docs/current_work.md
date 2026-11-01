@@ -1,6 +1,6 @@
 # Current Work
 
-Last updated: 2026-10-30
+Last updated: 2026-11-01
 
 ## Status
 
@@ -19,9 +19,14 @@ time.
 
 ## Next Action
 
-M0 Cleanup is implemented and in review. After it merges, propose M1 Data
-foundation, starting with the structural changes in
-[architecture](architecture.md#planned-changes).
+M1 Data foundation is approved as five pull requests, each reviewed on its own:
+
+1. The `KotobaKit` package, a minimal Yomitan importer, and import
+   measurements. In review.
+2. The frozen pack format, identity rules, and read API.
+3. The import service, App Group, dictionary registry, and saved-entry model.
+4. The app switch to downloaded packs, starting with Jitendex on first launch.
+5. Retiring the Python builder, the released SQLite asset, and its CI download.
 
 ## Open Decisions
 
@@ -30,11 +35,8 @@ foundation, starting with the structural changes in
 - What import precomputes, such as compiled styles, rasterized SVG, or render
   data stored in SQLite.
 - Which providers justify a semantic adapter beyond generic rendering.
-- Production import, identity, activation, recovery, and saved-reference
-  contracts.
-- How to store structured content compactly; see
-  [the compression measurements](dictionary.md#structured-content-compression-2026-10-30).
-  zlib with a preset dictionary needs no new dependency; zstd would add one.
+- Import activation and recovery contracts. Identity is decided; see
+  [Identity](dictionary.md#identity).
 - How import guards storage once the Python verifier's fixed 100 MB limit is
   retired: for example a size estimate and free-space check instead of a fixed
   cap.
