@@ -23,9 +23,12 @@ M1 Data foundation is approved as five pull requests, each reviewed on its own:
 
 1. The `KotobaKit` package, a minimal Yomitan importer, and import
    measurements. Merged.
-2. The frozen pack format, identity rules, and read API. In review.
+2. The frozen pack format, identity rules, and read API. Merged.
 3. The import service, App Group, dictionary registry, and saved-entry model,
-   plus a test that cancels an import mid-write.
+   plus a test that cancels an import mid-write. In review. The app links
+   `KotobaKit` and has the App Group entitlement but uses neither yet.
+   Existing saved words are discarded, not migrated, when PR 4 switches
+   models; the app is unreleased.
 4. The app switch to downloaded packs, starting with Jitendex on first launch,
    including list preview text and a device search benchmark.
 5. Retiring the Python builder, the released SQLite asset, and its CI download.
@@ -37,16 +40,8 @@ M1 Data foundation is approved as five pull requests, each reviewed on its own:
 - What import precomputes, such as compiled styles, rasterized SVG, or render
   data stored in SQLite.
 - Which providers justify a semantic adapter beyond generic rendering.
-- Import activation and recovery contracts. Identity and the pack format are
-  decided; see [Identity](dictionary.md#identity) and
-  [Pack Format](dictionary.md#pack-format).
-- Whether the registry keeps user-imported source archives. Only a change to a
-  pack's data columns needs them.
 - How hiragana and katakana match each other: a kana-folded reading column,
   added in place, decided with deinflection in M3.
-- How import guards storage once the Python verifier's fixed 100 MB limit is
-  retired: for example a size estimate and free-space check instead of a fixed
-  cap.
 - Whether KotobaLab mirrors recommended dictionaries in its own GitHub Release
   as a fallback when an upstream download fails or changes format. Jitendex's
   CC BY-SA 4.0 license allows it with attribution.
