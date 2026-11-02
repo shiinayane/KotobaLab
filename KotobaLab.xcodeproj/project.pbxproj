@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8D089AFC2F7D6C340040BB42 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 8D089AFB2F7D6C340040BB42 /* GRDB */; };
+		8D0F7A012FB0C10000A1B2C3 /* KotobaKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0F7A022FB0C10000A1B2C3 /* KotobaKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				8D089AFC2F7D6C340040BB42 /* GRDB in Frameworks */,
+				8D0F7A012FB0C10000A1B2C3 /* KotobaKit in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -159,6 +161,7 @@
 			name = KotobaLab;
 			packageProductDependencies = (
 				8D089AFB2F7D6C340040BB42 /* GRDB */,
+				8D0F7A022FB0C10000A1B2C3 /* KotobaKit */,
 			);
 			productName = KotobaLab;
 			productReference = 8D85E6652F745BFA002A040A /* KotobaLab.app */;
@@ -194,6 +197,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				8D089AFA2F7D6C340040BB42 /* XCRemoteSwiftPackageReference "GRDB" */,
+				8D0F7A032FB0C10000A1B2C3 /* XCLocalSwiftPackageReference "Packages/KotobaKit" */,
 			);
 			preferredProjectObjectVersion = 100;
 			productRefGroup = 8D85E6662F745BFA002A040A /* Products */;
@@ -411,6 +415,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = KotobaLab/KotobaLab.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2B3LZ256AG;
@@ -445,6 +450,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = KotobaLab/KotobaLab.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2B3LZ256AG;
@@ -503,6 +509,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		8D0F7A032FB0C10000A1B2C3 /* XCLocalSwiftPackageReference "Packages/KotobaKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/KotobaKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		8D089AFA2F7D6C340040BB42 /* XCRemoteSwiftPackageReference "GRDB" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -519,6 +532,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8D089AFA2F7D6C340040BB42 /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
+		};
+		8D0F7A022FB0C10000A1B2C3 /* KotobaKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D0F7A032FB0C10000A1B2C3 /* XCLocalSwiftPackageReference "Packages/KotobaKit" */;
+			productName = KotobaKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -159,10 +159,6 @@ struct DictionaryPackTests {
         await #expect(throws: DictionaryPackError.staleReference) {
             try await reimported.group(of: entry)
         }
-        // A pack opened before the replacement fails instead of reading the new file.
-        await #expect(throws: (any Error).self) {
-            try await pack.entry(entry.reference)
-        }
     }
 
     @Test func resolve_shouldFindEveryRowOfAnUnchangedPack() async throws {

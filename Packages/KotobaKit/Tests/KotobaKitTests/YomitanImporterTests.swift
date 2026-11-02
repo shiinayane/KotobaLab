@@ -161,6 +161,20 @@ struct YomitanImporterTests {
         }
     }
 
+    @Test func importArchive_shouldReportEachTermBank() throws {
+        let fixture = try FixtureArchive()
+        defer { fixture.remove() }
+        var reports: [YomitanImportProgress] = []
+
+        _ = try YomitanImporter().importArchive(at: fixture.archiveURL, to: fixture.packURL) {
+            reports.append($0)
+        }
+
+        #expect(reports.map(\.completedTermBanks) == [1, 2])
+        #expect(reports.map(\.termBankCount) == [2, 2])
+        #expect(reports.last?.fractionCompleted == 1)
+    }
+
     @Test func importArchive_shouldReplaceAnExistingPack() async throws {
         let fixture = try FixtureArchive()
         defer { fixture.remove() }

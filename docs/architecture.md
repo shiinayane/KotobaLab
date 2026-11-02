@@ -16,7 +16,8 @@ role.
 
 Hard rules:
 
-- `Domain/` must not import SwiftUI, SwiftData, GRDB, or SQLite record types.
+- `Domain/` must not import SwiftUI, SwiftData, GRDB, or SQLite record types. It
+  may use `KotobaKit` value types such as `DictionaryEntrySnapshot`.
 - Views must not hold repositories or database references.
 - Business logic lives in UseCases, not Views.
 - Dictionary content stays in SQLite; user-owned data stays in SwiftData.
@@ -36,7 +37,8 @@ Hard rules:
 | Feature UI | `Features/<Feature>/` |
 | Sheet presentation (`AppRouter`) | `Navigation/` |
 | Shared components | `Shared/` |
-| Yomitan import and dictionary packs, not yet used by the app | `Packages/KotobaKit/` |
+| Yomitan import, dictionary packs, and the installed-dictionary library; linked but not yet used by the app | `Packages/KotobaKit/` |
+| The App Group identifier and shared container paths | `App/AppGroup.swift` |
 
 A feature with dependencies, asynchronous state, or testable behavior uses
 `Scene + Store + View`: the Scene assembles UseCases, the Store owns state, and
@@ -74,7 +76,7 @@ alone.
 | Layer | Owns |
 | --- | --- |
 | Builder pytest | Source decoding, transformation, export invariants |
-| KotobaKit `swift test` | Yomitan import, pack contents, search, identity resolution, compression; runs on macOS against a handwritten Yomitan fixture |
+| KotobaKit `swift test` | Yomitan import, pack contents, search, identity resolution, compression, installing and recovering packs; runs on macOS against a handwritten Yomitan fixture |
 | Database verifier | Schema, indexes, integrity, production query plans, size |
 | Repository tests | Record mapping and persistence, against the fixture database |
 | UseCase tests | Framework-independent coordination, with mock repositories |
@@ -92,10 +94,9 @@ milestone that first needs it.
 
 | Change | Reason | Milestone |
 | --- | --- | --- |
-| Local Swift package for the dictionary core (import, storage, search) and the renderer | The Share Extension and App Intents need the same code as the app | M1 |
-| An import service with progress and cancellation, not a UseCase | Import is a long-running background task | M1 |
-| User data in an App Group container, composed at launch | App Intents have no view environment to supply a `ModelContext` | M1 decides, M4 uses |
+| Dictionary packs from `DictionaryLibrary` in the App Group's `Dictionaries` directory, and the SwiftData store in the App Group with `SavedEntryRecord` replacing `SavedWordRecord`, composed at launch | App Intents and extensions have no view environment to supply a `ModelContext` | M1 |
 | UseCases only where they coordinate repositories or hold domain rules | `SearchWordsUseCase` and `ToggleSavedWordUseCase` only forward calls; stable identity changes every signature anyway | M1 |
+| The production dictionary renderer in `KotobaKit` | The Share Extension and App Intents render entries too | M2 |
 | Value-based navigation with `navigationDestination(for:)` instead of `AnyView` destination closures | Linked entries and deep links from system-wide entry need to open an entry by value | M2 |
 
 ## Known Gaps

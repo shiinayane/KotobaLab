@@ -261,9 +261,8 @@ External source (e.g. Yomitan)
 - SQLite is the rebuildable runtime projection, not an exchange format. Search
   projections stay lean; detail projections may carry structured forms, senses,
   tags, and restrictions.
-- Saved words, history, notes, preferences, and pack registry state live
-  outside dictionary assets. Replacing an asset must never silently delete
-  personal data.
+- Saved words, history, notes, and preferences live outside dictionary
+  assets. Replacing an asset must never silently delete personal data.
 
 ## Fidelity Contract
 
@@ -371,9 +370,9 @@ Changes follow three rules, so most changes need no source archive:
   in-place upgrade adds a meta key recording which upgrades a pack has; a pack
   without that key has none.
 
-Replacing a pack file makes a `DictionaryPack` opened earlier fail with an I/O
-error instead of reading the new file, so holders reopen after a replace. Reads
-of one pack run one at a time.
+A `DictionaryPack` opened before its file was replaced or deleted never reads
+the new file, but depending on the system it fails with an I/O error or keeps
+reading the deleted one, so holders reopen afterwards. Reads of one pack run one at a time.
 
 Glossaries are JSON with sorted keys, each raw-deflated on its own with the
 pack's preset dictionary, so lookup decodes one entry at a time. The preset
@@ -398,9 +397,23 @@ Every production asset should carry a stable dictionary ID, provider and
 display information, languages, schema version, content revision and build
 identity, a checksum, and license and attribution metadata.
 
-Target activation: discover, verify integrity, check metadata and
-compatibility, verify invariants, migrate user references if needed, activate
-atomically, and keep or restore the previous asset on failure.
+`DictionaryLibrary` in `KotobaKit` keeps the installed packs, one file per
+dictionary in one directory. The directory is the registry: each pack carries
+its dictionary ID, title, revision, and import time, so no separate list can
+disagree with the files.
+
+- Import writes a temporary file, moves it to a new pack file once complete,
+  and only then deletes the pack of the same dictionary it replaces. No pack is
+  replaced in place.
+- A failed, cancelled, or out-of-space import leaves the installed packs as
+  they were. There is no fixed size cap; running out of space is reported as
+  its own error.
+- Opening the library deletes leftover temporary files and, when an
+  interrupted replacement left two packs of one dictionary, keeps the newer.
+  Packs that cannot be opened are listed with their error and deleted only by
+  the user.
+- Source archives are not kept. A change to a pack's data columns means
+  downloading recommended dictionaries again and choosing user files again.
 
 Prefer one independently versioned read-only pack per provider. Aggregate lookup
 keeps source labels and a deterministic order, never compares provider-specific
