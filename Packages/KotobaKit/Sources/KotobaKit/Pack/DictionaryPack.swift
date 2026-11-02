@@ -29,8 +29,8 @@ public struct DictionaryPackInfo: Sendable {
 /// pack. Reads run one at a time on the pack's database queue, so a slow search delays the reads
 /// queued behind it.
 ///
-/// Replacing or deleting the file makes an instance opened earlier fail with an I/O error rather
-/// than read the new file; open the pack again afterwards.
+/// An instance opened before its file was replaced or deleted never reads the new file, but it may
+/// fail with an I/O error or keep reading the deleted one; open the pack again afterwards.
 public final class DictionaryPack: Sendable {
     public let info: DictionaryPackInfo
     private let queue: DatabaseQueue

@@ -68,21 +68,6 @@ struct DictionaryLibraryTests {
         #expect(try packFiles(in: fixture.libraryURL) == [second.packURL.lastPathComponent])
     }
 
-    /// Apple's SQLite notices that an open file was deleted and fails the next read.
-    @Test func replacedPack_shouldFailOnceItsFileIsDeleted() async throws {
-        let fixture = try FixtureArchive()
-        defer { fixture.remove() }
-        let library = try DictionaryLibrary(directory: fixture.libraryURL)
-        _ = try await library.install(archiveAt: fixture.archiveURL)
-        let old = try #require(await library.pack(for: Self.fixtureID))
-
-        _ = try await library.install(archiveAt: fixture.archiveURL)
-
-        await #expect(throws: DatabaseError.self) {
-            try await old.entryCount()
-        }
-    }
-
     @Test func remove_shouldDeleteThePack() async throws {
         let fixture = try FixtureArchive()
         defer { fixture.remove() }

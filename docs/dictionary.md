@@ -370,9 +370,9 @@ Changes follow three rules, so most changes need no source archive:
   in-place upgrade adds a meta key recording which upgrades a pack has; a pack
   without that key has none.
 
-Replacing or deleting a pack file makes a `DictionaryPack` opened earlier fail
-with an I/O error instead of reading the new file, so holders reopen
-afterwards. Reads of one pack run one at a time.
+A `DictionaryPack` opened before its file was replaced or deleted never reads
+the new file, but depending on the system it fails with an I/O error or keeps
+reading the deleted one, so holders reopen afterwards. Reads of one pack run one at a time.
 
 Glossaries are JSON with sorted keys, each raw-deflated on its own with the
 pack's preset dictionary, so lookup decodes one entry at a time. The preset

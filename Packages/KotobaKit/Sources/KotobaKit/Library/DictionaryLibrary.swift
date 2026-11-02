@@ -37,7 +37,7 @@ public enum DictionaryLibraryError: Error, Equatable {
 /// one process may install into a directory, through one library.
 ///
 /// After ``install(archiveAt:progress:)`` or ``remove(dictionaryID:)``, ask ``pack(for:)`` again:
-/// a ``DictionaryPack`` whose file was deleted fails with an I/O error.
+/// a ``DictionaryPack`` whose file was deleted may fail with an I/O error.
 public actor DictionaryLibrary {
     public nonisolated let directory: URL
     private let importer: YomitanImporter
